@@ -1,0 +1,41 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model State {
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+  abbv      String
+  full_text String
+  cities    City[]
+  addresses Address[]
+}
+
+model City {
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+  text      String
+  addresses Address[]
+  state     State     @relation(fields: [state_id], references: [id])
+  state_id  String
+}
+
+model Address {
+  id            String  @id @default(auto()) @map("_id") @db.ObjectId
+  street        String
+  buisness_name String?
+  city          City    @relation(fields: [city_id], references: [id])
+  city_id       String
+  state         State   @relation(fields: [state_id], references: [id])
+  zip           String
+  state_id      String
+}
+
+model AccessCode {
+  id       String @id @default(auto()) @map("_id") @db.ObjectId
+  used_for String
+  value    String
+}
