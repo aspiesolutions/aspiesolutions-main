@@ -1,9 +1,11 @@
 generator client {
   provider = "prisma-client-js"
 }
+
 generator typegraphql {
   provider = "typegraphql-prisma"
 }
+
 datasource db {
   provider = "mongodb"
   url      = env("DATABASE_URL")
@@ -11,8 +13,8 @@ datasource db {
 
 model State {
   id        String    @id @default(auto()) @map("_id") @db.ObjectId
-  abbv      String
-  full_text String
+  abbreviation      String    @unique
+  name      String    @unique
   cities    City[]
   addresses Address[]
 }
@@ -26,18 +28,23 @@ model City {
 }
 
 model Address {
-  id            String  @id @default(auto()) @map("_id") @db.ObjectId
-  street        String
+  id            String       @id @default(auto()) @map("_id") @db.ObjectId
+  street        String       @unique
   buisness_name String?
-  city          City    @relation(fields: [city_id], references: [id])
+  city          City         @relation(fields: [city_id], references: [id])
   city_id       String
-  state         State   @relation(fields: [state_id], references: [id])
+  state         State        @relation(fields: [state_id], references: [id])
   zip           String
   state_id      String
+  access_codes  AccessCode[]
 }
 
+// address is nullable to allow the creation of an access code and
+// associate it with an address later
 model AccessCode {
-  id       String @id @default(auto()) @map("_id") @db.ObjectId
-  used_for String
-  value    String
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  used_for   String
+  value      String
+  address    Address? @relation(fields: [address_id], references: [id])
+  address_id String?
 }

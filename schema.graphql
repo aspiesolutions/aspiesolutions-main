@@ -1,0 +1,1166 @@
+type Query {
+  accessCode(where: AccessCodeWhereUniqueInput!): AccessCode
+  findFirstAccessCode(where: AccessCodeWhereInput, orderBy: [AccessCodeOrderByWithRelationInput!], cursor: AccessCodeWhereUniqueInput, take: Int, skip: Int, distinct: [AccessCodeScalarFieldEnum!]): AccessCode
+  accessCodes(where: AccessCodeWhereInput, orderBy: [AccessCodeOrderByWithRelationInput!], cursor: AccessCodeWhereUniqueInput, take: Int, skip: Int, distinct: [AccessCodeScalarFieldEnum!]): [AccessCode!]!
+  aggregateAccessCode(where: AccessCodeWhereInput, orderBy: [AccessCodeOrderByWithRelationInput!], cursor: AccessCodeWhereUniqueInput, take: Int, skip: Int): AggregateAccessCode!
+  groupByAccessCode(where: AccessCodeWhereInput, orderBy: [AccessCodeOrderByWithAggregationInput!], by: [AccessCodeScalarFieldEnum!]!, having: AccessCodeScalarWhereWithAggregatesInput, take: Int, skip: Int): [AccessCodeGroupBy!]!
+  address(where: AddressWhereUniqueInput!): Address
+  findFirstAddress(where: AddressWhereInput, orderBy: [AddressOrderByWithRelationInput!], cursor: AddressWhereUniqueInput, take: Int, skip: Int, distinct: [AddressScalarFieldEnum!]): Address
+  addresses(where: AddressWhereInput, orderBy: [AddressOrderByWithRelationInput!], cursor: AddressWhereUniqueInput, take: Int, skip: Int, distinct: [AddressScalarFieldEnum!]): [Address!]!
+  aggregateAddress(where: AddressWhereInput, orderBy: [AddressOrderByWithRelationInput!], cursor: AddressWhereUniqueInput, take: Int, skip: Int): AggregateAddress!
+  groupByAddress(where: AddressWhereInput, orderBy: [AddressOrderByWithAggregationInput!], by: [AddressScalarFieldEnum!]!, having: AddressScalarWhereWithAggregatesInput, take: Int, skip: Int): [AddressGroupBy!]!
+  city(where: CityWhereUniqueInput!): City
+  findFirstCity(where: CityWhereInput, orderBy: [CityOrderByWithRelationInput!], cursor: CityWhereUniqueInput, take: Int, skip: Int, distinct: [CityScalarFieldEnum!]): City
+  cities(where: CityWhereInput, orderBy: [CityOrderByWithRelationInput!], cursor: CityWhereUniqueInput, take: Int, skip: Int, distinct: [CityScalarFieldEnum!]): [City!]!
+  aggregateCity(where: CityWhereInput, orderBy: [CityOrderByWithRelationInput!], cursor: CityWhereUniqueInput, take: Int, skip: Int): AggregateCity!
+  groupByCity(where: CityWhereInput, orderBy: [CityOrderByWithAggregationInput!], by: [CityScalarFieldEnum!]!, having: CityScalarWhereWithAggregatesInput, take: Int, skip: Int): [CityGroupBy!]!
+  state(where: StateWhereUniqueInput!): State
+  findFirstState(where: StateWhereInput, orderBy: [StateOrderByWithRelationInput!], cursor: StateWhereUniqueInput, take: Int, skip: Int, distinct: [StateScalarFieldEnum!]): State
+  states(where: StateWhereInput, orderBy: [StateOrderByWithRelationInput!], cursor: StateWhereUniqueInput, take: Int, skip: Int, distinct: [StateScalarFieldEnum!]): [State!]!
+  aggregateState(where: StateWhereInput, orderBy: [StateOrderByWithRelationInput!], cursor: StateWhereUniqueInput, take: Int, skip: Int): AggregateState!
+  groupByState(where: StateWhereInput, orderBy: [StateOrderByWithAggregationInput!], by: [StateScalarFieldEnum!]!, having: StateScalarWhereWithAggregatesInput, take: Int, skip: Int): [StateGroupBy!]!
+}
+
+type AccessCode {
+  id: String!
+  used_for: String!
+  value: String!
+}
+
+input AccessCodeWhereUniqueInput {
+  id: String
+}
+
+input AccessCodeWhereInput {
+  AND: [AccessCodeWhereInput!]
+  OR: [AccessCodeWhereInput!]
+  NOT: [AccessCodeWhereInput!]
+  id: StringFilter
+  used_for: StringFilter
+  value: StringFilter
+}
+
+input StringFilter {
+  equals: String
+  in: [String!]
+  notIn: [String!]
+  lt: String
+  lte: String
+  gt: String
+  gte: String
+  contains: String
+  startsWith: String
+  endsWith: String
+  mode: QueryMode
+  not: NestedStringFilter
+}
+
+enum QueryMode {
+  default
+  insensitive
+}
+
+input NestedStringFilter {
+  equals: String
+  in: [String!]
+  notIn: [String!]
+  lt: String
+  lte: String
+  gt: String
+  gte: String
+  contains: String
+  startsWith: String
+  endsWith: String
+  not: NestedStringFilter
+}
+
+input AccessCodeOrderByWithRelationInput {
+  id: SortOrder
+  used_for: SortOrder
+  value: SortOrder
+}
+
+enum SortOrder {
+  asc
+  desc
+}
+
+enum AccessCodeScalarFieldEnum {
+  id
+  used_for
+  value
+}
+
+type AggregateAccessCode {
+  _count: AccessCodeCountAggregate
+  _min: AccessCodeMinAggregate
+  _max: AccessCodeMaxAggregate
+}
+
+type AccessCodeCountAggregate {
+  id: Int!
+  used_for: Int!
+  value: Int!
+  _all: Int!
+}
+
+type AccessCodeMinAggregate {
+  id: String
+  used_for: String
+  value: String
+}
+
+type AccessCodeMaxAggregate {
+  id: String
+  used_for: String
+  value: String
+}
+
+type AccessCodeGroupBy {
+  id: String!
+  used_for: String!
+  value: String!
+  _count: AccessCodeCountAggregate
+  _min: AccessCodeMinAggregate
+  _max: AccessCodeMaxAggregate
+}
+
+input AccessCodeOrderByWithAggregationInput {
+  id: SortOrder
+  used_for: SortOrder
+  value: SortOrder
+  _count: AccessCodeCountOrderByAggregateInput
+  _max: AccessCodeMaxOrderByAggregateInput
+  _min: AccessCodeMinOrderByAggregateInput
+}
+
+input AccessCodeCountOrderByAggregateInput {
+  id: SortOrder
+  used_for: SortOrder
+  value: SortOrder
+}
+
+input AccessCodeMaxOrderByAggregateInput {
+  id: SortOrder
+  used_for: SortOrder
+  value: SortOrder
+}
+
+input AccessCodeMinOrderByAggregateInput {
+  id: SortOrder
+  used_for: SortOrder
+  value: SortOrder
+}
+
+input AccessCodeScalarWhereWithAggregatesInput {
+  AND: [AccessCodeScalarWhereWithAggregatesInput!]
+  OR: [AccessCodeScalarWhereWithAggregatesInput!]
+  NOT: [AccessCodeScalarWhereWithAggregatesInput!]
+  id: StringWithAggregatesFilter
+  used_for: StringWithAggregatesFilter
+  value: StringWithAggregatesFilter
+}
+
+input StringWithAggregatesFilter {
+  equals: String
+  in: [String!]
+  notIn: [String!]
+  lt: String
+  lte: String
+  gt: String
+  gte: String
+  contains: String
+  startsWith: String
+  endsWith: String
+  mode: QueryMode
+  not: NestedStringWithAggregatesFilter
+  _count: NestedIntFilter
+  _min: NestedStringFilter
+  _max: NestedStringFilter
+}
+
+input NestedStringWithAggregatesFilter {
+  equals: String
+  in: [String!]
+  notIn: [String!]
+  lt: String
+  lte: String
+  gt: String
+  gte: String
+  contains: String
+  startsWith: String
+  endsWith: String
+  not: NestedStringWithAggregatesFilter
+  _count: NestedIntFilter
+  _min: NestedStringFilter
+  _max: NestedStringFilter
+}
+
+input NestedIntFilter {
+  equals: Int
+  in: [Int!]
+  notIn: [Int!]
+  lt: Int
+  lte: Int
+  gt: Int
+  gte: Int
+  not: NestedIntFilter
+}
+
+type Address {
+  id: String!
+  street: String!
+  buisness_name: String
+  city_id: String!
+  zip: String!
+  state_id: String!
+  city: City!
+  state: State!
+}
+
+type City {
+  id: String!
+  text: String!
+  state_id: String!
+  _count: CityCount
+  addresses(where: AddressWhereInput, orderBy: [AddressOrderByWithRelationInput!], cursor: AddressWhereUniqueInput, take: Int, skip: Int, distinct: [AddressScalarFieldEnum!]): [Address!]!
+  state: State!
+}
+
+type CityCount {
+  addresses: Int!
+}
+
+input AddressWhereInput {
+  AND: [AddressWhereInput!]
+  OR: [AddressWhereInput!]
+  NOT: [AddressWhereInput!]
+  id: StringFilter
+  street: StringFilter
+  buisness_name: StringNullableFilter
+  city: CityRelationFilter
+  city_id: StringFilter
+  state: StateRelationFilter
+  zip: StringFilter
+  state_id: StringFilter
+}
+
+input StringNullableFilter {
+  equals: String
+  in: [String!]
+  notIn: [String!]
+  lt: String
+  lte: String
+  gt: String
+  gte: String
+  contains: String
+  startsWith: String
+  endsWith: String
+  mode: QueryMode
+  not: NestedStringNullableFilter
+  isSet: Boolean
+}
+
+input NestedStringNullableFilter {
+  equals: String
+  in: [String!]
+  notIn: [String!]
+  lt: String
+  lte: String
+  gt: String
+  gte: String
+  contains: String
+  startsWith: String
+  endsWith: String
+  not: NestedStringNullableFilter
+  isSet: Boolean
+}
+
+input CityRelationFilter {
+  is: CityWhereInput
+  isNot: CityWhereInput
+}
+
+input CityWhereInput {
+  AND: [CityWhereInput!]
+  OR: [CityWhereInput!]
+  NOT: [CityWhereInput!]
+  id: StringFilter
+  text: StringFilter
+  addresses: AddressListRelationFilter
+  state: StateRelationFilter
+  state_id: StringFilter
+}
+
+input AddressListRelationFilter {
+  every: AddressWhereInput
+  some: AddressWhereInput
+  none: AddressWhereInput
+}
+
+input StateRelationFilter {
+  is: StateWhereInput
+  isNot: StateWhereInput
+}
+
+input StateWhereInput {
+  AND: [StateWhereInput!]
+  OR: [StateWhereInput!]
+  NOT: [StateWhereInput!]
+  id: StringFilter
+  abbv: StringFilter
+  full_text: StringFilter
+  cities: CityListRelationFilter
+  addresses: AddressListRelationFilter
+}
+
+input CityListRelationFilter {
+  every: CityWhereInput
+  some: CityWhereInput
+  none: CityWhereInput
+}
+
+input AddressOrderByWithRelationInput {
+  id: SortOrder
+  street: SortOrder
+  buisness_name: SortOrder
+  city: CityOrderByWithRelationInput
+  city_id: SortOrder
+  state: StateOrderByWithRelationInput
+  zip: SortOrder
+  state_id: SortOrder
+}
+
+input CityOrderByWithRelationInput {
+  id: SortOrder
+  text: SortOrder
+  addresses: AddressOrderByRelationAggregateInput
+  state: StateOrderByWithRelationInput
+  state_id: SortOrder
+}
+
+input AddressOrderByRelationAggregateInput {
+  _count: SortOrder
+}
+
+input StateOrderByWithRelationInput {
+  id: SortOrder
+  abbv: SortOrder
+  full_text: SortOrder
+  cities: CityOrderByRelationAggregateInput
+  addresses: AddressOrderByRelationAggregateInput
+}
+
+input CityOrderByRelationAggregateInput {
+  _count: SortOrder
+}
+
+input AddressWhereUniqueInput {
+  id: String
+}
+
+enum AddressScalarFieldEnum {
+  id
+  street
+  buisness_name
+  city_id
+  zip
+  state_id
+}
+
+type State {
+  id: String!
+  abbv: String!
+  full_text: String!
+  _count: StateCount
+  cities(where: CityWhereInput, orderBy: [CityOrderByWithRelationInput!], cursor: CityWhereUniqueInput, take: Int, skip: Int, distinct: [CityScalarFieldEnum!]): [City!]!
+  addresses(where: AddressWhereInput, orderBy: [AddressOrderByWithRelationInput!], cursor: AddressWhereUniqueInput, take: Int, skip: Int, distinct: [AddressScalarFieldEnum!]): [Address!]!
+}
+
+type StateCount {
+  cities: Int!
+  addresses: Int!
+}
+
+input CityWhereUniqueInput {
+  id: String
+}
+
+enum CityScalarFieldEnum {
+  id
+  text
+  state_id
+}
+
+type AggregateAddress {
+  _count: AddressCountAggregate
+  _min: AddressMinAggregate
+  _max: AddressMaxAggregate
+}
+
+type AddressCountAggregate {
+  id: Int!
+  street: Int!
+  buisness_name: Int!
+  city_id: Int!
+  zip: Int!
+  state_id: Int!
+  _all: Int!
+}
+
+type AddressMinAggregate {
+  id: String
+  street: String
+  buisness_name: String
+  city_id: String
+  zip: String
+  state_id: String
+}
+
+type AddressMaxAggregate {
+  id: String
+  street: String
+  buisness_name: String
+  city_id: String
+  zip: String
+  state_id: String
+}
+
+type AddressGroupBy {
+  id: String!
+  street: String!
+  buisness_name: String
+  city_id: String!
+  zip: String!
+  state_id: String!
+  _count: AddressCountAggregate
+  _min: AddressMinAggregate
+  _max: AddressMaxAggregate
+}
+
+input AddressOrderByWithAggregationInput {
+  id: SortOrder
+  street: SortOrder
+  buisness_name: SortOrder
+  city_id: SortOrder
+  zip: SortOrder
+  state_id: SortOrder
+  _count: AddressCountOrderByAggregateInput
+  _max: AddressMaxOrderByAggregateInput
+  _min: AddressMinOrderByAggregateInput
+}
+
+input AddressCountOrderByAggregateInput {
+  id: SortOrder
+  street: SortOrder
+  buisness_name: SortOrder
+  city_id: SortOrder
+  zip: SortOrder
+  state_id: SortOrder
+}
+
+input AddressMaxOrderByAggregateInput {
+  id: SortOrder
+  street: SortOrder
+  buisness_name: SortOrder
+  city_id: SortOrder
+  zip: SortOrder
+  state_id: SortOrder
+}
+
+input AddressMinOrderByAggregateInput {
+  id: SortOrder
+  street: SortOrder
+  buisness_name: SortOrder
+  city_id: SortOrder
+  zip: SortOrder
+  state_id: SortOrder
+}
+
+input AddressScalarWhereWithAggregatesInput {
+  AND: [AddressScalarWhereWithAggregatesInput!]
+  OR: [AddressScalarWhereWithAggregatesInput!]
+  NOT: [AddressScalarWhereWithAggregatesInput!]
+  id: StringWithAggregatesFilter
+  street: StringWithAggregatesFilter
+  buisness_name: StringNullableWithAggregatesFilter
+  city_id: StringWithAggregatesFilter
+  zip: StringWithAggregatesFilter
+  state_id: StringWithAggregatesFilter
+}
+
+input StringNullableWithAggregatesFilter {
+  equals: String
+  in: [String!]
+  notIn: [String!]
+  lt: String
+  lte: String
+  gt: String
+  gte: String
+  contains: String
+  startsWith: String
+  endsWith: String
+  mode: QueryMode
+  not: NestedStringNullableWithAggregatesFilter
+  _count: NestedIntNullableFilter
+  _min: NestedStringNullableFilter
+  _max: NestedStringNullableFilter
+  isSet: Boolean
+}
+
+input NestedStringNullableWithAggregatesFilter {
+  equals: String
+  in: [String!]
+  notIn: [String!]
+  lt: String
+  lte: String
+  gt: String
+  gte: String
+  contains: String
+  startsWith: String
+  endsWith: String
+  not: NestedStringNullableWithAggregatesFilter
+  _count: NestedIntNullableFilter
+  _min: NestedStringNullableFilter
+  _max: NestedStringNullableFilter
+  isSet: Boolean
+}
+
+input NestedIntNullableFilter {
+  equals: Int
+  in: [Int!]
+  notIn: [Int!]
+  lt: Int
+  lte: Int
+  gt: Int
+  gte: Int
+  not: NestedIntNullableFilter
+  isSet: Boolean
+}
+
+type AggregateCity {
+  _count: CityCountAggregate
+  _min: CityMinAggregate
+  _max: CityMaxAggregate
+}
+
+type CityCountAggregate {
+  id: Int!
+  text: Int!
+  state_id: Int!
+  _all: Int!
+}
+
+type CityMinAggregate {
+  id: String
+  text: String
+  state_id: String
+}
+
+type CityMaxAggregate {
+  id: String
+  text: String
+  state_id: String
+}
+
+type CityGroupBy {
+  id: String!
+  text: String!
+  state_id: String!
+  _count: CityCountAggregate
+  _min: CityMinAggregate
+  _max: CityMaxAggregate
+}
+
+input CityOrderByWithAggregationInput {
+  id: SortOrder
+  text: SortOrder
+  state_id: SortOrder
+  _count: CityCountOrderByAggregateInput
+  _max: CityMaxOrderByAggregateInput
+  _min: CityMinOrderByAggregateInput
+}
+
+input CityCountOrderByAggregateInput {
+  id: SortOrder
+  text: SortOrder
+  state_id: SortOrder
+}
+
+input CityMaxOrderByAggregateInput {
+  id: SortOrder
+  text: SortOrder
+  state_id: SortOrder
+}
+
+input CityMinOrderByAggregateInput {
+  id: SortOrder
+  text: SortOrder
+  state_id: SortOrder
+}
+
+input CityScalarWhereWithAggregatesInput {
+  AND: [CityScalarWhereWithAggregatesInput!]
+  OR: [CityScalarWhereWithAggregatesInput!]
+  NOT: [CityScalarWhereWithAggregatesInput!]
+  id: StringWithAggregatesFilter
+  text: StringWithAggregatesFilter
+  state_id: StringWithAggregatesFilter
+}
+
+input StateWhereUniqueInput {
+  id: String
+}
+
+enum StateScalarFieldEnum {
+  id
+  abbv
+  full_text
+}
+
+type AggregateState {
+  _count: StateCountAggregate
+  _min: StateMinAggregate
+  _max: StateMaxAggregate
+}
+
+type StateCountAggregate {
+  id: Int!
+  abbv: Int!
+  full_text: Int!
+  _all: Int!
+}
+
+type StateMinAggregate {
+  id: String
+  abbv: String
+  full_text: String
+}
+
+type StateMaxAggregate {
+  id: String
+  abbv: String
+  full_text: String
+}
+
+type StateGroupBy {
+  id: String!
+  abbv: String!
+  full_text: String!
+  _count: StateCountAggregate
+  _min: StateMinAggregate
+  _max: StateMaxAggregate
+}
+
+input StateOrderByWithAggregationInput {
+  id: SortOrder
+  abbv: SortOrder
+  full_text: SortOrder
+  _count: StateCountOrderByAggregateInput
+  _max: StateMaxOrderByAggregateInput
+  _min: StateMinOrderByAggregateInput
+}
+
+input StateCountOrderByAggregateInput {
+  id: SortOrder
+  abbv: SortOrder
+  full_text: SortOrder
+}
+
+input StateMaxOrderByAggregateInput {
+  id: SortOrder
+  abbv: SortOrder
+  full_text: SortOrder
+}
+
+input StateMinOrderByAggregateInput {
+  id: SortOrder
+  abbv: SortOrder
+  full_text: SortOrder
+}
+
+input StateScalarWhereWithAggregatesInput {
+  AND: [StateScalarWhereWithAggregatesInput!]
+  OR: [StateScalarWhereWithAggregatesInput!]
+  NOT: [StateScalarWhereWithAggregatesInput!]
+  id: StringWithAggregatesFilter
+  abbv: StringWithAggregatesFilter
+  full_text: StringWithAggregatesFilter
+}
+
+type Mutation {
+  createAccessCode(data: AccessCodeCreateInput!): AccessCode!
+  createManyAccessCode(data: [AccessCodeCreateManyInput!]!): AffectedRowsOutput!
+  deleteAccessCode(where: AccessCodeWhereUniqueInput!): AccessCode
+  updateAccessCode(data: AccessCodeUpdateInput!, where: AccessCodeWhereUniqueInput!): AccessCode
+  deleteManyAccessCode(where: AccessCodeWhereInput): AffectedRowsOutput!
+  updateManyAccessCode(data: AccessCodeUpdateManyMutationInput!, where: AccessCodeWhereInput): AffectedRowsOutput!
+  upsertAccessCode(where: AccessCodeWhereUniqueInput!, create: AccessCodeCreateInput!, update: AccessCodeUpdateInput!): AccessCode!
+  createAddress(data: AddressCreateInput!): Address!
+  createManyAddress(data: [AddressCreateManyInput!]!): AffectedRowsOutput!
+  deleteAddress(where: AddressWhereUniqueInput!): Address
+  updateAddress(data: AddressUpdateInput!, where: AddressWhereUniqueInput!): Address
+  deleteManyAddress(where: AddressWhereInput): AffectedRowsOutput!
+  updateManyAddress(data: AddressUpdateManyMutationInput!, where: AddressWhereInput): AffectedRowsOutput!
+  upsertAddress(where: AddressWhereUniqueInput!, create: AddressCreateInput!, update: AddressUpdateInput!): Address!
+  createCity(data: CityCreateInput!): City!
+  createManyCity(data: [CityCreateManyInput!]!): AffectedRowsOutput!
+  deleteCity(where: CityWhereUniqueInput!): City
+  updateCity(data: CityUpdateInput!, where: CityWhereUniqueInput!): City
+  deleteManyCity(where: CityWhereInput): AffectedRowsOutput!
+  updateManyCity(data: CityUpdateManyMutationInput!, where: CityWhereInput): AffectedRowsOutput!
+  upsertCity(where: CityWhereUniqueInput!, create: CityCreateInput!, update: CityUpdateInput!): City!
+  createState(data: StateCreateInput!): State!
+  createManyState(data: [StateCreateManyInput!]!): AffectedRowsOutput!
+  deleteState(where: StateWhereUniqueInput!): State
+  updateState(data: StateUpdateInput!, where: StateWhereUniqueInput!): State
+  deleteManyState(where: StateWhereInput): AffectedRowsOutput!
+  updateManyState(data: StateUpdateManyMutationInput!, where: StateWhereInput): AffectedRowsOutput!
+  upsertState(where: StateWhereUniqueInput!, create: StateCreateInput!, update: StateUpdateInput!): State!
+}
+
+input AccessCodeCreateInput {
+  id: String
+  used_for: String!
+  value: String!
+}
+
+type AffectedRowsOutput {
+  count: Int!
+}
+
+input AccessCodeCreateManyInput {
+  id: String
+  used_for: String!
+  value: String!
+}
+
+input AccessCodeUpdateInput {
+  used_for: StringFieldUpdateOperationsInput
+  value: StringFieldUpdateOperationsInput
+}
+
+input StringFieldUpdateOperationsInput {
+  set: String
+}
+
+input AccessCodeUpdateManyMutationInput {
+  used_for: StringFieldUpdateOperationsInput
+  value: StringFieldUpdateOperationsInput
+}
+
+input AddressCreateInput {
+  id: String
+  street: String!
+  buisness_name: String
+  city: CityCreateNestedOneWithoutAddressesInput!
+  state: StateCreateNestedOneWithoutAddressesInput!
+  zip: String!
+}
+
+input CityCreateNestedOneWithoutAddressesInput {
+  create: CityCreateWithoutAddressesInput
+  connectOrCreate: CityCreateOrConnectWithoutAddressesInput
+  connect: CityWhereUniqueInput
+}
+
+input CityCreateWithoutAddressesInput {
+  id: String
+  text: String!
+  state: StateCreateNestedOneWithoutCitiesInput!
+}
+
+input StateCreateNestedOneWithoutCitiesInput {
+  create: StateCreateWithoutCitiesInput
+  connectOrCreate: StateCreateOrConnectWithoutCitiesInput
+  connect: StateWhereUniqueInput
+}
+
+input StateCreateWithoutCitiesInput {
+  id: String
+  abbv: String!
+  full_text: String!
+  addresses: AddressCreateNestedManyWithoutStateInput
+}
+
+input AddressCreateNestedManyWithoutStateInput {
+  create: [AddressCreateWithoutStateInput!]
+  connectOrCreate: [AddressCreateOrConnectWithoutStateInput!]
+  createMany: AddressCreateManyStateInputEnvelope
+  connect: [AddressWhereUniqueInput!]
+}
+
+input AddressCreateWithoutStateInput {
+  id: String
+  street: String!
+  buisness_name: String
+  city: CityCreateNestedOneWithoutAddressesInput!
+  zip: String!
+}
+
+input AddressCreateOrConnectWithoutStateInput {
+  where: AddressWhereUniqueInput!
+  create: AddressCreateWithoutStateInput!
+}
+
+input AddressCreateManyStateInputEnvelope {
+  data: [AddressCreateManyStateInput!]!
+}
+
+input AddressCreateManyStateInput {
+  id: String
+  street: String!
+  buisness_name: String
+  city_id: String!
+  zip: String!
+}
+
+input StateCreateOrConnectWithoutCitiesInput {
+  where: StateWhereUniqueInput!
+  create: StateCreateWithoutCitiesInput!
+}
+
+input CityCreateOrConnectWithoutAddressesInput {
+  where: CityWhereUniqueInput!
+  create: CityCreateWithoutAddressesInput!
+}
+
+input StateCreateNestedOneWithoutAddressesInput {
+  create: StateCreateWithoutAddressesInput
+  connectOrCreate: StateCreateOrConnectWithoutAddressesInput
+  connect: StateWhereUniqueInput
+}
+
+input StateCreateWithoutAddressesInput {
+  id: String
+  abbv: String!
+  full_text: String!
+  cities: CityCreateNestedManyWithoutStateInput
+}
+
+input CityCreateNestedManyWithoutStateInput {
+  create: [CityCreateWithoutStateInput!]
+  connectOrCreate: [CityCreateOrConnectWithoutStateInput!]
+  createMany: CityCreateManyStateInputEnvelope
+  connect: [CityWhereUniqueInput!]
+}
+
+input CityCreateWithoutStateInput {
+  id: String
+  text: String!
+  addresses: AddressCreateNestedManyWithoutCityInput
+}
+
+input AddressCreateNestedManyWithoutCityInput {
+  create: [AddressCreateWithoutCityInput!]
+  connectOrCreate: [AddressCreateOrConnectWithoutCityInput!]
+  createMany: AddressCreateManyCityInputEnvelope
+  connect: [AddressWhereUniqueInput!]
+}
+
+input AddressCreateWithoutCityInput {
+  id: String
+  street: String!
+  buisness_name: String
+  state: StateCreateNestedOneWithoutAddressesInput!
+  zip: String!
+}
+
+input AddressCreateOrConnectWithoutCityInput {
+  where: AddressWhereUniqueInput!
+  create: AddressCreateWithoutCityInput!
+}
+
+input AddressCreateManyCityInputEnvelope {
+  data: [AddressCreateManyCityInput!]!
+}
+
+input AddressCreateManyCityInput {
+  id: String
+  street: String!
+  buisness_name: String
+  zip: String!
+  state_id: String!
+}
+
+input CityCreateOrConnectWithoutStateInput {
+  where: CityWhereUniqueInput!
+  create: CityCreateWithoutStateInput!
+}
+
+input CityCreateManyStateInputEnvelope {
+  data: [CityCreateManyStateInput!]!
+}
+
+input CityCreateManyStateInput {
+  id: String
+  text: String!
+}
+
+input StateCreateOrConnectWithoutAddressesInput {
+  where: StateWhereUniqueInput!
+  create: StateCreateWithoutAddressesInput!
+}
+
+input AddressCreateManyInput {
+  id: String
+  street: String!
+  buisness_name: String
+  city_id: String!
+  zip: String!
+  state_id: String!
+}
+
+input AddressUpdateInput {
+  street: StringFieldUpdateOperationsInput
+  buisness_name: NullableStringFieldUpdateOperationsInput
+  city: CityUpdateOneRequiredWithoutAddressesInput
+  state: StateUpdateOneRequiredWithoutAddressesInput
+  zip: StringFieldUpdateOperationsInput
+}
+
+input NullableStringFieldUpdateOperationsInput {
+  set: String
+  unset: Boolean
+}
+
+input CityUpdateOneRequiredWithoutAddressesInput {
+  create: CityCreateWithoutAddressesInput
+  connectOrCreate: CityCreateOrConnectWithoutAddressesInput
+  upsert: CityUpsertWithoutAddressesInput
+  connect: CityWhereUniqueInput
+  update: CityUpdateWithoutAddressesInput
+}
+
+input CityUpsertWithoutAddressesInput {
+  update: CityUpdateWithoutAddressesInput!
+  create: CityCreateWithoutAddressesInput!
+}
+
+input CityUpdateWithoutAddressesInput {
+  text: StringFieldUpdateOperationsInput
+  state: StateUpdateOneRequiredWithoutCitiesInput
+}
+
+input StateUpdateOneRequiredWithoutCitiesInput {
+  create: StateCreateWithoutCitiesInput
+  connectOrCreate: StateCreateOrConnectWithoutCitiesInput
+  upsert: StateUpsertWithoutCitiesInput
+  connect: StateWhereUniqueInput
+  update: StateUpdateWithoutCitiesInput
+}
+
+input StateUpsertWithoutCitiesInput {
+  update: StateUpdateWithoutCitiesInput!
+  create: StateCreateWithoutCitiesInput!
+}
+
+input StateUpdateWithoutCitiesInput {
+  abbv: StringFieldUpdateOperationsInput
+  full_text: StringFieldUpdateOperationsInput
+  addresses: AddressUpdateManyWithoutStateInput
+}
+
+input AddressUpdateManyWithoutStateInput {
+  create: [AddressCreateWithoutStateInput!]
+  connectOrCreate: [AddressCreateOrConnectWithoutStateInput!]
+  upsert: [AddressUpsertWithWhereUniqueWithoutStateInput!]
+  createMany: AddressCreateManyStateInputEnvelope
+  set: [AddressWhereUniqueInput!]
+  disconnect: [AddressWhereUniqueInput!]
+  delete: [AddressWhereUniqueInput!]
+  connect: [AddressWhereUniqueInput!]
+  update: [AddressUpdateWithWhereUniqueWithoutStateInput!]
+  updateMany: [AddressUpdateManyWithWhereWithoutStateInput!]
+  deleteMany: [AddressScalarWhereInput!]
+}
+
+input AddressUpsertWithWhereUniqueWithoutStateInput {
+  where: AddressWhereUniqueInput!
+  update: AddressUpdateWithoutStateInput!
+  create: AddressCreateWithoutStateInput!
+}
+
+input AddressUpdateWithoutStateInput {
+  street: StringFieldUpdateOperationsInput
+  buisness_name: NullableStringFieldUpdateOperationsInput
+  city: CityUpdateOneRequiredWithoutAddressesInput
+  zip: StringFieldUpdateOperationsInput
+}
+
+input AddressUpdateWithWhereUniqueWithoutStateInput {
+  where: AddressWhereUniqueInput!
+  data: AddressUpdateWithoutStateInput!
+}
+
+input AddressUpdateManyWithWhereWithoutStateInput {
+  where: AddressScalarWhereInput!
+  data: AddressUpdateManyMutationInput!
+}
+
+input AddressScalarWhereInput {
+  AND: [AddressScalarWhereInput!]
+  OR: [AddressScalarWhereInput!]
+  NOT: [AddressScalarWhereInput!]
+  id: StringFilter
+  street: StringFilter
+  buisness_name: StringNullableFilter
+  city_id: StringFilter
+  zip: StringFilter
+  state_id: StringFilter
+}
+
+input AddressUpdateManyMutationInput {
+  street: StringFieldUpdateOperationsInput
+  buisness_name: NullableStringFieldUpdateOperationsInput
+  zip: StringFieldUpdateOperationsInput
+}
+
+input StateUpdateOneRequiredWithoutAddressesInput {
+  create: StateCreateWithoutAddressesInput
+  connectOrCreate: StateCreateOrConnectWithoutAddressesInput
+  upsert: StateUpsertWithoutAddressesInput
+  connect: StateWhereUniqueInput
+  update: StateUpdateWithoutAddressesInput
+}
+
+input StateUpsertWithoutAddressesInput {
+  update: StateUpdateWithoutAddressesInput!
+  create: StateCreateWithoutAddressesInput!
+}
+
+input StateUpdateWithoutAddressesInput {
+  abbv: StringFieldUpdateOperationsInput
+  full_text: StringFieldUpdateOperationsInput
+  cities: CityUpdateManyWithoutStateInput
+}
+
+input CityUpdateManyWithoutStateInput {
+  create: [CityCreateWithoutStateInput!]
+  connectOrCreate: [CityCreateOrConnectWithoutStateInput!]
+  upsert: [CityUpsertWithWhereUniqueWithoutStateInput!]
+  createMany: CityCreateManyStateInputEnvelope
+  set: [CityWhereUniqueInput!]
+  disconnect: [CityWhereUniqueInput!]
+  delete: [CityWhereUniqueInput!]
+  connect: [CityWhereUniqueInput!]
+  update: [CityUpdateWithWhereUniqueWithoutStateInput!]
+  updateMany: [CityUpdateManyWithWhereWithoutStateInput!]
+  deleteMany: [CityScalarWhereInput!]
+}
+
+input CityUpsertWithWhereUniqueWithoutStateInput {
+  where: CityWhereUniqueInput!
+  update: CityUpdateWithoutStateInput!
+  create: CityCreateWithoutStateInput!
+}
+
+input CityUpdateWithoutStateInput {
+  text: StringFieldUpdateOperationsInput
+  addresses: AddressUpdateManyWithoutCityInput
+}
+
+input AddressUpdateManyWithoutCityInput {
+  create: [AddressCreateWithoutCityInput!]
+  connectOrCreate: [AddressCreateOrConnectWithoutCityInput!]
+  upsert: [AddressUpsertWithWhereUniqueWithoutCityInput!]
+  createMany: AddressCreateManyCityInputEnvelope
+  set: [AddressWhereUniqueInput!]
+  disconnect: [AddressWhereUniqueInput!]
+  delete: [AddressWhereUniqueInput!]
+  connect: [AddressWhereUniqueInput!]
+  update: [AddressUpdateWithWhereUniqueWithoutCityInput!]
+  updateMany: [AddressUpdateManyWithWhereWithoutCityInput!]
+  deleteMany: [AddressScalarWhereInput!]
+}
+
+input AddressUpsertWithWhereUniqueWithoutCityInput {
+  where: AddressWhereUniqueInput!
+  update: AddressUpdateWithoutCityInput!
+  create: AddressCreateWithoutCityInput!
+}
+
+input AddressUpdateWithoutCityInput {
+  street: StringFieldUpdateOperationsInput
+  buisness_name: NullableStringFieldUpdateOperationsInput
+  state: StateUpdateOneRequiredWithoutAddressesInput
+  zip: StringFieldUpdateOperationsInput
+}
+
+input AddressUpdateWithWhereUniqueWithoutCityInput {
+  where: AddressWhereUniqueInput!
+  data: AddressUpdateWithoutCityInput!
+}
+
+input AddressUpdateManyWithWhereWithoutCityInput {
+  where: AddressScalarWhereInput!
+  data: AddressUpdateManyMutationInput!
+}
+
+input CityUpdateWithWhereUniqueWithoutStateInput {
+  where: CityWhereUniqueInput!
+  data: CityUpdateWithoutStateInput!
+}
+
+input CityUpdateManyWithWhereWithoutStateInput {
+  where: CityScalarWhereInput!
+  data: CityUpdateManyMutationInput!
+}
+
+input CityScalarWhereInput {
+  AND: [CityScalarWhereInput!]
+  OR: [CityScalarWhereInput!]
+  NOT: [CityScalarWhereInput!]
+  id: StringFilter
+  text: StringFilter
+  state_id: StringFilter
+}
+
+input CityUpdateManyMutationInput {
+  text: StringFieldUpdateOperationsInput
+}
+
+input CityCreateInput {
+  id: String
+  text: String!
+  addresses: AddressCreateNestedManyWithoutCityInput
+  state: StateCreateNestedOneWithoutCitiesInput!
+}
+
+input CityCreateManyInput {
+  id: String
+  text: String!
+  state_id: String!
+}
+
+input CityUpdateInput {
+  text: StringFieldUpdateOperationsInput
+  addresses: AddressUpdateManyWithoutCityInput
+  state: StateUpdateOneRequiredWithoutCitiesInput
+}
+
+input StateCreateInput {
+  id: String
+  abbv: String!
+  full_text: String!
+  cities: CityCreateNestedManyWithoutStateInput
+  addresses: AddressCreateNestedManyWithoutStateInput
+}
+
+input StateCreateManyInput {
+  id: String
+  abbv: String!
+  full_text: String!
+}
+
+input StateUpdateInput {
+  abbv: StringFieldUpdateOperationsInput
+  full_text: StringFieldUpdateOperationsInput
+  cities: CityUpdateManyWithoutStateInput
+  addresses: AddressUpdateManyWithoutStateInput
+}
+
+input StateUpdateManyMutationInput {
+  abbv: StringFieldUpdateOperationsInput
+  full_text: StringFieldUpdateOperationsInput
+}
