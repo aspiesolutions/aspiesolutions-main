@@ -1,20 +1,12 @@
 import React, { useState } from "react";
 import { gql, useQuery } from "urql";
-import { client } from "../lib/urql";
+import { getStatesQuery } from "../lib/urql";
 import {DisplayStatesAsTable} from "../components/displayStatesAsTable"
-const getStatesQuery = gql`
-  query getStatesQuery {
-    states {
-      id
-      name
-      abbreviation
-    }
-  }
-`;
+
 
 
 export default function ListStatesPage(props) {
-  const [result, rexecuteQuery] = useQuery({ query: getStatesQuery });
+  const [result, reexecuteQuery] = useQuery({ query: getStatesQuery });
   if (result.fetching) {
     return "please wait";
   } else if (result.data) {
@@ -27,6 +19,6 @@ export default function ListStatesPage(props) {
       />
     );
   } else {
-    return "hello world";
+    return "fallthrough case";
   }
 }
