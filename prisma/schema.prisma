@@ -21,7 +21,7 @@ model State {
 
 model City {
   id        String    @id @default(auto()) @map("_id") @db.ObjectId
-  text      String
+  name      String
   addresses Address[]
   state     State     @relation(fields: [state_id], references: [id])
   state_id  String

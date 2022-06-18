@@ -48,7 +48,7 @@ type AddressCount {
 
 type City {
   id: String!
-  text: String!
+  name: String!
   state_id: String!
   _count: CityCount
   addresses(where: AddressWhereInput, orderBy: [AddressOrderByWithRelationInput!], cursor: AddressWhereUniqueInput, take: Int, skip: Int, distinct: [AddressScalarFieldEnum!]): [Address!]!
@@ -149,7 +149,7 @@ input CityWhereInput {
   OR: [CityWhereInput!]
   NOT: [CityWhereInput!]
   id: StringFilter
-  text: StringFilter
+  name: StringFilter
   addresses: AddressListRelationFilter
   state: StateRelationFilter
   state_id: StringFilter
@@ -224,7 +224,7 @@ enum SortOrder {
 
 input CityOrderByWithRelationInput {
   id: SortOrder
-  text: SortOrder
+  name: SortOrder
   addresses: AddressOrderByRelationAggregateInput
   state: StateOrderByWithRelationInput
   state_id: SortOrder
@@ -284,7 +284,7 @@ input CityWhereUniqueInput {
 
 enum CityScalarFieldEnum {
   id
-  text
+  name
   state_id
 }
 
@@ -586,26 +586,26 @@ type AggregateCity {
 
 type CityCountAggregate {
   id: Int!
-  text: Int!
+  name: Int!
   state_id: Int!
   _all: Int!
 }
 
 type CityMinAggregate {
   id: String
-  text: String
+  name: String
   state_id: String
 }
 
 type CityMaxAggregate {
   id: String
-  text: String
+  name: String
   state_id: String
 }
 
 type CityGroupBy {
   id: String!
-  text: String!
+  name: String!
   state_id: String!
   _count: CityCountAggregate
   _min: CityMinAggregate
@@ -614,7 +614,7 @@ type CityGroupBy {
 
 input CityOrderByWithAggregationInput {
   id: SortOrder
-  text: SortOrder
+  name: SortOrder
   state_id: SortOrder
   _count: CityCountOrderByAggregateInput
   _max: CityMaxOrderByAggregateInput
@@ -623,19 +623,19 @@ input CityOrderByWithAggregationInput {
 
 input CityCountOrderByAggregateInput {
   id: SortOrder
-  text: SortOrder
+  name: SortOrder
   state_id: SortOrder
 }
 
 input CityMaxOrderByAggregateInput {
   id: SortOrder
-  text: SortOrder
+  name: SortOrder
   state_id: SortOrder
 }
 
 input CityMinOrderByAggregateInput {
   id: SortOrder
-  text: SortOrder
+  name: SortOrder
   state_id: SortOrder
 }
 
@@ -644,7 +644,7 @@ input CityScalarWhereWithAggregatesInput {
   OR: [CityScalarWhereWithAggregatesInput!]
   NOT: [CityScalarWhereWithAggregatesInput!]
   id: StringWithAggregatesFilter
-  text: StringWithAggregatesFilter
+  name: StringWithAggregatesFilter
   state_id: StringWithAggregatesFilter
 }
 
@@ -791,7 +791,7 @@ input CityCreateNestedOneWithoutAddressesInput {
 
 input CityCreateWithoutAddressesInput {
   id: String
-  text: String!
+  name: String!
   state: StateCreateNestedOneWithoutCitiesInput!
 }
 
@@ -901,7 +901,7 @@ input CityCreateNestedManyWithoutStateInput {
 
 input CityCreateWithoutStateInput {
   id: String
-  text: String!
+  name: String!
   addresses: AddressCreateNestedManyWithoutCityInput
 }
 
@@ -949,7 +949,7 @@ input CityCreateManyStateInputEnvelope {
 
 input CityCreateManyStateInput {
   id: String
-  text: String!
+  name: String!
 }
 
 input StateCreateOrConnectWithoutAddressesInput {
@@ -1025,7 +1025,7 @@ input CityUpsertWithoutAddressesInput {
 }
 
 input CityUpdateWithoutAddressesInput {
-  text: StringFieldUpdateOperationsInput
+  name: StringFieldUpdateOperationsInput
   state: StateUpdateOneRequiredWithoutCitiesInput
 }
 
@@ -1194,7 +1194,7 @@ input CityUpsertWithWhereUniqueWithoutStateInput {
 }
 
 input CityUpdateWithoutStateInput {
-  text: StringFieldUpdateOperationsInput
+  name: StringFieldUpdateOperationsInput
   addresses: AddressUpdateManyWithoutCityInput
 }
 
@@ -1251,12 +1251,12 @@ input CityScalarWhereInput {
   OR: [CityScalarWhereInput!]
   NOT: [CityScalarWhereInput!]
   id: StringFilter
-  text: StringFilter
+  name: StringFilter
   state_id: StringFilter
 }
 
 input CityUpdateManyMutationInput {
-  text: StringFieldUpdateOperationsInput
+  name: StringFieldUpdateOperationsInput
 }
 
 input AddressCreateInput {
@@ -1289,19 +1289,19 @@ input AddressUpdateInput {
 
 input CityCreateInput {
   id: String
-  text: String!
+  name: String!
   addresses: AddressCreateNestedManyWithoutCityInput
   state: StateCreateNestedOneWithoutCitiesInput!
 }
 
 input CityCreateManyInput {
   id: String
-  text: String!
+  name: String!
   state_id: String!
 }
 
 input CityUpdateInput {
-  text: StringFieldUpdateOperationsInput
+  name: StringFieldUpdateOperationsInput
   addresses: AddressUpdateManyWithoutCityInput
   state: StateUpdateOneRequiredWithoutCitiesInput
 }
