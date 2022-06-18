@@ -36,7 +36,9 @@ export default function AddCity(props) {
     query: addCityGetCitesQuery,
     variables: { state_id: state?.id },
   });
-  let [addCityMutationResult,addCity] = useMutation({query:addManyCitiesToStateMutation});
+  let [addCityMutationResult, addCity] = useMutation({
+    query: addManyCitiesToStateMutation,
+  });
   // optimize the selectStateChangeHandler
   const selectStateChangeHandler = useCallback(
     (e) => {
@@ -48,11 +50,39 @@ export default function AddCity(props) {
     },
     [addCityGetStatesResult?.data?.states, setState]
   );
-  const addCitySubmitFormCallback = useCallback((formSubmitEvent) => {
-    formSubmitEvent.preventDefault()
-    console.log(formSubmitEvent.currentTarget)
-    return false;
-  }, []);
+  const addCitySubmitFormCallback = useCallback(
+    (formSubmitEvent) => {
+      formSubmitEvent.preventDefault();
+      // get the textarea associated with this form
+      let textarea = formSubmitEvent.currentTarget.querySelector(
+        `textarea[name="cities"]`
+      );
+      if (textarea == null) {
+        // stop handling this event if we can't find the textarea
+        return false;
+      }
+      // copy the value into local memory
+      let citiesString = textarea.value;
+      // release the handle to the element
+      textarea = null;
+      let citiesList = citiesString.split("\n");
+      // Trim each string, removing empty space
+      citiesList = citiesList.map((city) => city.trim());
+      // dont try to add cities that already exist
+      citiesList = citiesList.filter(
+        (city) => (addCityGetCitiesResult?.data?.cites || []).includes(city) === false
+      );
+      // convert the list of strings into input objects
+      let citiesInputObjects = citiesList.map((city) => {
+        return { name: city, state_id: state.id };
+      });
+      citiesList = null;
+      // start the process
+
+      console.log(citiesInputObjects);
+    },
+    [addCityGetCitiesResult?.data?.cities, state, addCityMutationResult]
+  );
   // schedule a
   if (addCityGetStatesResult.fetching) {
     return "please wait";
@@ -68,7 +98,7 @@ export default function AddCity(props) {
           required
           list="states"
           id="select-state"
-          name="state"
+          name="states"
           onChange={selectStateChangeHandler}
         />
         <datalist id="states">
