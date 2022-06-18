@@ -25,19 +25,53 @@ type AccessCode {
   id: String!
   used_for: String!
   value: String!
+  address_id: String
+  address: Address
 }
 
-input AccessCodeWhereUniqueInput {
-  id: String
+type Address {
+  id: String!
+  street: String!
+  buisness_name: String
+  city_id: String!
+  zip: String!
+  state_id: String!
+  _count: AddressCount
+  city: City!
+  state: State!
+  access_codes(where: AccessCodeWhereInput, orderBy: [AccessCodeOrderByWithRelationInput!], cursor: AccessCodeWhereUniqueInput, take: Int, skip: Int, distinct: [AccessCodeScalarFieldEnum!]): [AccessCode!]!
 }
 
-input AccessCodeWhereInput {
-  AND: [AccessCodeWhereInput!]
-  OR: [AccessCodeWhereInput!]
-  NOT: [AccessCodeWhereInput!]
+type AddressCount {
+  access_codes: Int!
+}
+
+type City {
+  id: String!
+  text: String!
+  state_id: String!
+  _count: CityCount
+  addresses(where: AddressWhereInput, orderBy: [AddressOrderByWithRelationInput!], cursor: AddressWhereUniqueInput, take: Int, skip: Int, distinct: [AddressScalarFieldEnum!]): [Address!]!
+  state: State!
+}
+
+type CityCount {
+  addresses: Int!
+}
+
+input AddressWhereInput {
+  AND: [AddressWhereInput!]
+  OR: [AddressWhereInput!]
+  NOT: [AddressWhereInput!]
   id: StringFilter
-  used_for: StringFilter
-  value: StringFilter
+  street: StringFilter
+  buisness_name: StringNullableFilter
+  city: CityRelationFilter
+  city_id: StringFilter
+  state: StateRelationFilter
+  zip: StringFilter
+  state_id: StringFilter
+  access_codes: AccessCodeListRelationFilter
 }
 
 input StringFilter {
@@ -72,177 +106,6 @@ input NestedStringFilter {
   startsWith: String
   endsWith: String
   not: NestedStringFilter
-}
-
-input AccessCodeOrderByWithRelationInput {
-  id: SortOrder
-  used_for: SortOrder
-  value: SortOrder
-}
-
-enum SortOrder {
-  asc
-  desc
-}
-
-enum AccessCodeScalarFieldEnum {
-  id
-  used_for
-  value
-}
-
-type AggregateAccessCode {
-  _count: AccessCodeCountAggregate
-  _min: AccessCodeMinAggregate
-  _max: AccessCodeMaxAggregate
-}
-
-type AccessCodeCountAggregate {
-  id: Int!
-  used_for: Int!
-  value: Int!
-  _all: Int!
-}
-
-type AccessCodeMinAggregate {
-  id: String
-  used_for: String
-  value: String
-}
-
-type AccessCodeMaxAggregate {
-  id: String
-  used_for: String
-  value: String
-}
-
-type AccessCodeGroupBy {
-  id: String!
-  used_for: String!
-  value: String!
-  _count: AccessCodeCountAggregate
-  _min: AccessCodeMinAggregate
-  _max: AccessCodeMaxAggregate
-}
-
-input AccessCodeOrderByWithAggregationInput {
-  id: SortOrder
-  used_for: SortOrder
-  value: SortOrder
-  _count: AccessCodeCountOrderByAggregateInput
-  _max: AccessCodeMaxOrderByAggregateInput
-  _min: AccessCodeMinOrderByAggregateInput
-}
-
-input AccessCodeCountOrderByAggregateInput {
-  id: SortOrder
-  used_for: SortOrder
-  value: SortOrder
-}
-
-input AccessCodeMaxOrderByAggregateInput {
-  id: SortOrder
-  used_for: SortOrder
-  value: SortOrder
-}
-
-input AccessCodeMinOrderByAggregateInput {
-  id: SortOrder
-  used_for: SortOrder
-  value: SortOrder
-}
-
-input AccessCodeScalarWhereWithAggregatesInput {
-  AND: [AccessCodeScalarWhereWithAggregatesInput!]
-  OR: [AccessCodeScalarWhereWithAggregatesInput!]
-  NOT: [AccessCodeScalarWhereWithAggregatesInput!]
-  id: StringWithAggregatesFilter
-  used_for: StringWithAggregatesFilter
-  value: StringWithAggregatesFilter
-}
-
-input StringWithAggregatesFilter {
-  equals: String
-  in: [String!]
-  notIn: [String!]
-  lt: String
-  lte: String
-  gt: String
-  gte: String
-  contains: String
-  startsWith: String
-  endsWith: String
-  mode: QueryMode
-  not: NestedStringWithAggregatesFilter
-  _count: NestedIntFilter
-  _min: NestedStringFilter
-  _max: NestedStringFilter
-}
-
-input NestedStringWithAggregatesFilter {
-  equals: String
-  in: [String!]
-  notIn: [String!]
-  lt: String
-  lte: String
-  gt: String
-  gte: String
-  contains: String
-  startsWith: String
-  endsWith: String
-  not: NestedStringWithAggregatesFilter
-  _count: NestedIntFilter
-  _min: NestedStringFilter
-  _max: NestedStringFilter
-}
-
-input NestedIntFilter {
-  equals: Int
-  in: [Int!]
-  notIn: [Int!]
-  lt: Int
-  lte: Int
-  gt: Int
-  gte: Int
-  not: NestedIntFilter
-}
-
-type Address {
-  id: String!
-  street: String!
-  buisness_name: String
-  city_id: String!
-  zip: String!
-  state_id: String!
-  city: City!
-  state: State!
-}
-
-type City {
-  id: String!
-  text: String!
-  state_id: String!
-  _count: CityCount
-  addresses(where: AddressWhereInput, orderBy: [AddressOrderByWithRelationInput!], cursor: AddressWhereUniqueInput, take: Int, skip: Int, distinct: [AddressScalarFieldEnum!]): [Address!]!
-  state: State!
-}
-
-type CityCount {
-  addresses: Int!
-}
-
-input AddressWhereInput {
-  AND: [AddressWhereInput!]
-  OR: [AddressWhereInput!]
-  NOT: [AddressWhereInput!]
-  id: StringFilter
-  street: StringFilter
-  buisness_name: StringNullableFilter
-  city: CityRelationFilter
-  city_id: StringFilter
-  state: StateRelationFilter
-  zip: StringFilter
-  state_id: StringFilter
 }
 
 input StringNullableFilter {
@@ -308,8 +171,8 @@ input StateWhereInput {
   OR: [StateWhereInput!]
   NOT: [StateWhereInput!]
   id: StringFilter
-  abbv: StringFilter
-  full_text: StringFilter
+  abbreviation: StringFilter
+  name: StringFilter
   cities: CityListRelationFilter
   addresses: AddressListRelationFilter
 }
@@ -318,6 +181,28 @@ input CityListRelationFilter {
   every: CityWhereInput
   some: CityWhereInput
   none: CityWhereInput
+}
+
+input AccessCodeListRelationFilter {
+  every: AccessCodeWhereInput
+  some: AccessCodeWhereInput
+  none: AccessCodeWhereInput
+}
+
+input AccessCodeWhereInput {
+  AND: [AccessCodeWhereInput!]
+  OR: [AccessCodeWhereInput!]
+  NOT: [AccessCodeWhereInput!]
+  id: StringFilter
+  used_for: StringFilter
+  value: StringFilter
+  address: AddressRelationFilter
+  address_id: StringNullableFilter
+}
+
+input AddressRelationFilter {
+  is: AddressWhereInput
+  isNot: AddressWhereInput
 }
 
 input AddressOrderByWithRelationInput {
@@ -329,6 +214,12 @@ input AddressOrderByWithRelationInput {
   state: StateOrderByWithRelationInput
   zip: SortOrder
   state_id: SortOrder
+  access_codes: AccessCodeOrderByRelationAggregateInput
+}
+
+enum SortOrder {
+  asc
+  desc
 }
 
 input CityOrderByWithRelationInput {
@@ -345,8 +236,8 @@ input AddressOrderByRelationAggregateInput {
 
 input StateOrderByWithRelationInput {
   id: SortOrder
-  abbv: SortOrder
-  full_text: SortOrder
+  abbreviation: SortOrder
+  name: SortOrder
   cities: CityOrderByRelationAggregateInput
   addresses: AddressOrderByRelationAggregateInput
 }
@@ -355,8 +246,13 @@ input CityOrderByRelationAggregateInput {
   _count: SortOrder
 }
 
+input AccessCodeOrderByRelationAggregateInput {
+  _count: SortOrder
+}
+
 input AddressWhereUniqueInput {
   id: String
+  street: String
 }
 
 enum AddressScalarFieldEnum {
@@ -370,8 +266,8 @@ enum AddressScalarFieldEnum {
 
 type State {
   id: String!
-  abbv: String!
-  full_text: String!
+  abbreviation: String!
+  name: String!
   _count: StateCount
   cities(where: CityWhereInput, orderBy: [CityOrderByWithRelationInput!], cursor: CityWhereUniqueInput, take: Int, skip: Int, distinct: [CityScalarFieldEnum!]): [City!]!
   addresses(where: AddressWhereInput, orderBy: [AddressOrderByWithRelationInput!], cursor: AddressWhereUniqueInput, take: Int, skip: Int, distinct: [AddressScalarFieldEnum!]): [Address!]!
@@ -390,6 +286,199 @@ enum CityScalarFieldEnum {
   id
   text
   state_id
+}
+
+input AccessCodeOrderByWithRelationInput {
+  id: SortOrder
+  used_for: SortOrder
+  value: SortOrder
+  address: AddressOrderByWithRelationInput
+  address_id: SortOrder
+}
+
+input AccessCodeWhereUniqueInput {
+  id: String
+}
+
+enum AccessCodeScalarFieldEnum {
+  id
+  used_for
+  value
+  address_id
+}
+
+type AggregateAccessCode {
+  _count: AccessCodeCountAggregate
+  _min: AccessCodeMinAggregate
+  _max: AccessCodeMaxAggregate
+}
+
+type AccessCodeCountAggregate {
+  id: Int!
+  used_for: Int!
+  value: Int!
+  address_id: Int!
+  _all: Int!
+}
+
+type AccessCodeMinAggregate {
+  id: String
+  used_for: String
+  value: String
+  address_id: String
+}
+
+type AccessCodeMaxAggregate {
+  id: String
+  used_for: String
+  value: String
+  address_id: String
+}
+
+type AccessCodeGroupBy {
+  id: String!
+  used_for: String!
+  value: String!
+  address_id: String
+  _count: AccessCodeCountAggregate
+  _min: AccessCodeMinAggregate
+  _max: AccessCodeMaxAggregate
+}
+
+input AccessCodeOrderByWithAggregationInput {
+  id: SortOrder
+  used_for: SortOrder
+  value: SortOrder
+  address_id: SortOrder
+  _count: AccessCodeCountOrderByAggregateInput
+  _max: AccessCodeMaxOrderByAggregateInput
+  _min: AccessCodeMinOrderByAggregateInput
+}
+
+input AccessCodeCountOrderByAggregateInput {
+  id: SortOrder
+  used_for: SortOrder
+  value: SortOrder
+  address_id: SortOrder
+}
+
+input AccessCodeMaxOrderByAggregateInput {
+  id: SortOrder
+  used_for: SortOrder
+  value: SortOrder
+  address_id: SortOrder
+}
+
+input AccessCodeMinOrderByAggregateInput {
+  id: SortOrder
+  used_for: SortOrder
+  value: SortOrder
+  address_id: SortOrder
+}
+
+input AccessCodeScalarWhereWithAggregatesInput {
+  AND: [AccessCodeScalarWhereWithAggregatesInput!]
+  OR: [AccessCodeScalarWhereWithAggregatesInput!]
+  NOT: [AccessCodeScalarWhereWithAggregatesInput!]
+  id: StringWithAggregatesFilter
+  used_for: StringWithAggregatesFilter
+  value: StringWithAggregatesFilter
+  address_id: StringNullableWithAggregatesFilter
+}
+
+input StringWithAggregatesFilter {
+  equals: String
+  in: [String!]
+  notIn: [String!]
+  lt: String
+  lte: String
+  gt: String
+  gte: String
+  contains: String
+  startsWith: String
+  endsWith: String
+  mode: QueryMode
+  not: NestedStringWithAggregatesFilter
+  _count: NestedIntFilter
+  _min: NestedStringFilter
+  _max: NestedStringFilter
+}
+
+input NestedStringWithAggregatesFilter {
+  equals: String
+  in: [String!]
+  notIn: [String!]
+  lt: String
+  lte: String
+  gt: String
+  gte: String
+  contains: String
+  startsWith: String
+  endsWith: String
+  not: NestedStringWithAggregatesFilter
+  _count: NestedIntFilter
+  _min: NestedStringFilter
+  _max: NestedStringFilter
+}
+
+input NestedIntFilter {
+  equals: Int
+  in: [Int!]
+  notIn: [Int!]
+  lt: Int
+  lte: Int
+  gt: Int
+  gte: Int
+  not: NestedIntFilter
+}
+
+input StringNullableWithAggregatesFilter {
+  equals: String
+  in: [String!]
+  notIn: [String!]
+  lt: String
+  lte: String
+  gt: String
+  gte: String
+  contains: String
+  startsWith: String
+  endsWith: String
+  mode: QueryMode
+  not: NestedStringNullableWithAggregatesFilter
+  _count: NestedIntNullableFilter
+  _min: NestedStringNullableFilter
+  _max: NestedStringNullableFilter
+  isSet: Boolean
+}
+
+input NestedStringNullableWithAggregatesFilter {
+  equals: String
+  in: [String!]
+  notIn: [String!]
+  lt: String
+  lte: String
+  gt: String
+  gte: String
+  contains: String
+  startsWith: String
+  endsWith: String
+  not: NestedStringNullableWithAggregatesFilter
+  _count: NestedIntNullableFilter
+  _min: NestedStringNullableFilter
+  _max: NestedStringNullableFilter
+  isSet: Boolean
+}
+
+input NestedIntNullableFilter {
+  equals: Int
+  in: [Int!]
+  notIn: [Int!]
+  lt: Int
+  lte: Int
+  gt: Int
+  gte: Int
+  not: NestedIntNullableFilter
+  isSet: Boolean
 }
 
 type AggregateAddress {
@@ -489,55 +578,6 @@ input AddressScalarWhereWithAggregatesInput {
   state_id: StringWithAggregatesFilter
 }
 
-input StringNullableWithAggregatesFilter {
-  equals: String
-  in: [String!]
-  notIn: [String!]
-  lt: String
-  lte: String
-  gt: String
-  gte: String
-  contains: String
-  startsWith: String
-  endsWith: String
-  mode: QueryMode
-  not: NestedStringNullableWithAggregatesFilter
-  _count: NestedIntNullableFilter
-  _min: NestedStringNullableFilter
-  _max: NestedStringNullableFilter
-  isSet: Boolean
-}
-
-input NestedStringNullableWithAggregatesFilter {
-  equals: String
-  in: [String!]
-  notIn: [String!]
-  lt: String
-  lte: String
-  gt: String
-  gte: String
-  contains: String
-  startsWith: String
-  endsWith: String
-  not: NestedStringNullableWithAggregatesFilter
-  _count: NestedIntNullableFilter
-  _min: NestedStringNullableFilter
-  _max: NestedStringNullableFilter
-  isSet: Boolean
-}
-
-input NestedIntNullableFilter {
-  equals: Int
-  in: [Int!]
-  notIn: [Int!]
-  lt: Int
-  lte: Int
-  gt: Int
-  gte: Int
-  not: NestedIntNullableFilter
-  isSet: Boolean
-}
-
 type AggregateCity {
   _count: CityCountAggregate
   _min: CityMinAggregate
@@ -610,12 +650,14 @@ input CityScalarWhereWithAggregatesInput {
 
 input StateWhereUniqueInput {
   id: String
+  abbreviation: String
+  name: String
 }
 
 enum StateScalarFieldEnum {
   id
-  abbv
-  full_text
+  abbreviation
+  name
 }
 
 type AggregateState {
@@ -626,27 +668,27 @@ type AggregateState {
 
 type StateCountAggregate {
   id: Int!
-  abbv: Int!
-  full_text: Int!
+  abbreviation: Int!
+  name: Int!
   _all: Int!
 }
 
 type StateMinAggregate {
   id: String
-  abbv: String
-  full_text: String
+  abbreviation: String
+  name: String
 }
 
 type StateMaxAggregate {
   id: String
-  abbv: String
-  full_text: String
+  abbreviation: String
+  name: String
 }
 
 type StateGroupBy {
   id: String!
-  abbv: String!
-  full_text: String!
+  abbreviation: String!
+  name: String!
   _count: StateCountAggregate
   _min: StateMinAggregate
   _max: StateMaxAggregate
@@ -654,8 +696,8 @@ type StateGroupBy {
 
 input StateOrderByWithAggregationInput {
   id: SortOrder
-  abbv: SortOrder
-  full_text: SortOrder
+  abbreviation: SortOrder
+  name: SortOrder
   _count: StateCountOrderByAggregateInput
   _max: StateMaxOrderByAggregateInput
   _min: StateMinOrderByAggregateInput
@@ -663,20 +705,20 @@ input StateOrderByWithAggregationInput {
 
 input StateCountOrderByAggregateInput {
   id: SortOrder
-  abbv: SortOrder
-  full_text: SortOrder
+  abbreviation: SortOrder
+  name: SortOrder
 }
 
 input StateMaxOrderByAggregateInput {
   id: SortOrder
-  abbv: SortOrder
-  full_text: SortOrder
+  abbreviation: SortOrder
+  name: SortOrder
 }
 
 input StateMinOrderByAggregateInput {
   id: SortOrder
-  abbv: SortOrder
-  full_text: SortOrder
+  abbreviation: SortOrder
+  name: SortOrder
 }
 
 input StateScalarWhereWithAggregatesInput {
@@ -684,8 +726,8 @@ input StateScalarWhereWithAggregatesInput {
   OR: [StateScalarWhereWithAggregatesInput!]
   NOT: [StateScalarWhereWithAggregatesInput!]
   id: StringWithAggregatesFilter
-  abbv: StringWithAggregatesFilter
-  full_text: StringWithAggregatesFilter
+  abbreviation: StringWithAggregatesFilter
+  name: StringWithAggregatesFilter
 }
 
 type Mutation {
@@ -723,33 +765,16 @@ input AccessCodeCreateInput {
   id: String
   used_for: String!
   value: String!
+  address: AddressCreateNestedOneWithoutAccess_codesInput
 }
 
-type AffectedRowsOutput {
-  count: Int!
+input AddressCreateNestedOneWithoutAccess_codesInput {
+  create: AddressCreateWithoutAccess_codesInput
+  connectOrCreate: AddressCreateOrConnectWithoutAccess_codesInput
+  connect: AddressWhereUniqueInput
 }
 
-input AccessCodeCreateManyInput {
-  id: String
-  used_for: String!
-  value: String!
-}
-
-input AccessCodeUpdateInput {
-  used_for: StringFieldUpdateOperationsInput
-  value: StringFieldUpdateOperationsInput
-}
-
-input StringFieldUpdateOperationsInput {
-  set: String
-}
-
-input AccessCodeUpdateManyMutationInput {
-  used_for: StringFieldUpdateOperationsInput
-  value: StringFieldUpdateOperationsInput
-}
-
-input AddressCreateInput {
+input AddressCreateWithoutAccess_codesInput {
   id: String
   street: String!
   buisness_name: String
@@ -778,8 +803,8 @@ input StateCreateNestedOneWithoutCitiesInput {
 
 input StateCreateWithoutCitiesInput {
   id: String
-  abbv: String!
-  full_text: String!
+  abbreviation: String!
+  name: String!
   addresses: AddressCreateNestedManyWithoutStateInput
 }
 
@@ -796,6 +821,35 @@ input AddressCreateWithoutStateInput {
   buisness_name: String
   city: CityCreateNestedOneWithoutAddressesInput!
   zip: String!
+  access_codes: AccessCodeCreateNestedManyWithoutAddressInput
+}
+
+input AccessCodeCreateNestedManyWithoutAddressInput {
+  create: [AccessCodeCreateWithoutAddressInput!]
+  connectOrCreate: [AccessCodeCreateOrConnectWithoutAddressInput!]
+  createMany: AccessCodeCreateManyAddressInputEnvelope
+  connect: [AccessCodeWhereUniqueInput!]
+}
+
+input AccessCodeCreateWithoutAddressInput {
+  id: String
+  used_for: String!
+  value: String!
+}
+
+input AccessCodeCreateOrConnectWithoutAddressInput {
+  where: AccessCodeWhereUniqueInput!
+  create: AccessCodeCreateWithoutAddressInput!
+}
+
+input AccessCodeCreateManyAddressInputEnvelope {
+  data: [AccessCodeCreateManyAddressInput!]!
+}
+
+input AccessCodeCreateManyAddressInput {
+  id: String
+  used_for: String!
+  value: String!
 }
 
 input AddressCreateOrConnectWithoutStateInput {
@@ -833,8 +887,8 @@ input StateCreateNestedOneWithoutAddressesInput {
 
 input StateCreateWithoutAddressesInput {
   id: String
-  abbv: String!
-  full_text: String!
+  abbreviation: String!
+  name: String!
   cities: CityCreateNestedManyWithoutStateInput
 }
 
@@ -864,6 +918,7 @@ input AddressCreateWithoutCityInput {
   buisness_name: String
   state: StateCreateNestedOneWithoutAddressesInput!
   zip: String!
+  access_codes: AccessCodeCreateNestedManyWithoutAddressInput
 }
 
 input AddressCreateOrConnectWithoutCityInput {
@@ -902,16 +957,48 @@ input StateCreateOrConnectWithoutAddressesInput {
   create: StateCreateWithoutAddressesInput!
 }
 
-input AddressCreateManyInput {
-  id: String
-  street: String!
-  buisness_name: String
-  city_id: String!
-  zip: String!
-  state_id: String!
+input AddressCreateOrConnectWithoutAccess_codesInput {
+  where: AddressWhereUniqueInput!
+  create: AddressCreateWithoutAccess_codesInput!
 }
 
-input AddressUpdateInput {
+type AffectedRowsOutput {
+  count: Int!
+}
+
+input AccessCodeCreateManyInput {
+  id: String
+  used_for: String!
+  value: String!
+  address_id: String
+}
+
+input AccessCodeUpdateInput {
+  used_for: StringFieldUpdateOperationsInput
+  value: StringFieldUpdateOperationsInput
+  address: AddressUpdateOneWithoutAccess_codesInput
+}
+
+input StringFieldUpdateOperationsInput {
+  set: String
+}
+
+input AddressUpdateOneWithoutAccess_codesInput {
+  create: AddressCreateWithoutAccess_codesInput
+  connectOrCreate: AddressCreateOrConnectWithoutAccess_codesInput
+  upsert: AddressUpsertWithoutAccess_codesInput
+  disconnect: Boolean
+  delete: Boolean
+  connect: AddressWhereUniqueInput
+  update: AddressUpdateWithoutAccess_codesInput
+}
+
+input AddressUpsertWithoutAccess_codesInput {
+  update: AddressUpdateWithoutAccess_codesInput!
+  create: AddressCreateWithoutAccess_codesInput!
+}
+
+input AddressUpdateWithoutAccess_codesInput {
   street: StringFieldUpdateOperationsInput
   buisness_name: NullableStringFieldUpdateOperationsInput
   city: CityUpdateOneRequiredWithoutAddressesInput
@@ -956,8 +1043,8 @@ input StateUpsertWithoutCitiesInput {
 }
 
 input StateUpdateWithoutCitiesInput {
-  abbv: StringFieldUpdateOperationsInput
-  full_text: StringFieldUpdateOperationsInput
+  abbreviation: StringFieldUpdateOperationsInput
+  name: StringFieldUpdateOperationsInput
   addresses: AddressUpdateManyWithoutStateInput
 }
 
@@ -986,6 +1073,57 @@ input AddressUpdateWithoutStateInput {
   buisness_name: NullableStringFieldUpdateOperationsInput
   city: CityUpdateOneRequiredWithoutAddressesInput
   zip: StringFieldUpdateOperationsInput
+  access_codes: AccessCodeUpdateManyWithoutAddressInput
+}
+
+input AccessCodeUpdateManyWithoutAddressInput {
+  create: [AccessCodeCreateWithoutAddressInput!]
+  connectOrCreate: [AccessCodeCreateOrConnectWithoutAddressInput!]
+  upsert: [AccessCodeUpsertWithWhereUniqueWithoutAddressInput!]
+  createMany: AccessCodeCreateManyAddressInputEnvelope
+  set: [AccessCodeWhereUniqueInput!]
+  disconnect: [AccessCodeWhereUniqueInput!]
+  delete: [AccessCodeWhereUniqueInput!]
+  connect: [AccessCodeWhereUniqueInput!]
+  update: [AccessCodeUpdateWithWhereUniqueWithoutAddressInput!]
+  updateMany: [AccessCodeUpdateManyWithWhereWithoutAddressInput!]
+  deleteMany: [AccessCodeScalarWhereInput!]
+}
+
+input AccessCodeUpsertWithWhereUniqueWithoutAddressInput {
+  where: AccessCodeWhereUniqueInput!
+  update: AccessCodeUpdateWithoutAddressInput!
+  create: AccessCodeCreateWithoutAddressInput!
+}
+
+input AccessCodeUpdateWithoutAddressInput {
+  used_for: StringFieldUpdateOperationsInput
+  value: StringFieldUpdateOperationsInput
+}
+
+input AccessCodeUpdateWithWhereUniqueWithoutAddressInput {
+  where: AccessCodeWhereUniqueInput!
+  data: AccessCodeUpdateWithoutAddressInput!
+}
+
+input AccessCodeUpdateManyWithWhereWithoutAddressInput {
+  where: AccessCodeScalarWhereInput!
+  data: AccessCodeUpdateManyMutationInput!
+}
+
+input AccessCodeScalarWhereInput {
+  AND: [AccessCodeScalarWhereInput!]
+  OR: [AccessCodeScalarWhereInput!]
+  NOT: [AccessCodeScalarWhereInput!]
+  id: StringFilter
+  used_for: StringFilter
+  value: StringFilter
+  address_id: StringNullableFilter
+}
+
+input AccessCodeUpdateManyMutationInput {
+  used_for: StringFieldUpdateOperationsInput
+  value: StringFieldUpdateOperationsInput
 }
 
 input AddressUpdateWithWhereUniqueWithoutStateInput {
@@ -1030,8 +1168,8 @@ input StateUpsertWithoutAddressesInput {
 }
 
 input StateUpdateWithoutAddressesInput {
-  abbv: StringFieldUpdateOperationsInput
-  full_text: StringFieldUpdateOperationsInput
+  abbreviation: StringFieldUpdateOperationsInput
+  name: StringFieldUpdateOperationsInput
   cities: CityUpdateManyWithoutStateInput
 }
 
@@ -1085,6 +1223,7 @@ input AddressUpdateWithoutCityInput {
   buisness_name: NullableStringFieldUpdateOperationsInput
   state: StateUpdateOneRequiredWithoutAddressesInput
   zip: StringFieldUpdateOperationsInput
+  access_codes: AccessCodeUpdateManyWithoutAddressInput
 }
 
 input AddressUpdateWithWhereUniqueWithoutCityInput {
@@ -1120,6 +1259,34 @@ input CityUpdateManyMutationInput {
   text: StringFieldUpdateOperationsInput
 }
 
+input AddressCreateInput {
+  id: String
+  street: String!
+  buisness_name: String
+  city: CityCreateNestedOneWithoutAddressesInput!
+  state: StateCreateNestedOneWithoutAddressesInput!
+  zip: String!
+  access_codes: AccessCodeCreateNestedManyWithoutAddressInput
+}
+
+input AddressCreateManyInput {
+  id: String
+  street: String!
+  buisness_name: String
+  city_id: String!
+  zip: String!
+  state_id: String!
+}
+
+input AddressUpdateInput {
+  street: StringFieldUpdateOperationsInput
+  buisness_name: NullableStringFieldUpdateOperationsInput
+  city: CityUpdateOneRequiredWithoutAddressesInput
+  state: StateUpdateOneRequiredWithoutAddressesInput
+  zip: StringFieldUpdateOperationsInput
+  access_codes: AccessCodeUpdateManyWithoutAddressInput
+}
+
 input CityCreateInput {
   id: String
   text: String!
@@ -1141,26 +1308,26 @@ input CityUpdateInput {
 
 input StateCreateInput {
   id: String
-  abbv: String!
-  full_text: String!
+  abbreviation: String!
+  name: String!
   cities: CityCreateNestedManyWithoutStateInput
   addresses: AddressCreateNestedManyWithoutStateInput
 }
 
 input StateCreateManyInput {
   id: String
-  abbv: String!
-  full_text: String!
+  abbreviation: String!
+  name: String!
 }
 
 input StateUpdateInput {
-  abbv: StringFieldUpdateOperationsInput
-  full_text: StringFieldUpdateOperationsInput
+  abbreviation: StringFieldUpdateOperationsInput
+  name: StringFieldUpdateOperationsInput
   cities: CityUpdateManyWithoutStateInput
   addresses: AddressUpdateManyWithoutStateInput
 }
 
 input StateUpdateManyMutationInput {
-  abbv: StringFieldUpdateOperationsInput
-  full_text: StringFieldUpdateOperationsInput
+  abbreviation: StringFieldUpdateOperationsInput
+  name: StringFieldUpdateOperationsInput
 }

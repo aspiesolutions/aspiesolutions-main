@@ -12,11 +12,11 @@ datasource db {
 }
 
 model State {
-  id        String    @id @default(auto()) @map("_id") @db.ObjectId
-  abbreviation      String    @unique
-  name      String    @unique
-  cities    City[]
-  addresses Address[]
+  id           String    @id @default(auto()) @map("_id") @db.ObjectId
+  abbreviation String    @unique
+  name         String    @unique
+  cities       City[]
+  addresses    Address[]
 }
 
 model City {
