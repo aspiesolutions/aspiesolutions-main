@@ -1,6 +1,9 @@
 import Head from 'next/head'
-import Image from 'next/image'
+// import Image from 'next/image'
 import mapboxgl from "!mapbox-gl"
+import "mapbox-gl/dist/mapbox-gl.css"
+import '@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css';
+import MapboxGeocoder from '@mapbox/mapbox-gl-geocoder';
 // import { Address } from '@universe/address-parser'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import styles from '../styles/Home.module.css'
@@ -44,6 +47,12 @@ export default function Home(props) {
         showUserHeading:true
       })
     )
+    map.current.addControl(
+      new MapboxGeocoder({
+        accessToken:mapboxgl.accessToken,
+        mapboxgl:mapboxgl
+      })
+    )
   })
   useEffect(()=>{
     if(!map.current) return;
@@ -62,14 +71,10 @@ export default function Home(props) {
       </Head>
 
       <main>
-        <form method='GET'>
-          <label htmlFor="address">address</label>
-          <input id="address" type="text" name="address" defaultValue={props?.address?.query} placeholder='123 main street, example city, 12345' />
-          <button type="submit">Search</button>
-        </form>
-      </main>
       <div>{zoom} {lat}, {lng}</div>
-      <div style={{minWidth:"1px"}} ref={mapboxContainer}></div>
+      <div id="mapbox-container" style={{minHeight:"200px"}} ref={mapboxContainer}></div>
+      </main>
+
     </div>
   )
 }
