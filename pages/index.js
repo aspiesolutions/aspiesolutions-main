@@ -1,6 +1,6 @@
 import Head from 'next/head'
 import Image from 'next/image'
-import { Address,parse } from '@universe/address-parser'
+// import { Address } from '@universe/address-parser'
 import { useCallback, useEffect, useState } from 'react'
 import styles from '../styles/Home.module.css'
 // import parseAddress from "../lib/parseAddress"
@@ -16,7 +16,7 @@ function checkGeoLocation(){
     }
   }
 }
-export default function Home() {
+export default function Home(props) {
   // check for geolocation
   const [geoError,setGeoError]= useState(null)
 
@@ -29,19 +29,9 @@ export default function Home() {
       </Head>
 
       <main>
-        <form method='POST' onSubmit={async (e)=>{
-          e.preventDefault()
-          let addrInput = e.currentTarget.querySelector(`input[name="address"]`);
-          if(addrInput == null) {
-            return false
-          }
-          let address = await parse(addrInput.value)
-          console.log("address")
-
-          return false
-        }}>
+        <form method='GET'>
           <label htmlFor="address">address</label>
-          <input id="address" type="text" name="address" placeholder='123 main street, example city, 12345' />
+          <input id="address" type="text" name="address" defaultValue={props?.address?.query} placeholder='123 main street, example city, 12345' />
           <button type="submit">Search</button>
         </form>
       </main>
@@ -53,6 +43,19 @@ export default function Home() {
 export async function getServerSideProps(context) {
   // cities and states can be fetched on the server side first
   const prisma = require("../lib/prisma").default
+  let parsedAddress = null;
+  let queryAddress = context?.query?.address || null;
+  if(queryAddress) {
+    const {parse} = require("@universe/address-parser");
+    console.log("address",queryAddress)
+    try {
+      parsedAddress = await parse(queryAddress)
+    }
+    catch (parseError) {
+      console.error(parseError)
+    }
+    console.log(parsedAddress)
+  }
 
-  return {props:{states:await prisma.state.findMany()}}
+  return {props:{states:await prisma.state.findMany(),address:{query:queryAddress,parsed:parsedAddress}}}
 }
