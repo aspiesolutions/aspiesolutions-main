@@ -520,6 +520,26 @@
     "@typescript-eslint/types" "5.28.0"
     eslint-visitor-keys "^3.3.0"
 
+"@universe/address-parser@^1.1.0":
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/@universe/address-parser/-/address-parser-1.1.0.tgz#7f2fc9c65cb0492ec4d34f225526a12bfa6ebf6e"
+  integrity sha512-byQsmEz8uiCVZNldYmOjMU84l+lBAkBVMKNP/pqX37sgss9/5/QiwvTQYQGbw9PJZuPilFvur1QyW61QiHriaA==
+  dependencies:
+    "@universe/models" "^2.0.0-beta.0"
+    "@universe/util" "^1.1.0"
+
+"@universe/models@^2.0.0-beta.0":
+  version "2.2.3"
+  resolved "https://registry.yarnpkg.com/@universe/models/-/models-2.2.3.tgz#7b79ab3d3f9eca811baa33cf566e1d319f5402eb"
+  integrity sha512-RGHZCzIWoZ27D7d6IVWBhwgu4cfQjnjqvQ+BY43WEKGcHIrGll63/E5Tt6xymQtZJus6GSxDZMbWjqv0M/stMg==
+  dependencies:
+    "@universe/util" "^1.1.1"
+
+"@universe/util@^1.1.0", "@universe/util@^1.1.1":
+  version "1.1.2"
+  resolved "https://registry.yarnpkg.com/@universe/util/-/util-1.1.2.tgz#4c2f1cc2849a77874a24b9ad4c3c35164db955b3"
+  integrity sha512-nYCLGbYoidZHrZHMQWnCuSeCERCnAbfIDS0vpE8ucTqQaN6MoQTuS9mVD+4mjt/Hk9pQVmv8VRYWEaCvOLyxig==
+
 "@urql/core@^2.4.3":
   version "2.5.0"
   resolved "https://registry.yarnpkg.com/@urql/core/-/core-2.5.0.tgz#6b7e736dc9d3e9e9d7ea3e711ae8dc52be443b1b"

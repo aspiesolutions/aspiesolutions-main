@@ -12,6 +12,7 @@
     "@graphql-tools/schema": "^8.3.14",
     "@prisma/client": "^3.15.2",
     "@types/react": "^18.0.13",
+    "@universe/address-parser": "^1.1.0",
     "class-validator": "^0.13.2",
     "graphql": "^15.3.0",
     "graphql-fields": "^2.0.3",

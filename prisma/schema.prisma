@@ -30,6 +30,7 @@ model City {
 model Address {
   id            String       @id @default(auto()) @map("_id") @db.ObjectId
   street        String       @unique
+  type          AddressType?
   buisness_name String?
   city          City         @relation(fields: [city_id], references: [id])
   city_id       String
@@ -37,6 +38,14 @@ model Address {
   zip           String
   state_id      String
   access_codes  AccessCode[]
+
+}
+
+enum AddressType {
+  House
+  Duplex
+  Multiplex
+  Apartments
 }
 
 // address is nullable to allow the creation of an access code and
