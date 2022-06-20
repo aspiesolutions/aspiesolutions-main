@@ -1,9 +1,12 @@
 import Head from 'next/head'
 import Image from 'next/image'
+import mapboxgl from "!mapbox-gl"
 // import { Address } from '@universe/address-parser'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import styles from '../styles/Home.module.css'
 // import parseAddress from "../lib/parseAddress"
+const defaultMapboxToken = "pk.eyJ1IjoianRoZWN5YmVydGlua2VyZXIiLCJhIjoiY2w0bjRicWFzMWs2eTNpcGd5c2UyYm1tbCJ9.gtMxHjwKheor-JFsyfx19g"
+mapboxgl.accessToken = defaultMapboxToken
 function checkGeoLocation(){
   console.log("checking for geolocation")
   if(typeof window === "object" && "navigator" in window) {
@@ -18,8 +21,38 @@ function checkGeoLocation(){
 }
 export default function Home(props) {
   // check for geolocation
-  const [geoError,setGeoError]= useState(null)
+  const mapboxContainer = useRef(null);
+  const map = useRef(null);
+  const [lat,setLat] = useState(0)
+  const [lng,setLng] = useState(0)
+  const [zoom, setZoom] = useState(1)
+  useEffect(()=>{
+    if(map.current) return;
+    map.current = new mapboxgl.Map({
+      container:mapboxContainer?.current,
+      style:"mapbox://styles/mapbox/streets-v11",
+      center:[50,50],
+      zoom,
 
+    })
+    map.current.addControl(
+      new mapboxgl.GeolocateControl({
+        positionOptions: {
+          enableHighAccuracy:true
+        },
+        trackUserLocation:true,
+        showUserHeading:true
+      })
+    )
+  })
+  useEffect(()=>{
+    if(!map.current) return;
+    map.current.on('move',()=>{
+      setLng(map.current.getCenter().lng.toFixed(16))
+      setLat(map.current.getCenter().lat.toFixed(16))
+      setZoom(map.current.getZoom())
+    })
+  })
   return (
     <div className={styles.container}>
       <Head>
@@ -35,6 +68,8 @@ export default function Home(props) {
           <button type="submit">Search</button>
         </form>
       </main>
+      <div>{zoom} {lat}, {lng}</div>
+      <div style={{minWidth:"1px"}} ref={mapboxContainer}></div>
     </div>
   )
 }
