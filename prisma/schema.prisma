@@ -11,42 +11,54 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model State {
-  id           String    @id @default(auto()) @map("_id") @db.ObjectId
-  abbreviation String    @unique
-  name         String    @unique
-  cities       City[]
-  addresses    Address[]
-}
+// model State {
+//   id           String    @id @default(auto()) @map("_id") @db.ObjectId
+//   abbreviation String    @unique
+//   name         String    @unique
+//   cities       City[]
+//   addresses    Address[]
+// }
 
-model City {
-  id        String    @id @default(auto()) @map("_id") @db.ObjectId
-  name      String
-  addresses Address[]
-  state     State     @relation(fields: [state_id], references: [id])
-  state_id  String
-}
+// model City {
+//   id        String    @id @default(auto()) @map("_id") @db.ObjectId
+//   name      String
+//   addresses Address[]
+//   state     State     @relation(fields: [state_id], references: [id])
+//   state_id  String
+// }
 
 model Address {
   id            String       @id @default(auto()) @map("_id") @db.ObjectId
-  street        String       @unique
-  type          AddressType?
+  text           String
+  care  String?
+  facility  String?
+  facilityType String?
+  pinType String?
+  pinNum String?
+  number String?
+  streetPreDir String?
+  streetName        String? 
+  streetType   String?
+  // type          AddressType?
+  streetPostDir String?
+  unitAbbr      String?
+  unitNum       String?
   buisness_name String?
-  city          City         @relation(fields: [city_id], references: [id])
-  city_id       String
-  state         State        @relation(fields: [state_id], references: [id])
-  zip           String
-  state_id      String
+  city          String?
+  state         String?      
+  zip           String?
+  zip4          String?
+  country String?
   access_codes  AccessCode[]
 
 }
 
-enum AddressType {
-  House
-  Duplex
-  Multiplex
-  Apartments
-}
+// enum AddressType {
+//   House
+//   Duplex
+//   Multiplex
+//   Apartments
+// }
 
 // address is nullable to allow the creation of an access code and
 // associate it with an address later
