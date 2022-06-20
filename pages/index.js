@@ -43,19 +43,24 @@ export default function Home(props) {
 export async function getServerSideProps(context) {
   // cities and states can be fetched on the server side first
   const prisma = require("../lib/prisma").default
-  let parsedAddress = null;
+  let situs = null;
+  let uspsLabel = null;
+  let text = null;
   let queryAddress = context?.query?.address || null;
   if(queryAddress) {
-    const {parse} = require("@universe/address-parser");
+    const {Address, parse} = require("@universe/address-parser");
     console.log("address",queryAddress)
     try {
-      parsedAddress = await parse(queryAddress)
+      situs = await parse(queryAddress)
+      let address = new Address(situs)
+      let uspsLabel = address.label()
+      let text = address.print()
     }
     catch (parseError) {
       console.error(parseError)
     }
-    console.log(parsedAddress)
+    console.log(situs)
   }
 
-  return {props:{states:await prisma.state.findMany(),address:{query:queryAddress,parsed:parsedAddress}}}
+  return {props:{address:{query:queryAddress,situs,uspsLabel,text}}}
 }
