@@ -29,7 +29,7 @@ datasource db {
 
 model Address {
   id            String       @id @default(auto()) @map("_id") @db.ObjectId
-  text           String
+  text           String @unique
   care  String?
   facility  String?
   facilityType String?
