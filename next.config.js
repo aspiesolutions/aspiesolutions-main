@@ -1,5 +1,6 @@
 /** @type {import('next').NextConfig} */
 const _ = require("lodash")
+const withOffline = require("next-offline")
 const nextConfig = {
   reactStrictMode: true,
   experimental:{
@@ -15,4 +16,4 @@ const nextConfig = {
   }
 }
 
-module.exports = nextConfig
+module.exports = withOffline(nextConfig)
