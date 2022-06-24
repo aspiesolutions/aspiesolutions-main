@@ -11,6 +11,7 @@ import { graphql, printSchema } from "graphql";
 import { NextApiRequest, NextApiResponse } from "next";
 
 import { PrismaClient } from "@prisma/client";
+import { unstable_getServerSession } from "next-auth";
 
 
 const schema = await buildSchema({
@@ -51,6 +52,18 @@ export default async function graphqlHandler(
   }
   if (req.method == "POST") {
     console.dir(req.body);
+    // build up the graphql execution context
+    let session = null;
+    // using next-auth, try to  get the session from next-auth
+    try {
+  
+      session = await unstable_getServerSession(req,res,null)
+    }
+    catch (getSessionError) {
+      console.warn("Something went wrong while trying to call unstable_getServerSession. session will be null server side")
+      console.error(getSessionError)
+    }
+    console.info("Finished GetSession, session is", typeof session)
     // extract query from body if its a string, else extract it from query object on body, else null
     let query =
       typeof req.body === "string" ? req.body : req?.body?.query || null;

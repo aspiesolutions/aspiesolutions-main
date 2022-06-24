@@ -9,6 +9,8 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import styles from "../styles/Home.module.css";
 import { gql, useMutation, useQuery } from "urql";
 import { useRouter } from "next/router";
+import { NextAuthOptions, unstable_getServerSession } from "next-auth";
+import { getToken } from "next-auth/jwt";
 // import parseAddress from "../lib/parseAddress"
 const defaultMapboxToken =
   "pk.eyJ1IjoianRoZWN5YmVydGlua2VyZXIiLCJhIjoiY2w0bjRicWFzMWs2eTNpcGd5c2UyYm1tbCJ9.gtMxHjwKheor-JFsyfx19g";
@@ -35,10 +37,53 @@ const addAddressWithDefaultsMutation = gql`
     }
   }
 `;
+// USED TO DEFINE AND HANDLE ERRORS
+const ERROR_UNAUTHORIZED = "UNAUTHORIZED";
+const ERROR_GENERAL_FAILURE = "ERROR_GENERAL_FAILURE";
+
+const REASON_NULL_SESSION = "NULL_SESSION";
+const REASON_UNKNOWN = "REASON_UNKNOWN";
+// the server has instructed the client to attempt to initate the authentication flow.
+// the client should be programed to redirect to the authentication page at this point
+
+const MESSAGE_SERVER_GENERAL_FAILURE = `Server returned an error. The application is unable to determine the kind of error that occurred.
+Please contact the administrator. Unable to continue`;
+
+const ACTION_ATTEMPT_AUTHENTICATION = "ATTEMPT_AUTHENTICATION";
+const ACTION_HALT = "HALT";
+const ATTEMPT_AUTHENTICATION_MESSAGE =
+  "The server requires you to attempt authentication before continuing";
+
+function handleServerErrorFromProps(props) {
+  const { error } = props;
+  if (error == null) {
+    return {};
+  }
+  let { kind, reason, action, message } = error;
+  if (kind == null) {
+    return {
+      errorKind: ERROR_GENERAL_FAILURE,
+      errorMessage: message || MESSAGE_SERVER_GENERAL_FAILURE,
+      errorAction: action || ACTION_HALT,
+      errorReason: reason || REASON_UNKNOWN,
+    };
+  }
+  if (props.error.kind == ERROR_UNAUTHORIZED && reason == null) {
+    return {
+      errorKind: kind,
+      message: message || `You do not yet have permission to view this page`,
+      errorAction: action || ACTION_ATTEMPT_AUTHENTICATION,
+      errorReason: reason,
+    };
+  }
+}
 
 export default function Home(props) {
   // check for geolocation
   const router = useRouter();
+  // perform initial check for a server side error
+  const { errorKind, errorReason, errorMessage, errorAction } =
+    handleServerErrorFromProps(props);
   const mapboxContainer = useRef(null);
   const map = useRef(null);
   const [lat, setLat] = useState(-98.8223185136653);
@@ -51,7 +96,8 @@ export default function Home(props) {
   // });
   // const [gqlCreateAddressMutationResult,createAddress] = useMutation(addAddressWithDefaultsMutation)
   useEffect(() => {
-    if (map.current) return;
+
+    if (errorKind || map.current) return;
     map.current = new mapboxgl.Map({
       container: mapboxContainer?.current,
       style: "mapbox://styles/mapbox/streets-v11",
@@ -80,7 +126,7 @@ export default function Home(props) {
   });
 
   useEffect(() => {
-    if (!map.current) return;
+    if (errorKind || !map.current) return;
     map.current.on("move", () => {
       setLng(map.current.getCenter().lng.toFixed(16));
       setLat(map.current.getCenter().lat.toFixed(16));
@@ -88,6 +134,10 @@ export default function Home(props) {
     });
   });
   useEffect(() => {
+    // dont perform any action when an error happens
+    if(errorKind) {
+      return
+    }
     // update the query params when the user types in an address
     if (!router.isReady || mapboxAddressResult == null) return;
     // we have to check if the address matches, otherwise an infinite update loop occurs
@@ -100,7 +150,14 @@ export default function Home(props) {
         address: mapboxAddressResult?.result?.place_name,
       },
     });
-  }, [router, mapboxAddressResult]);
+  }, [errorKind,router, mapboxAddressResult]);
+  // if the server returns an error for an unknown reason, just print its message
+  if(errorKind === ERROR_GENERAL_FAILURE && errorReason === REASON_UNKNOWN) {
+    return <div>{errorMessage}</div>
+  }
+  if(errorKind === ERROR_UNAUTHORIZED && errorAction === ACTION_ATTEMPT_AUTHENTICATION) {
+    return <div>{errorMessage}</div>
+  }
   return (
     <div className={styles.container}>
       <Head>
@@ -138,40 +195,58 @@ export default function Home(props) {
 }
 
 export async function getServerSideProps(context) {
-  // cities and states can be fetched on the server side first
-  const prisma = require("../lib/prisma").default;
+  // always check the session first. this mini-app deals with sensitive data that should not be publicly available
+  const { authOptions } = require("../lib/nextAuth");
+  let session = await unstable_getServerSession(
+    context.req,
+    context.res,
+    authOptions
+  );
+  console.log("session", session);
+  if ((session == null)) {
+    context.res.statusCode = 403;
+    return {
+      props: {
+        error: {
+          kind: ERROR_UNAUTHORIZED,
+          reason: REASON_NULL_SESSION,
+          action: ACTION_ATTEMPT_AUTHENTICATION,
+          message: "Please Log in",
+        },
+      },
+    };
+  }
+
+  // const prisma = require("../lib/prisma").default;
   const { Address, parse } = require("@universe/address-parser");
-  console.log(context.req?.method)
+  console.log(context.req?.method);
   let situs = null;
   let uspsLabel = null;
   let text = null;
   let exactMatches = null;
+  // destructure initial arguments from context?.query
   let queryAddress = context?.query?.address || null;
   let newAddress = null;
-  if(queryAddress) {
+  if (queryAddress) {
     situs = parse(queryAddress);
     uspsLabel = Address.print(situs);
-
   }
-  if(req.method === "GET" && queryAddress) {
+  if (context.req.method === "GET" && queryAddress) {
     // search the database where the text is an exact match
+
     console.log(situs);
     console.log(uspsLabel);
     // try to find the address by parts
-    exactMatches = await prisma.address.findMany({
-      where: {
-        number: { equals: situs.number },
-        streetName: { equals: situs.streetName },
-        streetType: { equals: situs.streetType },
-        city: { equals: situs.city },
-        state: { equals: situs.state },
-        country: { equals: situs.country },
-      },
-    });
-  }
-  if(req.method === "POST") {
-    // create an address
-
+    // exactMatches = await prisma.address.findMany({
+    //   where: {
+    //     number: { equals: situs.number },
+    //     streetName: { equals: situs.streetName },
+    //     streetType: { equals: situs.streetType },
+    //     city: { equals: situs.city },
+    //     state: { equals: situs.state },
+    //     country: { equals: situs.country },
+    //   },
+    // });
   }
   return {
     props: {
