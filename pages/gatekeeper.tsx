@@ -4,13 +4,17 @@ import mapboxgl from "!mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import "@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css";
 import MapboxGeocoder from "@mapbox/mapbox-gl-geocoder";
+
+import {NEXTAUTH_DEFAULT_PROVIDER} from "../lib/constants"
+
 // import { Address } from '@universe/address-parser/esm/src/index'
 import { useCallback, useEffect, useRef, useState } from "react";
 import styles from "../styles/Home.module.css";
 import { gql, useMutation, useQuery } from "urql";
 import { useRouter } from "next/router";
 import { NextAuthOptions, unstable_getServerSession } from "next-auth";
-import { getToken } from "next-auth/jwt";
+import { signIn} from "next-auth/react"
+// import { getToken } from "next-auth/jwt";
 // import parseAddress from "../lib/parseAddress"
 const defaultMapboxToken =
   "pk.eyJ1IjoianRoZWN5YmVydGlua2VyZXIiLCJhIjoiY2w0bjRicWFzMWs2eTNpcGd5c2UyYm1tbCJ9.gtMxHjwKheor-JFsyfx19g";
@@ -39,50 +43,55 @@ const addAddressWithDefaultsMutation = gql`
 `;
 // USED TO DEFINE AND HANDLE ERRORS
 const ERROR_UNAUTHORIZED = "UNAUTHORIZED";
+const ERROR_NO_ERROR = "ERROR_NO_ERROR"
 const ERROR_GENERAL_FAILURE = "ERROR_GENERAL_FAILURE";
 
+const REASON_NO_ERROR = "NO_ERROR_DETECTED"
 const REASON_NULL_SESSION = "NULL_SESSION";
 const REASON_UNKNOWN = "REASON_UNKNOWN";
 // the server has instructed the client to attempt to initate the authentication flow.
 // the client should be programed to redirect to the authentication page at this point
 
+
+const MESSAGE_NO_ERROR = `No error detected`
 const MESSAGE_SERVER_GENERAL_FAILURE = `Server returned an error. The application is unable to determine the kind of error that occurred.
 Please contact the administrator. Unable to continue`;
+const MESSAGE_AUTHENTICATON_ATTEMPT_REQUIRED =
+  "The server requires you to attempt authentication before continuing";
 
 const ACTION_ATTEMPT_AUTHENTICATION = "ATTEMPT_AUTHENTICATION";
-const ACTION_HALT = "HALT";
-const ATTEMPT_AUTHENTICATION_MESSAGE =
-  "The server requires you to attempt authentication before continuing";
+const ACTION_HALT = "ACTION_HALT";
+const ACTION_CONTINUE= "ACTION_CONTINUE"
+const ACTION_DEFAULT_NO_ERROR ="ACTION_DEFAULT_CONTINUE"
+
 
 function handleServerErrorFromProps(props) {
   const { error } = props;
-  if (error == null) {
-    return {};
+  let defaultErrorKind = ERROR_NO_ERROR;
+  let defaultErrorReason = REASON_NO_ERROR;
+  let defaultErrorAction = ACTION_DEFAULT_NO_ERROR;
+  let defaultErrorMessage = MESSAGE_NO_ERROR;
+  if(!error) {
+    return [defaultErrorKind,defaultErrorReason,defaultErrorAction,defaultErrorMessage]
   }
   let { kind, reason, action, message } = error;
   if (kind == null) {
-    return {
-      errorKind: ERROR_GENERAL_FAILURE,
-      errorMessage: message || MESSAGE_SERVER_GENERAL_FAILURE,
-      errorAction: action || ACTION_HALT,
-      errorReason: reason || REASON_UNKNOWN,
-    };
+    return [
+      ERROR_GENERAL_FAILURE,
+      reason || REASON_UNKNOWN,
+      action || ACTION_HALT,
+      message || MESSAGE_SERVER_GENERAL_FAILURE,
+    ];
   }
-  if (props.error.kind == ERROR_UNAUTHORIZED && reason == null) {
-    return {
-      errorKind: kind,
-      message: message || `You do not yet have permission to view this page`,
-      errorAction: action || ACTION_ATTEMPT_AUTHENTICATION,
-      errorReason: reason,
-    };
-  }
+  return [kind,reason,action,message];
 }
+
 
 export default function Home(props) {
   // check for geolocation
   const router = useRouter();
   // perform initial check for a server side error
-  const { errorKind, errorReason, errorMessage, errorAction } =
+  const [ errorKind, errorReason,errorAction,errorMessage ] =
     handleServerErrorFromProps(props);
   const mapboxContainer = useRef(null);
   const map = useRef(null);
@@ -97,7 +106,7 @@ export default function Home(props) {
   // const [gqlCreateAddressMutationResult,createAddress] = useMutation(addAddressWithDefaultsMutation)
   useEffect(() => {
 
-    if (errorKind || map.current) return;
+    if (errorKind != ERROR_NO_ERROR || map.current) return;
     map.current = new mapboxgl.Map({
       container: mapboxContainer?.current,
       style: "mapbox://styles/mapbox/streets-v11",
@@ -126,7 +135,7 @@ export default function Home(props) {
   });
 
   useEffect(() => {
-    if (errorKind || !map.current) return;
+    if (errorKind !== ERROR_NO_ERROR || !map.current) return;
     map.current.on("move", () => {
       setLng(map.current.getCenter().lng.toFixed(16));
       setLat(map.current.getCenter().lat.toFixed(16));
@@ -135,7 +144,7 @@ export default function Home(props) {
   });
   useEffect(() => {
     // dont perform any action when an error happens
-    if(errorKind) {
+    if(errorKind !== ERROR_NO_ERROR) {
       return
     }
     // update the query params when the user types in an address
@@ -152,11 +161,14 @@ export default function Home(props) {
     });
   }, [errorKind,router, mapboxAddressResult]);
   // if the server returns an error for an unknown reason, just print its message
-  if(errorKind === ERROR_GENERAL_FAILURE && errorReason === REASON_UNKNOWN) {
-    return <div>{errorMessage}</div>
+  if(errorKind === ERROR_GENERAL_FAILURE) {
+    return <div>{errorMessage} "{errorReason}"</div>
   }
   if(errorKind === ERROR_UNAUTHORIZED && errorAction === ACTION_ATTEMPT_AUTHENTICATION) {
-    return <div>{errorMessage}</div>
+    return (<div>
+      <p>{errorMessage}</p>
+      <a href="/api/auth/signin" onClick={(e)=>{e.preventDefault();signIn(NEXTAUTH_DEFAULT_PROVIDER)}}>Please click here to attempt to log in</a>
+      </div>)
   }
   return (
     <div className={styles.container}>
@@ -211,7 +223,7 @@ export async function getServerSideProps(context) {
           kind: ERROR_UNAUTHORIZED,
           reason: REASON_NULL_SESSION,
           action: ACTION_ATTEMPT_AUTHENTICATION,
-          message: "Please Log in",
+          message: MESSAGE_AUTHENTICATON_ATTEMPT_REQUIRED,
         },
       },
     };
