@@ -163,7 +163,7 @@ export default function Home(props) {
   }, [errorKind,router, mapboxAddressResult]);
   // if the server returns an error for an unknown reason, just print its message
   if(errorKind === ERROR_GENERAL_FAILURE) {
-    return <div>{errorMessage} "{errorReason}"</div>
+    return <div>{errorMessage} &quot;{errorReason}&quot;</div>
   }
   if(errorKind === ERROR_UNAUTHORIZED && errorAction === ACTION_ATTEMPT_AUTHENTICATION) {
     return (<div>
