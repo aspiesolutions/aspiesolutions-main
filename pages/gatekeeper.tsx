@@ -1,9 +1,10 @@
 import Head from "next/head";
 // import Image from 'next/image'
-import mapboxgl from "!mapbox-gl";
+import mapboxgl from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import "@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css";
 import MapboxGeocoder from "@mapbox/mapbox-gl-geocoder";
+import Link from "next/link"
 
 import {NEXTAUTH_DEFAULT_PROVIDER} from "../lib/constants"
 
@@ -167,7 +168,7 @@ export default function Home(props) {
   if(errorKind === ERROR_UNAUTHORIZED && errorAction === ACTION_ATTEMPT_AUTHENTICATION) {
     return (<div>
       <p>{errorMessage}</p>
-      <a href="/api/auth/signin" onClick={(e)=>{e.preventDefault();signIn(NEXTAUTH_DEFAULT_PROVIDER)}}>Please click here to attempt to log in</a>
+      <Link href="/api/auth/signin" ><span onClick={(e)=>{e.preventDefault();signIn(NEXTAUTH_DEFAULT_PROVIDER)}}>Please click here to attempt to log in</span></Link>
       </div>)
   }
   return (
