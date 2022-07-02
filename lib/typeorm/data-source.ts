@@ -12,7 +12,7 @@ const PG_DATABASE = process.env.PG_DATABASE || "test"
 const DB_IS_PRODUCTION = process.env.NODE_ENV === "production"
 const PG_PORT =  parseInt(process.env.PG_PORT) || 5432
 const PG_HOST = process.env.PG_HOST || "localhost"
-
+// this is a public certificate placed here for simplicity sake
 const CA_CERTIFICATE = process.env.CA_CERFITICATE ||
 `-----BEGIN CERTIFICATE-----
 MIIEMTCCApmgAwIBAgIEAJGIBzANBgkqhkiG9w0BAQwFADA6MTgwNgYDVQQDDC9j
