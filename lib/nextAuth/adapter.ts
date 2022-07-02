@@ -174,18 +174,16 @@ export default function CustomTypeOrmAapter(options: Options) {
       if(session.user == null) {
         return null;
       }
-      console.log("getSessionAndUser session.user",session.user)
-      console.log("getSessionAndUser session.session",session)
       // reshape the return object to the expected values
       let ret = {session:{...session},user:{...session.user}}
       if(ret?.session?.user){
         delete ret?.session?.user
       }
-      console.log("getSessionAndUserRet",ret)
       return ret
     },
-    async updateSession({ sessionToken, }) {
+    async updateSession({ sessionToken, ...rest }) {
       // throw new Error(NOT_IMPLEMENTED_MSG)
+      console.log("updateSession",sessionToken,rest)
 
       return null;
     },

@@ -5,7 +5,7 @@ import "mapbox-gl/dist/mapbox-gl.css";
 import "@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css";
 import MapboxGeocoder from "@mapbox/mapbox-gl-geocoder";
 import Link from "next/link";
-
+import { User } from "../lib/typeorm/entity/User";
 import { NEXTAUTH_DEFAULT_PROVIDER } from "../lib/constants";
 
 // import { Address } from '@universe/address-parser/esm/src/index'
@@ -14,7 +14,7 @@ import styles from "../styles/Home.module.css";
 import { gql, useMutation, useQuery } from "urql";
 import { useRouter } from "next/router";
 import { NextAuthOptions, unstable_getServerSession } from "next-auth";
-import { signIn } from "next-auth/react";
+import { getSession, signIn } from "next-auth/react";
 import {
   REQUIRED_SCOPE_MISSING,
   UnauthorizedDatabaseTransaction,
@@ -25,40 +25,36 @@ import {
 
 /// types definition for this mini app
 type ServerSideError = {
-  kind,
-  reason,
-  action,
-  message
-
-}
+  kind;
+  reason;
+  action;
+  message;
+};
 type AccessCodeError = {
-  kind,
-  reason,
-  action,
-  message
-}
+  kind;
+  reason;
+  action;
+  message;
+};
 type AccessCodeProps = {
-  error:null,
-  data:null
-}
+  error: null;
+  data: null;
+};
 type AddressData = {
-  query,
-  situs,
-  uspsLabel,
-  matches
-}
-type AddressProps =  {
-  error: AccessCodeError | null,
-  data:AddressData | null
-
-}
+  query;
+  situs;
+  uspsLabel;
+  matches;
+};
+type AddressProps = {
+  error: AccessCodeError | null;
+  data: AddressData | null;
+};
 type ServerSideProps = {
-  error:ServerSideError | null,
-  address: AddressProps
-  accessCodes: AccessCodeProps
-}
-
-
+  error: ServerSideError | null;
+  address: AddressProps;
+  accessCodes: AccessCodeProps;
+};
 
 const defaultMapboxToken =
   "pk.eyJ1IjoianRoZWN5YmVydGlua2VyZXIiLCJhIjoiY2w0bjRicWFzMWs2eTNpcGd5c2UyYm1tbCJ9.gtMxHjwKheor-JFsyfx19g";
@@ -108,12 +104,12 @@ const ACTION_CONTINUE = "ACTION_CONTINUE";
 const ACTION_DEFAULT_NO_ERROR = "ACTION_DEFAULT_CONTINUE";
 
 function AccessCodes(props) {
-  switch(props?.error?.kind) {
+  switch (props?.error?.kind) {
     case UNAUTHORIZED_PRISMA_TRANSACTION:
-    return props?.error?.message || "Database oops"
-    break;
+      return props?.error?.message || "Database oops";
+      break;
   }
-  return <>{"hello from accessCodes"}</>
+  return <>{"hello from accessCodes"}</>;
 }
 
 export default function Home(props) {
@@ -234,7 +230,10 @@ export default function Home(props) {
         ></div>
         <div>current Address {mapboxAddressResult?.result?.place_name}</div>
         {/* display the access codes here */}
-        <AccessCodes error={props?.accessCodes?.error} data={props?.accessCodes?.data} />
+        <AccessCodes
+          error={props?.accessCodes?.error}
+          data={props?.accessCodes?.data}
+        />
       </main>
     </div>
   );
@@ -243,108 +242,58 @@ export default function Home(props) {
 export async function getServerSideProps(context) {
   // early initialize data structures
   let initialProps: ServerSideProps = {
-    error:null,
-    address:{
-      data:null,
-      error:null,
+    error: null,
+    address: {
+      data: null,
+      error: null,
     },
-    accessCodes:{
-      data:null,
-      error:null
-    }
-  }
+    accessCodes: {
+      data: null,
+      error: null,
+    },
+  };
+  // always check the session first. this mini-app deals with sensitive data that should not be publicly available
+  const { authOptions } = require("../lib/nextAuth");
+  let session = null;
   try {
-    // always check the session first. this mini-app deals with sensitive data that should not be publicly available
-    const { authOptions } = require("../lib/nextAuth");
-    let session = await unstable_getServerSession(
+    console.log("trying unstable_getServerSession")
+    session = await unstable_getServerSession(
       context?.req,
       context?.res,
       authOptions
     );
-    // this is a client factory
-
-    if (session == null) {
-      context.res.statusCode = 403;
-      initialProps.error =  {
-        kind: ERROR_UNAUTHORIZED,
-        reason: REASON_NULL_SESSION,
-        action: ACTION_ATTEMPT_AUTHENTICATION,
-        message: MESSAGE_AUTHENTICATON_ATTEMPT_REQUIRED,
-      };
-      return {
-        props: initialProps
-      };
-    }
-    // ORM is not set up yet. moving from prisma to typeorm
-    return {
-      props: initialProps
-    }
-    // const prisma = require("../lib/prisma").default;
-    // const { USER_CONTEXT } = require("../lib/prisma");
-    // try to get the access codes, if it fails, place an error object into the response instead of returning a hard error
-
-    try {
-      // accessCodes.data = await prisma.accessCode.findMany({});
-    } catch (error) {
-      // we understand how to handle these errors
-      if (error instanceof UnauthorizedDatabaseTransaction) {
-        accessCodes.error = {
-          kind: error.name,
-          reason: error.reason,
-          scope: error.scope,
-        };
-      }
-      // otherwise, rethrow
-      else {
-        throw error;
-      }
-    }
-
-    // const prisma = require("../lib/prisma").default;
-    const { Address, parse } = require("@universe/address-parser");
-    console.log(context.req?.method);
-    let situs = null;
-    let uspsLabel = null;
-    let text = null;
-    let exactMatches = null;
-    // destructure initial arguments from context?.query
-    let queryAddress = context?.query?.address || null;
-    let newAddress = null;
-    if (queryAddress) {
-      situs = parse(queryAddress);
-      uspsLabel = Address.print(situs);
-    }
-    if (context.req.method === "GET" && queryAddress) {
-      // search the database where the text is an exact match
-
-      console.log(situs);
-      console.log(uspsLabel);
-      // try to find the address by parts
-      // exactMatches = await prisma.address.findMany({
-      //   where: {
-      //     number: { equals: situs.number },
-      //     streetName: { equals: situs.streetName },
-      //     streetType: { equals: situs.streetType },
-      //     city: { equals: situs.city },
-      //     state: { equals: situs.state },
-      //     country: { equals: situs.country },
-      //   },
-      // });
-    }
-    return {
-      props: {
-        error:null,
-        address: {
-          query: queryAddress,
-          situs,
-          uspsLabel,
-          text,
-          matches: { exact: exactMatches },
-        },
-        accessCodes
-      },
-    };
   } catch (error) {
-    throw error;
+    console.error(
+      "unstable_getServerSessionFailed. falling back to getSession"
+    );
   }
+  if (session == null) {
+    // try again using getSession
+    console.log("trying again with getSession")
+    try {
+      session = getSession({ req: context.req });
+    } catch (error) {
+      console.error(
+        "getSessionFailed. getting the server side session is unavailable unless another authentication method can be devised"
+      );
+      console.error(error)
+    }
+  }
+
+  // this is a client factory
+
+  if (session == null) {
+    context.res.statusCode = 403;
+    initialProps.error = {
+      kind: ERROR_UNAUTHORIZED,
+      reason: REASON_NULL_SESSION,
+      action: ACTION_ATTEMPT_AUTHENTICATION,
+      message: MESSAGE_AUTHENTICATON_ATTEMPT_REQUIRED,
+    };
+
+  }
+  return {
+    props: initialProps,
+  };
+  // ORM is not set up yet. moving from prisma to typeorm
 }
