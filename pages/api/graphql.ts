@@ -18,11 +18,11 @@ import { graphql, printSchema } from "graphql";
 import { NextApiRequest, NextApiResponse } from "next";
 
 // import the prisma ORM client
-import prisma from "../../lib/prisma";
+// import prisma from "../../lib/prisma";
 import { unstable_getServerSession } from "next-auth";
 // import { ROLE_PREFIX, SCOPE_PREFIX } from "../../lib/rbac";
 import { parseAuthenticationHeader } from "../../lib/http";
-import { authOptions } from "../../lib/nextAuth";
+import { authOptions } from "../../lib/nextAuth/index.js";
 
 // const resolversEnhanceMap: ResolversEnhanceMap = {
 //   Address: {

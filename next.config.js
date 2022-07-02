@@ -1,6 +1,6 @@
-/** @type {import('next').NextConfig} */
 const _ = require("lodash")
 // const withOffline = require("next-offline")
+/** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
   experimental:{

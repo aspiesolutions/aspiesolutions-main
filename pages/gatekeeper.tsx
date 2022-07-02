@@ -207,12 +207,13 @@ export async function getServerSideProps(context) {
   let accessCodes = { data: null, error: null };
   try {
     // always check the session first. this mini-app deals with sensitive data that should not be publicly available
-    const { authOptions } = require("../lib/nextAuth");
-    let session = await unstable_getServerSession(
-      context.req,
-      context.res,
-      authOptions
-    );
+    // const { authOptions } = require("../lib/nextAuth");
+    // let session = await unstable_getServerSession(
+    //   context.req,
+    //   context.res,
+    //   authOptions
+    // );
+    let session = null;
     // this is a client factory
 
     if (session == null) {
@@ -229,12 +230,19 @@ export async function getServerSideProps(context) {
         },
       };
     }
-    const prisma = require("../lib/prisma").default;
+    // ORM is not set up yet. moving from prisma to typeorm
+    return {
+      props:{
+        error:null,
+        address:null,
+      }
+    }
+    // const prisma = require("../lib/prisma").default;
     // const { USER_CONTEXT } = require("../lib/prisma");
     // try to get the access codes, if it fails, place an error object into the response instead of returning a hard error
 
     try {
-      accessCodes.data = await prisma.accessCode.findMany({});
+      // accessCodes.data = await prisma.accessCode.findMany({});
     } catch (error) {
       // we understand how to handle these errors
       if (error instanceof UnauthorizedDatabaseTransaction) {
