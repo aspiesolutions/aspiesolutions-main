@@ -157,25 +157,34 @@ export default function CustomTypeOrmAapter(options: Options) {
         return await sessionRepository.save(newSession)
     },
     async getSessionAndUser(sessionToken) {
-      let userRepository = await getUserRepository()
+      let currentTime = Date.now()
       let sessionRepository = await getSessionRepository();
 
       let session = await sessionRepository.findOne({where:{sessionToken},relations:["user"]})
+
       if( session === null) {
         return null;
+      }
+      if(currentTime > session.expires.getTime()) {
+        log.debug("Session Expired!")
+        // delete the session if it expired
+        await sessionRepository.delete(session)
+        return null
       }
       if(session.user == null) {
         return null;
       }
       console.log("getSessionAndUser session.user",session.user)
+      console.log("getSessionAndUser session.session",session)
       // reshape the return object to the expected values
-      let ret = {session,user:session.user}
+      let ret = {session:{...session},user:{...session.user}}
       if(ret?.session?.user){
         delete ret?.session?.user
       }
+      console.log("getSessionAndUserRet",ret)
       return ret
     },
-    async updateSession({ sessionToken }) {
+    async updateSession({ sessionToken, }) {
       // throw new Error(NOT_IMPLEMENTED_MSG)
 
       return null;

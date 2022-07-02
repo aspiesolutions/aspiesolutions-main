@@ -14,7 +14,7 @@ import styles from "../styles/Home.module.css";
 import { gql, useMutation, useQuery } from "urql";
 import { useRouter } from "next/router";
 import { NextAuthOptions, unstable_getServerSession } from "next-auth";
-import { getSession, signIn } from "next-auth/react";
+import { signIn } from "next-auth/react";
 import {
   REQUIRED_SCOPE_MISSING,
   UnauthorizedDatabaseTransaction,
@@ -22,6 +22,44 @@ import {
 } from "../lib/rbac";
 // import { getToken } from "next-auth/jwt";
 // import parseAddress from "../lib/parseAddress"
+
+/// types definition for this mini app
+type ServerSideError = {
+  kind,
+  reason,
+  action,
+  message
+
+}
+type AccessCodeError = {
+  kind,
+  reason,
+  action,
+  message
+}
+type AccessCodeProps = {
+  error:null,
+  data:null
+}
+type AddressData = {
+  query,
+  situs,
+  uspsLabel,
+  matches
+}
+type AddressProps =  {
+  error: AccessCodeError | null,
+  data:AddressData | null
+
+}
+type ServerSideProps = {
+  error:ServerSideError | null,
+  address: AddressProps
+  accessCodes: AccessCodeProps
+}
+
+
+
 const defaultMapboxToken =
   "pk.eyJ1IjoianRoZWN5YmVydGlua2VyZXIiLCJhIjoiY2w0bjRicWFzMWs2eTNpcGd5c2UyYm1tbCJ9.gtMxHjwKheor-JFsyfx19g";
 mapboxgl.accessToken = defaultMapboxToken;
@@ -204,36 +242,42 @@ export default function Home(props) {
 
 export async function getServerSideProps(context) {
   // early initialize data structures
-  let accessCodes = { data: null, error: null };
+  let initialProps: ServerSideProps = {
+    error:null,
+    address:{
+      data:null,
+      error:null,
+    },
+    accessCodes:{
+      data:null,
+      error:null
+    }
+  }
   try {
     // always check the session first. this mini-app deals with sensitive data that should not be publicly available
     const { authOptions } = require("../lib/nextAuth");
-    let session =
-    await getSession(
-      {req:context.req}
+    let session = await unstable_getServerSession(
+      context?.req,
+      context?.res,
+      authOptions
     );
     // this is a client factory
 
     if (session == null) {
       context.res.statusCode = 403;
+      initialProps.error =  {
+        kind: ERROR_UNAUTHORIZED,
+        reason: REASON_NULL_SESSION,
+        action: ACTION_ATTEMPT_AUTHENTICATION,
+        message: MESSAGE_AUTHENTICATON_ATTEMPT_REQUIRED,
+      };
       return {
-        props: {
-          error: {
-            kind: ERROR_UNAUTHORIZED,
-            reason: REASON_NULL_SESSION,
-            action: ACTION_ATTEMPT_AUTHENTICATION,
-            message: MESSAGE_AUTHENTICATON_ATTEMPT_REQUIRED,
-          },
-          accessCodes,
-        },
+        props: initialProps
       };
     }
     // ORM is not set up yet. moving from prisma to typeorm
     return {
-      props:{
-        error:null,
-        address:null,
-      }
+      props: initialProps
     }
     // const prisma = require("../lib/prisma").default;
     // const { USER_CONTEXT } = require("../lib/prisma");
