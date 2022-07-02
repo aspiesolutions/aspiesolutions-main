@@ -168,8 +168,12 @@ export default function CustomTypeOrmAapter(options: Options) {
         return null;
       }
       console.log("getSessionAndUser session.user",session.user)
-
-      return session.user
+      // reshape the return object to the expected values
+      let ret = {session,user:session.user}
+      if(ret?.session?.user){
+        delete ret?.session?.user
+      }
+      return ret
     },
     async updateSession({ sessionToken }) {
       // throw new Error(NOT_IMPLEMENTED_MSG)

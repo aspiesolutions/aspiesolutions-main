@@ -14,7 +14,7 @@ import styles from "../styles/Home.module.css";
 import { gql, useMutation, useQuery } from "urql";
 import { useRouter } from "next/router";
 import { NextAuthOptions, unstable_getServerSession } from "next-auth";
-import { signIn } from "next-auth/react";
+import { getSession, signIn } from "next-auth/react";
 import {
   REQUIRED_SCOPE_MISSING,
   UnauthorizedDatabaseTransaction,
@@ -196,7 +196,7 @@ export default function Home(props) {
         ></div>
         <div>current Address {mapboxAddressResult?.result?.place_name}</div>
         {/* display the access codes here */}
-        <AccessCodes error={props?.accessCodes?.error} data={props?.accessCodes.data} />
+        <AccessCodes error={props?.accessCodes?.error} data={props?.accessCodes?.data} />
       </main>
     </div>
   );
@@ -207,13 +207,11 @@ export async function getServerSideProps(context) {
   let accessCodes = { data: null, error: null };
   try {
     // always check the session first. this mini-app deals with sensitive data that should not be publicly available
-    // const { authOptions } = require("../lib/nextAuth");
-    // let session = await unstable_getServerSession(
-    //   context.req,
-    //   context.res,
-    //   authOptions
-    // );
-    let session = null;
+    const { authOptions } = require("../lib/nextAuth");
+    let session =
+    await getSession(
+      {req:context.req}
+    );
     // this is a client factory
 
     if (session == null) {
