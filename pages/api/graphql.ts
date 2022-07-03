@@ -10,10 +10,10 @@ import path from "path";
 //   buildTypeDefsAndResolvers,
 // } from "type-graphql";
 
-import {console} from "../../lib/logger"
+// import {console} from "../../lib/logger"
 // import { ApolloServer } from "apollo-server-micro";
 // import { makeExecutableSchema } from "@graphql-tools/schema";
-import { graphql, printSchema } from "graphql";
+import { execute} from "graphql";
 // import corsAsync from "cors-async";
 import { NextApiRequest, NextApiResponse } from "next";
 
@@ -68,7 +68,7 @@ import { authOptions } from "../../lib/nextAuth/index.js";
 // this configures this nextjs api route
 export const config = {
   api: {
-    bodyParser: true,
+    bodyParser: false,
   },
 };
 
@@ -83,63 +83,50 @@ export default async function graphqlHandler(
     res.send(null);
     return;
   }
-
-  res.status(501).send("Under maintainence, Api Not available");
-  return;
-
-  if (req.method === "POST" && req.body == null) {
-    res.status(400).send({ errors: ["Missing request body"], data: null });
-    return;
-  }
-  if (req.method == "POST") {
-    // console.dir(req.body);
-    // build up the graphql execution context
-    let token = null;
-    // if an authentication token is provided, detect and extract the token
-    let authentication = parseAuthenticationHeader(req.headers.authorization);
-    let session = null;
-    // using next-auth, try to  get the session from next-auth
-    try {
-      session = await unstable_getServerSession(req, res, authOptions);
-    } catch (getSessionError) {
-      console.warn(
-        "Something went wrong while trying to call unstable_getServerSession. session will be null server side"
-      );
-      console.error(getSessionError);
+  // this handler is written in a way to allow the client to send compressed bodies.
+  // currently no compressed bodies will be handled correctly
+  // this handler responds either in compressed or uncompressed json format
+  let body: Buffer | null = null;
+  let query = null;
+  let contentType:string = req.headers['content-type'] || "text/plain";
+  let contentEncoding = (req.headers['content-encoding'] || "").trim().split(", ").filter(s=>s.length > 0);
+  let charSet: BufferEncoding = "utf-8"
+  req.on('data',(chunk)=>{
+    if (body == null) {
+      body = chunk
     }
-    console.info("Finished GetSession, session is", typeof session);
-    // extract query from body if its a string, else extract it from query object on body, else null
-    let query =
-      typeof req.body === "string" ? req.body : req?.body?.query || null;
-    // extract query variables if on body as variables, otherwise null
-    let variables = req?.body?.variables || null;
-    let operationName = req?.body?.operationName || null;
-
-    try {
-      let executionResult = await graphql({
-        schema,
-        source: typeof req.body === "string" ? req.body : req.body?.query,
-        variableValues: variables,
-        contextValue: { prisma },
-        operationName,
-      });
-      if (executionResult.errors) {
-        res.status(400);
-      } else {
-        res.status(200);
+    else {
+      body = Buffer.concat([body,chunk])
+    }
+  })
+  req.on('end',()=>{
+    if(contentEncoding.length > 0) {
+      console.log("content encoding was provided, possible encoding was performed")
+      console.warn("client request decoding is not implemented yet, this will possibly fail")
+      console.log(contentEncoding)
+    }
+    // assume the content has been decoded from this point
+    if(contentType.includes("text/plain") || contentType.includes("application/json")) {
+      query = body.toString(charSet)
+    }
+    else {
+      res.status(415).send(`Unsupported content type '${contentType}'`)
+      return
+    }
+    // handle here
+    if(req.method === "POST" && contentType.includes("application/json")) {
+      console.log("client says they sent JSON content. parse it for the variables")
+      console.log(query)
+      try {
+        let jsonBody = JSON.parse(query)
+        // create the context here
+        execute()
       }
-      res.setHeader("content-type", "application/json");
-      res.send(JSON.stringify(executionResult));
-    } catch (executionError) {
-      console.error(executionError);
-      res.status(500).send(null);
-      return;
+      catch(error) {
+        console.error(error)
+        res.status(500).send(null)
+      }
     }
-  }
-  res.status(405).send(null);
-
-  // res.setHeader("access-control-allow-methods","GET, POST, OPTIONS")
-  // res.setHeader("access-control-allow-headers","content-type")
-  // // res.setHeader("allow","GET, POST, OPTIONS")
-  // return handler(req,res)
+    // detect content compression if supported and compress the content
+  })
 }

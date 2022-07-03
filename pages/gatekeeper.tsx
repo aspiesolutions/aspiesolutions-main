@@ -52,6 +52,7 @@ type AddressProps = {
 };
 type ServerSideProps = {
   error: ServerSideError | null;
+  session: null | any,
   address: AddressProps;
   accessCodes: AccessCodeProps;
 };
@@ -190,10 +191,7 @@ export default function Home(props) {
       </div>
     );
   }
-  if (
-    props?.error?.kind === ERROR_UNAUTHORIZED &&
-    props?.error?.action === ACTION_ATTEMPT_AUTHENTICATION
-  ) {
+  if(props?.session == null) {
     return (
       <div>
         <p>{props?.error?.message}</p>
@@ -210,7 +208,6 @@ export default function Home(props) {
       </div>
     );
   }
-
   return (
     <div className={styles.container}>
       <Head>
@@ -243,6 +240,7 @@ export async function getServerSideProps(context) {
   // early initialize data structures
   let initialProps: ServerSideProps = {
     error: null,
+    session: null,
     address: {
       data: null,
       error: null,
@@ -271,7 +269,7 @@ export async function getServerSideProps(context) {
     // try again using getSession
     console.log("trying again with getSession")
     try {
-      session = getSession({ req: context.req });
+      session = await getSession({ req: context.req });
     } catch (error) {
       console.error(
         "getSessionFailed. getting the server side session is unavailable unless another authentication method can be devised"
@@ -279,10 +277,10 @@ export async function getServerSideProps(context) {
       console.error(error)
     }
   }
-
+  initialProps.session = session;
   // this is a client factory
 
-  if (session == null) {
+  if (initialProps.session == null) {
     context.res.statusCode = 403;
     initialProps.error = {
       kind: ERROR_UNAUTHORIZED,

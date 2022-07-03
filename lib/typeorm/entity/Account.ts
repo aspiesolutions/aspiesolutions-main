@@ -14,21 +14,23 @@ export class Account {
     provider:string
     @Column()
     providerAccountId:string
-    @Column({nullable:true})
-    refresh_token?:string
+    @Column({type:"text",nullable:true})
+    refresh_token:string | null
     @Column({nullable:false})
     access_token:string
     @Column({nullable:false})
     expires_at:number
+    @Column({nullable:true})
+    id_token:string
     @Column({nullable:false})
     token_type:string
     @Column({type:"text"})
     scope:string
-    @Column({nullable:true})
-    session_state?:string
-    @Column({nullable:true})
-    oauth_token_secret?: string
-    @Column({nullable:true})
-    oauth_token?:string
+    @Column({type:"text",nullable:true})
+    session_state:string | null
+    @Column({type:"text",nullable:true})
+    oauth_token_secret: string | null
+    @Column({type:"text",nullable:true})
+    oauth_token:string | null
 
 }
