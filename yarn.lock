@@ -4160,7 +4160,7 @@ type-fest@^0.8.1:
 
 type-graphql@^1.1.1:
   version "1.1.1"
-  resolved "https://registry.npmjs.org/type-graphql/-/type-graphql-1.1.1.tgz"
+  resolved "https://registry.yarnpkg.com/type-graphql/-/type-graphql-1.1.1.tgz#dc0710d961713b92d3fee927981fa43bf71667a4"
   integrity sha512-iOOWVn0ehCYMukmnXStbkRwFE9dcjt7/oDcBS1JyQZo9CbhlIll4lHHps54HMEk4A4c8bUPd+DjK8w1/ZrxB4A==
   dependencies:
     "@types/glob" "^7.1.3"
