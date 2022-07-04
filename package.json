@@ -42,6 +42,7 @@
       "react-relay": "^14.0.0",
       "reflect-metadata": "^0.1.13",
       "relay": "^0.8.0-1",
+      "relay-nextjs": "^0.8.0",
       "relay-runtime": "^14.0.0",
       "type-graphql": "^1.1.1",
       "typeorm": "0.3.7",
