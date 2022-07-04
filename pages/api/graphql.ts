@@ -5,9 +5,9 @@ import { execute} from "graphql";
 // import corsAsync from "cors-async";
 import { NextApiRequest, NextApiResponse } from "next";
 
-import { unstable_getServerSession } from "next-auth";
-import { parseAuthenticationHeader } from "../../lib/http";
-import { authOptions } from "../../lib/nextAuth/index.js";
+// import { unstable_getServerSession } from "next-auth";
+// import { parseAuthenticationHeader } from "../../src/lib/http";
+// import { authOptions } from "../../src/lib/nextAuth/index.js";
 
 export const config = {
   api: {
