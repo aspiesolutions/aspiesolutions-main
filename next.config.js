@@ -6,17 +6,21 @@ const nextConfig = {
   reactStrictMode: true,
   experimental:{
   },
-  webpack: (defaultConfig)=>{
+  webpack: (defaultConfig,{isServer,webpack})=>{
     let config = {
       experiments: {
         asyncWebAssembly:true,
         topLevelAwait: true
       },
+      plugins:defaultConfig.plugins || [],
       resolve: {
         alias: {
           typeorm:path.resolve(__dirname,"./node_modules/typeorm/typeorm-model-shim")
         }
       }
+    }
+    if(!isServer) {
+      config.plugins.push(new webpack.IgnorePlugin({resourceRegExp:/src\/lib\/server/}))
     }
     return _.merge(defaultConfig,config)
   }
