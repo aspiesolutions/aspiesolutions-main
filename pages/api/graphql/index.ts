@@ -1,7 +1,8 @@
 import "reflect-metadata";
 import fs from "fs";
 import path from "path";
-import { execute} from "graphql";
+import { graphql } from "graphql";
+import buildSchema from "../../../src/lib/graphql"
 // import corsAsync from "cors-async";
 import { NextApiRequest, NextApiResponse } from "next";
 
@@ -31,25 +32,25 @@ export default async function graphqlHandler(
   // this handler responds either in compressed or uncompressed json format
   let body: Buffer | null = null;
   let query = null;
-  let contentType:string = req.headers['content-type'] || "text/plain";
-  let contentEncoding = (req.headers['content-encoding'] || "").trim().split(", ").filter(s=>s.length > 0);
+  let contentType: string = req.headers['content-type'] || "text/plain";
+  let contentEncoding = (req.headers['content-encoding'] || "").trim().split(", ").filter(s => s.length > 0);
   let charSet: BufferEncoding = "utf-8"
-  req.on('data',(chunk)=>{
+  req.on('data', (chunk) => {
     if (body == null) {
       body = chunk
     }
     else {
-      body = Buffer.concat([body,chunk])
+      body = Buffer.concat([body, chunk])
     }
   })
-  req.on('end',()=>{
-    if(contentEncoding.length > 0) {
+  req.on('end', async () => {
+    if (contentEncoding.length > 0) {
       console.log("content encoding was provided, possible encoding was performed")
       console.warn("client request decoding is not implemented yet, this will possibly fail")
       console.log(contentEncoding)
     }
     // assume the content has been decoded from this point
-    if(contentType.includes("text/plain") || contentType.includes("application/json")) {
+    if (contentType.includes("text/plain") || contentType.includes("application/json")) {
       query = body.toString(charSet)
     }
     else {
@@ -57,15 +58,18 @@ export default async function graphqlHandler(
       return
     }
     // handle here
-    if(req.method === "POST" && contentType.includes("application/json")) {
+    if (req.method === "POST" && contentType.includes("application/json")) {
       console.log("client says they sent JSON content. parse it for the variables")
       console.log(query)
       try {
         let jsonBody = JSON.parse(query)
         // create the context here
-        execute()
+        let schema = await buildSchema()
+        let executionResult = await graphql({ schema, source: jsonBody.query, variableValues: jsonBody?.variables, operationName: jsonBody?.operationName })
+        res.setHeader("content-type","application/json; charset=utf-8")
+        res.send(executionResult)
       }
-      catch(error) {
+      catch (error) {
         console.error(error)
         res.status(500).send(null)
       }

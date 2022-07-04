@@ -5,9 +5,10 @@
    "scripts": {
       "dev": "next dev",
       "build": "next build",
-      "start": "ts-node src/index.ts",
+      "start": "next start",
       "lint": "next lint",
-      "typeorm": "typeorm-ts-node-commonjs"
+      "typeorm": "typeorm-ts-node-commonjs",
+      "download-schema": "yarn run --silent get-graphql-schema http://${PUBLIC_URL:-'localhost:3000'}/api/graphql > ${PWD}/src/schema/__generated__/schema.graphql"
    },
    "dependencies": {
       "@graphql-tools/schema": "^8.3.14",
@@ -47,6 +48,7 @@
       "@types/relay-runtime": "^13.0.3",
       "eslint": "8.17.0",
       "eslint-config-next": "12.1.6",
+      "get-graphql-schema": "^2.1.2",
       "relay-config": "^12.0.1",
       "ts-node": "^10.8.2"
    }
