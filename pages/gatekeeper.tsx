@@ -5,7 +5,7 @@ import "mapbox-gl/dist/mapbox-gl.css";
 import "@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css";
 import MapboxGeocoder from "@mapbox/mapbox-gl-geocoder";
 import Link from "next/link";
-import { User } from "../lib/typeorm/entity/User";
+import { User } from "../src/lib/typeorm/entity/User";
 import { NEXTAUTH_DEFAULT_PROVIDER } from "../lib/constants";
 
 // import { Address } from '@universe/address-parser/esm/src/index'
@@ -19,9 +19,7 @@ import {
   REQUIRED_SCOPE_MISSING,
   UnauthorizedDatabaseTransaction,
   UNAUTHORIZED_PRISMA_TRANSACTION,
-} from "../lib/rbac";
-// import { getToken } from "next-auth/jwt";
-// import parseAddress from "../lib/parseAddress"
+} from "../src/lib/rbac";
 
 /// types definition for this mini app
 type ServerSideError = {
