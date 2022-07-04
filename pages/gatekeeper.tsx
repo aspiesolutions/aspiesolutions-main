@@ -6,7 +6,7 @@ import "@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css";
 import MapboxGeocoder from "@mapbox/mapbox-gl-geocoder";
 import Link from "next/link";
 import { User } from "../src/lib/typeorm/entity/User";
-import { NEXTAUTH_DEFAULT_PROVIDER } from "../lib/constants";
+import { NEXTAUTH_DEFAULT_PROVIDER } from "../src/lib/constants";
 
 // import { Address } from '@universe/address-parser/esm/src/index'
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -249,7 +249,7 @@ export async function getServerSideProps(context) {
     },
   };
   // always check the session first. this mini-app deals with sensitive data that should not be publicly available
-  const { authOptions } = require("../lib/nextAuth");
+  const { authOptions } = require("../src/lib/nextAuth");
   let session = null;
   try {
     console.log("trying unstable_getServerSession")
