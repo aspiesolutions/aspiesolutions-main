@@ -94,7 +94,7 @@ export default function CustomTypeOrmAapter(options: Options): Adapter {
       let user = await userRepository.findOneBy({ id: account.userId });
       if (user === null) {
         // dont continue if the user is not found
-        return
+        return;
       }
       let accountRepository = await getAccountRepository();
       // find the account first before creating it.
@@ -212,11 +212,19 @@ export default function CustomTypeOrmAapter(options: Options): Adapter {
         },
       };
     },
-    async updateSession({ sessionToken, ...rest }) {
+    async updateSession({ sessionToken, userId, expires }) {
       // throw new Error(NOT_IMPLEMENTED_MSG)
-      console.log("updateSession", sessionToken, rest);
-
-      return null;
+      let sessionRepository = await getSessionRepository();
+      let session = await sessionRepository.findOneBy({
+        sessionToken,
+        user: { id: userId },
+      });
+      if (session === null) {
+        return null;
+      } else {
+        session.expires = expires;
+        return { ...(await sessionRepository.save(session)), userId };
+      }
     },
     async deleteSession(sessionToken) {
       // throw new Error(NOT_IMPLEMENTED_MSG)
