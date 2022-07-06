@@ -3,6 +3,7 @@ import { DataSource } from "typeorm"
 import { Account } from "./entity/Account"
 import { Session } from "./entity/Session"
 import { User } from "./entity/User"
+import { AccessCode } from "./entity/AccessCode"
 import { VerificationToken } from "./entity/VerificationToken"
 
 
@@ -51,9 +52,9 @@ export const AppDataSource = new DataSource({
     ssl: {ca:CA_CERTIFICATE},
     synchronize: !DB_IS_PRODUCTION,
     logging: false,
-    entities: [User,Account, VerificationToken,Session],
+    entities: [User,Account, VerificationToken,Session,AccessCode],
     migrations: [],
     subscribers: [],
 })
 
-export const PG_CONNECTION_STRING = `postgres://${PG_USERNAME}:${PG_PASSWORD}@${PG_HOST}:${PG_PORT}/${PG_DATABASE}?sslmode=require`
+// export const PG_CONNECTION_STRING = `postgres://${PG_USERNAME}:${PG_PASSWORD}@${PG_HOST}:${PG_PORT}/${PG_DATABASE}?sslmode=require`

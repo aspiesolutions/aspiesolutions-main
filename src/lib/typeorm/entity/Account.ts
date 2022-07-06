@@ -1,12 +1,13 @@
 import "reflect-metadata"
-import {Entity,PrimaryGeneratedColumn,Column,ManyToOne} from "typeorm"
+import {Entity,Column,ManyToOne, PrimaryColumn, Generated} from "typeorm"
 import type {Relation} from "typeorm"
 import { User } from "./User"
 //We are using babel, types must be explicitly declared
 // in the decorator for the ORM to work correctly
 @Entity()
 export class Account {
-    @PrimaryGeneratedColumn()
+    @PrimaryColumn({type:"uuid",nullable:false,unique:true})
+    @Generated("uuid")
     id:string
     @ManyToOne(()=>User,(user)=>user.id)
     user:Relation<User>

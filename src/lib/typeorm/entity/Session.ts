@@ -1,10 +1,12 @@
 import "reflect-metadata"
-import {Entity,Column,PrimaryGeneratedColumn,ManyToOne} from "typeorm"
+import {Entity,Column,PrimaryColumn,ManyToOne, Generated} from "typeorm"
 import type {Relation} from "typeorm"
 import { User } from "./User"
 @Entity()
+// Relay requires all 'objects' to have globally unique identifiers to allow data refetching
 export class Session {
-    @PrimaryGeneratedColumn({type:"bigint"})
+    @PrimaryColumn({type:"uuid",nullable:false,unique:true})
+    @Generated("uuid")
     id:string
     @Column({type:"timestamptz",nullable:false})
     expires:Date
