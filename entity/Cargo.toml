@@ -1,3 +1,6 @@
 [package]
 name="entity"
 version="0.0.1"
+
+[lib]
+path="src/mod.rs"
