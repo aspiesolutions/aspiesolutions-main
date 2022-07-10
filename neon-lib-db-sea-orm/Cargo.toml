@@ -1,0 +1,17 @@
+[package]
+name="neon-lib-db-sea-orm"
+version="0.1.0"
+edition="2021"
+
+[lib]
+crate-type=["cdylib"]
+
+
+[dependencies]
+tokio={version="1.19",features=["rt","sync"]}
+lazy_static = "1.4.0"
+
+[dependencies.neon]
+version = "0.10"
+default-features = false
+features = ["napi-6"]
