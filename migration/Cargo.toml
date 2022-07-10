@@ -10,6 +10,10 @@ path = "src/lib.rs"
 
 [dependencies]
 entity = { path = "../entity" }
+[dependencies.tokio]
+version= "1.19"
+features=["rt-multi-thread","macros"]
 
 [dependencies.sea-orm-migration]
 version = "^0.8.0"
+features=["sqlx-postgres","runtime-tokio-native-tls"]
