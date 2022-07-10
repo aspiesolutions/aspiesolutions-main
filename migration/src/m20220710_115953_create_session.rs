@@ -1,6 +1,7 @@
 use sea_orm_migration::prelude::*;
 use entity::session::Model;
 use entity::session;
+use entity::user;
 pub struct Migration;
 
 impl MigrationName for Migration {
@@ -17,8 +18,8 @@ impl MigrationTrait for Migration {
         .col(ColumnDef::new(session::Column::Id).primary_key().uuid().unique_key().not_null())
         .col(ColumnDef::new(session::Column::Expires).timestamp_with_time_zone().not_null())
         .col(ColumnDef::new(session::Column::SessionToken).text().not_null())
-        .col(ColumnDef::new(session::Column::UserId).uuid()).to_owned()).await
-
+        .col(ColumnDef::new(session::Column::UserId).uuid().not_null()).to_owned()).await?;
+        manager.create_foreign_key(ForeignKey::create().from_tbl(session::Entity).from_col(session::Column::UserId).to_tbl(user::Entity).to_col(user::Column::Id).to_owned()).await
     }
 
     async fn down(&self, manager: &SchemaManager) -> Result<(), DbErr> {

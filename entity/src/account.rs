@@ -17,7 +17,7 @@ pub struct Model {
     pub refresh_token: Option<String>,
     #[sea_orm(column_type = "Text")]
     pub access_token: String,
-    pub expires_at: i32,
+    pub access_token_expires_at: DateTimeWithTimeZone,
     #[sea_orm(column_type = "Text", nullable)]
     pub id_token: Option<String>,
     #[sea_orm(column_type = "Text")]
@@ -26,10 +26,10 @@ pub struct Model {
     pub scope: String,
     #[sea_orm(column_type = "Text", nullable)]
     pub session_state: Option<String>,
-    #[sea_orm(column_type = "Text", nullable)]
-    pub oauth_token_secret: Option<String>,
-    #[sea_orm(column_type = "Text", nullable)]
-    pub oauth_token: Option<String>,
+    // #[sea_orm(column_type = "Text", nullable)]
+    // pub oauth_token_secret: Option<String>,
+    // #[sea_orm(column_type = "Text", nullable)]
+    // pub oauth_token: Option<String>,
     #[sea_orm(column_name = "userId")]
     pub user_id: Option<Uuid>,
 }
