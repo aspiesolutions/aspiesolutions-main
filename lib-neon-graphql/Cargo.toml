@@ -1,6 +1,6 @@
 [package]
 name = "lib-neon-graphql"
-version = "0.0.1"
+version = "0.0.2"
 license = "ISC"
 edition = "2021"
 exclude = ["index.node"]
@@ -12,6 +12,9 @@ crate-type = ["cdylib"]
 
 [dependencies]
 serde_json="1.0"
+[dependencies.serde]
+version="1.0"
+features=["derive"]
 # neon-serde="0.4.0"
 
 [dependencies.juniper]
