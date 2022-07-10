@@ -3,6 +3,6 @@ function Loading() {
 }
 
 
-export default testComponent(props) {
+export default function testComponent(props) {
     
 }

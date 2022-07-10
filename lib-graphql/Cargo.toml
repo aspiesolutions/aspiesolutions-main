@@ -1,0 +1,14 @@
+[package]
+name="lib-graphql"
+version="0.0.2"
+[dependencies]
+serde_json="1.0"
+lazy_static = "1.4.0"
+[dependencies.serde]
+version="1.0"
+features=["derive"]
+# neon-serde="0.4.0"
+
+[dependencies.juniper]
+version="0.15"
+features=["serde_json"]

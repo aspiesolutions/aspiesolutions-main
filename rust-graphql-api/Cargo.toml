@@ -6,4 +6,4 @@ edition="2021"
 [dependencies]
 rocket = "0.5.0-rc.2"
 lib-graphql={path="../lib-graphql"}
-seo-orm={version="0.8",features=["sqlx-postgres","runtime-tokio-native-tls"]}
+sea-orm={version="0.8",features=["sqlx-postgres","runtime-tokio-native-tls"]}

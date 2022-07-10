@@ -1,2 +1,2 @@
 [workspace]
-members=["lib-neon-graphql"]
+members=["lib-neon-graphql","lib-graphql","rust-graphql-api","entity","migration"]

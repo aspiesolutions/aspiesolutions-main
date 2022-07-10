@@ -5,7 +5,7 @@ import { Session } from "./graphql/models/Session"
 import { User } from "./graphql/models/User"
 import { AccessCode } from "./graphql/models/AccessCode"
 import { VerificationToken } from "./graphql/models/VerificationToken"
-import { Node } from "./graphql/models/INode"
+import { INode } from "./graphql/models/INode"
 import { Address } from "@universe/address-parser"
 
 
