@@ -6,3 +6,4 @@ version="0.1.0"
 [dependencies]
 entity={path="../entity"}
 sea-orm={features=["sqlx-postgres","runtime-tokio-native-tls"]}
+lazy_static = "1.4.0"

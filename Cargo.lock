@@ -2003,6 +2003,7 @@ name = "rust-lib-db-sea-orm"
 version = "0.1.0"
 dependencies = [
  "entity",
+ "lazy_static",
  "sea-orm",
 ]
 
