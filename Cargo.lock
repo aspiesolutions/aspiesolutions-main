@@ -1999,6 +1999,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "rust-lib-db-sea-orm"
+version = "0.1.0"
+dependencies = [
+ "entity",
+ "sea-orm",
+]
+
+[[package]]
 name = "rust_decimal"
 version = "1.25.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
