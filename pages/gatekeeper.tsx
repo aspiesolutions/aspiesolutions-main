@@ -5,7 +5,7 @@ import "mapbox-gl/dist/mapbox-gl.css";
 import "@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css";
 import MapboxGeocoder from "@mapbox/mapbox-gl-geocoder";
 import Link from "next/link";
-import { User } from "../src/lib/typeorm/entity/User";
+import { User } from "../src/lib/graphql/models/User";
 import { NEXTAUTH_DEFAULT_PROVIDER } from "../src/lib/constants";
 
 // import { Address } from '@universe/address-parser/esm/src/index'

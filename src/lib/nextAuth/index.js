@@ -5,7 +5,7 @@ import { NEXTAUTH_AUTH0_PROVIDER_ID } from "../constants";
 import CustomTypeOrmAdapter from "./adapter"
 // import blank from "next-auth/adapters/"
 import log from "../logger"
-import { AppDataSource, PG_CONNECTION_STRING } from "../typeorm/data-source";
+import { AppDataSource, PG_CONNECTION_STRING } from "../data-source";
 export const authOptions ={
     adapter: CustomTypeOrmAdapter({datasource:AppDataSource}),
     logger:{

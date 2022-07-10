@@ -1,9 +1,9 @@
 import { DataSource } from "typeorm";
-import { User } from "../typeorm/entity/User";
+import { User } from "../graphql/models/User";
 import log from "../logger";
-import { Account } from "../typeorm/entity/Account";
+import { Account } from "../graphql/models/Account";
 import type { FindOptionsWhere } from "typeorm";
-import { Session } from "../typeorm/entity/Session";
+import { Session } from "../graphql/models/Session";
 
 export type Options = { datasource: DataSource };
 

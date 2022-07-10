@@ -9,7 +9,7 @@ import { Environment, GraphQLResponse, Network, RecordSource, Store } from 'rela
 // API of choice.
 import axios from "axios"
 import buildSchema from "../../graphql"
-import { AppDataSource } from '../../typeorm/data-source';
+import { AppDataSource } from '../../data-source';
 const DEFAULT_URL = "http://localhost:3000"
 
 // eventually we will need to build in the authentication logic here.

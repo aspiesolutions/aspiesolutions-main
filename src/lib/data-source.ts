@@ -1,10 +1,12 @@
 import "reflect-metadata"
 import { DataSource } from "typeorm"
-import { Account } from "./entity/Account"
-import { Session } from "./entity/Session"
-import { User } from "./entity/User"
-import { AccessCode } from "./entity/AccessCode"
-import { VerificationToken } from "./entity/VerificationToken"
+import { Account } from "./graphql/models/Account"
+import { Session } from "./graphql/models/Session"
+import { User } from "./graphql/models/User"
+import { AccessCode } from "./graphql/models/AccessCode"
+import { VerificationToken } from "./graphql/models/VerificationToken"
+import { Node } from "./graphql/models/INode"
+import { Address } from "@universe/address-parser"
 
 
 const PG_USERNAME = process.env.PG_USERNAME || "web"
@@ -52,7 +54,7 @@ export const AppDataSource = new DataSource({
     ssl: {ca:CA_CERTIFICATE},
     synchronize: !DB_IS_PRODUCTION,
     logging: false,
-    entities: [User,Account, VerificationToken,Session,AccessCode],
+    entities: [User,Account, VerificationToken,Session,AccessCode, Address],
     migrations: [],
     subscribers: [],
 })

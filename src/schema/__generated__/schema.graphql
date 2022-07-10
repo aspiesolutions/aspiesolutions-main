@@ -4,7 +4,11 @@ directive @specifiedBy(
   url: String!
 ) on SCALAR
 
+type AccessCode {
+  id: ID!
+}
+
 type Query {
-  accessCode: String!
+  accessCode: AccessCode!
 }
 

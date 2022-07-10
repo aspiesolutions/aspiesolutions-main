@@ -2,10 +2,13 @@ import "reflect-metadata"
 import {Entity,Column,ManyToOne, PrimaryColumn, Generated} from "typeorm"
 import type {Relation} from "typeorm"
 import { User } from "./User"
+import { Field, ID, ObjectType } from "type-graphql"
 //We are using babel, types must be explicitly declared
 // in the decorator for the ORM to work correctly
+@ObjectType()
 @Entity()
 export class Account {
+    @Field(type=>ID)
     @PrimaryColumn({type:"uuid",nullable:false,unique:true})
     @Generated("uuid")
     id:string
