@@ -3,7 +3,7 @@ import { withRelay, RelayProps } from 'relay-nextjs';
 import { graphql, usePreloadedQuery } from 'react-relay/hooks';
 import { getClientEnvironment } from '../../src/lib/relay-nextjs/clientEnvironment';
 import { relay_AccessCodeQuery } from '../../src/queries/__generated__/relay_AccessCodeQuery.graphql';
-
+import { createServerEnvironment } from '../../src/lib/server/relay-nextjs/serverEnvironment';
 // The $uuid variable is injected automatically from the route.
 const AccessCodeQuery = graphql`
   query relay_AccessCodeQuery {
@@ -55,7 +55,6 @@ export default withRelay(AccessCode, AccessCodeQuery, {
     // you can remove this argument.
     // { token }: { token: string }
   ) => {
-    const { createServerEnvironment } = await import('../../src/lib/server/relay-nextjs/serverEnvironment');
     return createServerEnvironment();
   },
 });

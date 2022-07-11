@@ -5,6 +5,9 @@ import { Account } from "../graphql/models/Account";
 import type { FindOptionsWhere } from "typeorm";
 import { Session } from "../graphql/models/Session";
 
+// import the custom orm solution from rust
+import * as rustOrm from "node-loader!../../../neon-lib-db-sea-orm/index.node"
+
 export type Options = { datasource: DataSource };
 
 let NOT_IMPLEMENTED_MSG = "Adapter Method Not Implemented";
@@ -24,11 +27,20 @@ export default function CustomTypeOrmAapter(options: Options): Adapter {
   }
   return {
     async createUser(user): Promise<AdapterUser> {
+      // working on replacing the current logic with the logic from the custom orm
       let userRepository = await getUserRepository();
       let entity = userRepository.create(user);
       let userCreateResult = await userRepository.save(entity);
       // throw new Error(NOT_IMPLEMENTED_MSG)
       let adapterUser: AdapterUser = { ...userCreateResult };
+      try {
+        rustOrm.createUser()
+      }
+      catch (e) {
+        console.error(`rustOrm create user failed ${e.toString()}`)
+      }
+
+
       return adapterUser;
     },
     async getUser(id) {

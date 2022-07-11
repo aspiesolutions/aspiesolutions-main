@@ -1,5 +1,5 @@
 Arguments: 
-  /usr/bin/node /usr/bin/yarn add lib-neon-graphql
+  /usr/bin/node /usr/bin/yarn add @aspiesolutions/neon-lib-db-sea-orm
 
 PATH: 
   /usr/bin:/home/jordan/.bun/bin:/home/jordan/bin:/usr/bin:/home/jordan/.bun/bin:/home/jordan/.rover/bin:/home/jordan/.cargo/bin:/home/jordan/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/home/jordan/.yarn/bin:~/bin:/usr/local/cuda/bin:/home/jordan/.yarn/bin:~/bin:/usr/local/cuda/bin
@@ -14,7 +14,7 @@ Platform:
   linux x64
 
 Trace: 
-  Error: https://registry.yarnpkg.com/lib-neon-graphql: Not found
+  Error: https://registry.yarnpkg.com/@aspiesolutions%2fneon-lib-db-sea-orm: Not found
       at Request.params.callback [as _callback] (/usr/lib/node_modules/yarn/lib/cli.js:67029:18)
       at Request.self.callback (/usr/lib/node_modules/yarn/lib/cli.js:140883:22)
       at Request.emit (node:events:527:28)
@@ -59,6 +59,7 @@ npm manifest:
         "graphql-fields": "^2.0.3",
         "graphql-tools": "^8.2.12",
         "jsonwebtoken": "^8.5.1",
+        "@aspiesolutions/lib-neon-graphql": "file:./lib-neon-graphql",
         "lodash": "^4.17.21",
         "mapbox-gl": "^2.9.1",
         "next": "12.1.6",
@@ -128,6 +129,9 @@ Lockfile:
       ts-invariant "^0.10.3"
       tslib "^2.3.0"
       zen-observable-ts "^1.2.5"
+  
+  "@aspiesolutions/lib-neon-graphql@file:./lib-neon-graphql":
+    version "0.0.2"
   
   "@babel/code-frame@^7.0.0", "@babel/code-frame@^7.18.6":
     version "7.18.6"

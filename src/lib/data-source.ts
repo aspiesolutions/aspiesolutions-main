@@ -52,7 +52,7 @@ export const AppDataSource = new DataSource({
     password: PG_PASSWORD,
     database: PG_DATABASE,
     ssl: {ca:CA_CERTIFICATE},
-    synchronize: !DB_IS_PRODUCTION,
+    synchronize: false,
     logging: false,
     entities: [User,Account, VerificationToken,Session,AccessCode, Address],
     migrations: [],

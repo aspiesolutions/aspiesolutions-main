@@ -1189,6 +1189,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "juniper_rocket"
+version = "0.8.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a431e6f03bc31bd74498a837e87ddf635deef3c1a2026e59680dec2552c84c28"
+dependencies = [
+ "futures",
+ "juniper",
+ "rocket",
+ "serde_json",
+]
+
+[[package]]
 name = "kv-log-macro"
 version = "1.0.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1400,6 +1412,15 @@ name = "neon-build"
 version = "0.10.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "8bac98a702e71804af3dacfde41edde4a16076a7bbe889ae61e56e18c5b1c811"
+
+[[package]]
+name = "neon-lib-db-sea-orm"
+version = "0.1.0"
+dependencies = [
+ "lazy_static",
+ "neon",
+ "tokio",
+]
 
 [[package]]
 name = "neon-macros"
@@ -1935,6 +1956,7 @@ dependencies = [
  "rocket_codegen",
  "rocket_http",
  "serde",
+ "serde_json",
  "state",
  "tempfile",
  "time 0.3.11",
@@ -1960,6 +1982,27 @@ dependencies = [
  "rocket_http",
  "syn",
  "unicode-xid",
+]
+
+[[package]]
+name = "rocket_db_pools"
+version = "0.1.0-rc.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "8bc154f4f4985a136e2d59c336474a56da02103993f5e637e3a5424971ee4eff"
+dependencies = [
+ "rocket",
+ "rocket_db_pools_codegen",
+ "version_check",
+]
+
+[[package]]
+name = "rocket_db_pools_codegen"
+version = "0.1.0-rc.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "0aa8f9b37bb1d4827aa5cca400d74e91d30f4352713cb65d6e7427bafe21336c"
+dependencies = [
+ "devise",
+ "quote",
 ]
 
 [[package]]
@@ -1993,8 +2036,12 @@ dependencies = [
 name = "rust-graphql-api"
 version = "0.0.1"
 dependencies = [
+ "async-trait",
+ "juniper_rocket",
  "lib-graphql",
  "rocket",
+ "rocket_db_pools",
+ "rust-lib-db-sea-orm",
  "sea-orm",
 ]
 

@@ -5,10 +5,16 @@ lazy_static::lazy_static!{
     pub static ref TOKIO_RUNTIME: std::sync::Arc<tokio::runtime::Runtime> = std::sync::Arc::new(tokio::runtime::Builder::new_current_thread().build().unwrap());
 }
 
+fn create_user(mut cx: FunctionContext) -> JsResult<JsObject> {
+    let o = cx.empty_object();
+    println!("Stubbed create user");
+    Ok(o)
+}
+
 
 #[neon::main]
 fn main(mut cx: ModuleContext) -> NeonResult<()> {
     // start the runtime when the module is loaded
-    TOKIO_RUNTIME.block_on(async {println!("future works!")});
+    cx.export_function("createUser", create_user)?;
     Ok(())
 }
