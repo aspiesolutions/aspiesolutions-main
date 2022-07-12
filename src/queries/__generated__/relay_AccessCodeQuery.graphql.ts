@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<09cfc70ee46c272f4be81128e14b2439>>
+ * @generated SignedSource<<8f89189c277f5ea737f27eaca5d3f1be>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -11,7 +11,9 @@
 import { ConcreteRequest, Query } from 'relay-runtime';
 export type relay_AccessCodeQuery$variables = {};
 export type relay_AccessCodeQuery$data = {
-  readonly accessCode: string;
+  readonly accessCode: {
+    readonly id: string;
+  };
 };
 export type relay_AccessCodeQuery = {
   response: relay_AccessCodeQuery$data;
@@ -23,8 +25,19 @@ var v0 = [
   {
     "alias": null,
     "args": null,
-    "kind": "ScalarField",
+    "concreteType": "AccessCode",
+    "kind": "LinkedField",
     "name": "accessCode",
+    "plural": false,
+    "selections": [
+      {
+        "alias": null,
+        "args": null,
+        "kind": "ScalarField",
+        "name": "id",
+        "storageKey": null
+      }
+    ],
     "storageKey": null
   }
 ];
@@ -46,16 +59,16 @@ return {
     "selections": (v0/*: any*/)
   },
   "params": {
-    "cacheID": "ff30a3978f6a4cb2cc3258397f26a067",
+    "cacheID": "81e0d04df873c898d98e70231bc7c327",
     "id": null,
     "metadata": {},
     "name": "relay_AccessCodeQuery",
     "operationKind": "query",
-    "text": "query relay_AccessCodeQuery {\n  accessCode\n}\n"
+    "text": "query relay_AccessCodeQuery {\n  accessCode {\n    id\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "cc88ab6efbbb928fc18f66d36ffc179b";
+(node as any).hash = "c06fed2539b24e2c4090e62afb4dac4e";
 
 export default node;
