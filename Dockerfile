@@ -1,7 +1,6 @@
 from debian:buster as base
 WORKDIR /app
 run apt-get update
-run apt-get upgrade -y
 # install deps
 ARG DEBIAN_FRONTEND="noninteractive"
 RUN export DEBIAN_FRONTEND=${DEBIAN_FRONTEND}
@@ -11,11 +10,6 @@ RUN apt-get install  build-essential curl autoconf automake libtool pkg-config g
 RUN curl -fsSL https://deb.nodesource.com/setup_16.x | bash -
 RUN apt-get install -y nodejs
 RUN npm install -g npm yarn
-# build libpostal
-RUN git clone https://github.com/openvenues/libpostal --depth 1
-WORKDIR /app/libpostal
-RUN ./bootstrap.sh && ./configure --datadir="$PWD" && make -j 2 && make install && ldconfig && make distclean
-WORKDIR /app
 COPY . .
 RUN yarn install
 RUN yarn build

@@ -1,7 +1,7 @@
 name: aspiesolutions-api-dev
 region: nyc
 services:
-- dockerfile_path: ./rust-graphql-api/Dockerfile
+- dockerfile_path: rust-graphql-api/Dockerfile
   github:
     branch: dev
     deploy_on_push: true
@@ -9,11 +9,12 @@ services:
   http_port: 65535
   instance_count: 2
   instance_size_slug: professional-xs
-  name: aspiesolutions-main
+  name: aspiesolutions-graphql-api
   routes:
-  - path: /
+  - path: /graphql
+  - path: /api/graphql
   source_dir: /
-- dockerfile_path: Dockerile
+- dockerfile_path: Dockerfile
   github:
     branch: dev
     deploy_on_push: true
@@ -21,8 +22,7 @@ services:
   http_port: 80
   instance_count: 2
   instance_size_slug: professional-xs
-  name: aspiesolutions-graphql-api
+  name: aspiesolutions-main
   routes:
-  - path: /graphql
-  - path: /api/graphql
+  - path: /
   source_dir: /
