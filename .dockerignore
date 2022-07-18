@@ -1,5 +1,9 @@
 node_modules
 target/
+# explicitly allow binaryies to be copied
+!target/x86_64-unknown-linux-gnu/debug/rust-graphql-api
+!target/x86_64-unknown-linux-gnu/release/rust-graphql-api
+
 .next
 .vscode
 .vercel
