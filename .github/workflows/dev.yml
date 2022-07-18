@@ -35,7 +35,7 @@ jobs:
       - uses: actions/cache@v3
         id: openssl
         with:
-          path: /musl/openssl
+          path: ~/musl/openssl
           key: musl-openssl-1-1-1f
       - name: Build OpenSSL
         if: steps.openssl.outputs.cache-hit != 'true'
@@ -47,10 +47,12 @@ jobs:
           wget https://github.com/openssl/openssl/archive/OpenSSL_1_1_1f.tar.gz
           tar zxvf OpenSSL_1_1_1f.tar.gz
           cd openssl-OpenSSL_1_1_1f
-          CC="musl-gcc -fPIE -pie" ./Configure no-shared no-async --prefix=/musl/openssl --openssldir=/musl/openssl/install linux-x86_64
+          CC="musl-gcc -fPIE -pie" ./Configure no-shared no-async --prefix=~/musl/openssl --openssldir=~/musl/openssl/install linux-x86_64
           make depend
           make -j$(nproc)
-          sudo make install
+          make install_sw install_ssldirs
+
+
       - name: Test Rust Workspace
         run: cargo test --workspace --target x86_64-unknown-linux-musl
       - name: Build Api for Development release with debug output
