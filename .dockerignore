@@ -1,8 +1,8 @@
 node_modules
 target/
-# explicitly allow binaryies to be copied
-!target/x86_64-unknown-linux-gnu/debug/rust-graphql-api
-!target/x86_64-unknown-linux-gnu/release/rust-graphql-api
+# # explicitly allow binaryies to be copied
+!./target/x86_64-unknown-linux-musl/debug/rust-graphql-api
+!./target/x86_64-unknown-linux-musl/debug/rust-graphql-api
 
 .next
 .vscode
