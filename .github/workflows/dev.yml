@@ -60,4 +60,4 @@ jobs:
       - name: Build Api for Release with debug output
         run: RUST_LOG=debug cargo build --bin rust-graphql-api --target x86_64-unknown-linux-musl --release
       - name: Build Api Docker Image
-        run: docker build -f rust-graphql-api/Dockerfile -t rust-graphql-api:dev rust-graphql-api:${{github.sha}}
+        run: docker build -f rust-graphql-api/Dockerfile -t rust-graphql-api:dev rust-graphql-api:${{github.sha}} .
