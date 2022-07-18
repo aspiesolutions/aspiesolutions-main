@@ -62,7 +62,7 @@ jobs:
       # - name: Build Api for Release with debug output
       #   run: RUST_LOG=debug cargo build --bin rust-graphql-api --target x86_64-unknown-linux-musl --release
       - name: Build Api Docker Image
-        run: docker build -f rust-graphql-api/Dockerfile -t rust-graphql-api:dev
+        run: docker build -f rust-graphql-api/Dockerfile -t rust-graphql-api:dev .
       - name: Tag Docker image
         run: |
           docker tag rust-graphql-api:dev registry.digitalocean.com/aspiesolutions/rust-graphql-api:dev
