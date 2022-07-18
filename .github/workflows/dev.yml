@@ -57,6 +57,8 @@ jobs:
         run: cargo test --workspace --target x86_64-unknown-linux-musl
       - name: Build Api for Development release with debug output
         run: RUST_LOG=debug cargo build --bin rust-graphql-api --target x86_64-unknown-linux-musl
+      - name: ls target
+        run: ls ./target/x86_64-unknown-linux-musl/debug/rust-graphql-api
       # - name: Build Api for Release with debug output
       #   run: RUST_LOG=debug cargo build --bin rust-graphql-api --target x86_64-unknown-linux-musl --release
       - name: Build Api Docker Image
