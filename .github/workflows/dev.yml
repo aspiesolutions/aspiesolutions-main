@@ -9,6 +9,7 @@ jobs:
     env:
       PKG_CONFIG_ALLOW_CROSS: true
       OPENSSL_STATIC: true
+      OPENSSL_DIR: $PWD/musl/openssl/install
     steps:
       - uses: actions/checkout@v3
       - uses: actions-rs/toolchain@v1
@@ -24,7 +25,7 @@ jobs:
           path: target/x86_64-unknown-linux-musl/debug/**
           key: rust-target-musl
       - name: Make directories for musl depedencies
-        run: mkdir -p $PWD/musl/openssl && mkdir -p $PWD/musl/openssl/install
+        run: mkdir -p $PWD/musl/openssl && mkdir -p $PWD/musl/openssl/include
       - name: Download OpenSSL
         run: wget https://github.com/openssl/openssl/archive/OpenSSL_1_1_1f.tar.gz
       - name: Extract OpenSSL
