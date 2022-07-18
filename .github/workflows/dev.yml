@@ -63,3 +63,9 @@ jobs:
       #   run: RUST_LOG=debug cargo build --bin rust-graphql-api --target x86_64-unknown-linux-musl --release
       - name: Build Api Docker Image
         run: docker build -f rust-graphql-api/Dockerfile -t rust-graphql-api:dev -t rust-graphql-api:${{github.sha}} .
+      - name: Log into registry
+        run: doctl registry login --expiry-seconds 600
+      - name: Push Docker Image
+        run: |
+          docker push registry.digitalocean.com/aspiesolutions/rust-graphql-api:dev
+          docker push registry.digitalocean.com/aspiesolutions/rust-graphql-api:${{github.sha}}
