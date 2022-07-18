@@ -4,6 +4,10 @@ on:
     - dev
 
 jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - run: whoami
   build:
     runs-on: ubuntu-latest
     env:
