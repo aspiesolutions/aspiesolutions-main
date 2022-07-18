@@ -4,10 +4,6 @@ on:
     - dev
 
 jobs:
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      - run: whoami
   build:
     runs-on: ubuntu-latest
     env:
@@ -30,6 +26,10 @@ jobs:
             ~/.cargo/git/db/
             target/
           key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+      - name: Install doctl
+        uses: digitalocean/action-doctl@v2
+        with:
+          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
       - name: Install Dependencies
         run: sudo apt-get update && sudo apt-get install build-essential musl-tools linux-headers-$(uname -r)
       - uses: actions/cache@v3
