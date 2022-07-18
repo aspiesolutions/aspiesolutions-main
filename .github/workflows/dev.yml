@@ -30,7 +30,7 @@ jobs:
         run: |
           wget https://github.com/openssl/openssl/archive/OpenSSL_1_1_1f.tar.gz
           tar zxvf OpenSSL_1_1_1f.tar.gz
-          cd OpenSSL_1_1_1f
+          cd openssl-OpenSSL_1_1_1f
           CC="musl-gcc -fPIE -pie" ./Configure no-shared no-async --prefix=./musl/openssl --openssldir=./musl/openssl/install linux-x86_64
           make depend
       - name: Test
