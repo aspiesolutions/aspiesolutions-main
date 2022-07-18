@@ -5,3 +5,4 @@ target/
 .vercel
 .env
 README.MD
+Dockerfile
