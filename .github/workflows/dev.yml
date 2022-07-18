@@ -32,5 +32,6 @@ jobs:
         run: tar zxvf OpenSSL_1_1_1f.tar.gz
       - name: Build OpenSSL dependencies
         run: CC="musl-gcc -fPIE -pie" ./Configure no-shared no-async --prefix=./musl --openssldir=./musl/openssl linux-x86_64 && make depend
+        working-dir: OpenSSL_1_1_1f
       - name: Test
         run: cargo test --bin rust-graphql-api --target x86_64-unknown-linux-musl
