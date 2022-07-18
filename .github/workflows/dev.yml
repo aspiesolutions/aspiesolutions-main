@@ -16,10 +16,6 @@ jobs:
         with:
           toolchain: stable
           target: x86_64-unknown-linux-musl
-      - uses: awalsh128/cache-apt-pkgs-action@v1
-        with:
-          packages: "build-essential musl-tools linux-headers-$(uname -r)" # provides musl-gcc
-          version: 1.0
       - uses: actions/cache@v3
         id: rust
         with:
@@ -30,6 +26,8 @@ jobs:
             ~/.cargo/git/db/
             target/
           key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+      - name: Install Dependencies
+        run: sudo apt-get update && sudo apt-get install build-essential musl-tools linux-headers-$(uname -r)
       - uses: actions/cache@v3
         id: openssl
         with:
@@ -54,4 +52,4 @@ jobs:
       - name: Build Api for Development release with debug output
         run: RUST_LOG=debug cargo build --bin rust-graphql-api --target x86_64-unknown-linux-musl
       - name: Build Api for Release with debug output
-        run: RUST_LOG=debug cargo bild --bin rust-graphql-api --target x86_64-unknown-linux-musl --release
+        run: RUST_LOG=debug cargo build --bin rust-graphql-api --target x86_64-unknown-linux-musl --release
