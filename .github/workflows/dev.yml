@@ -34,14 +34,14 @@ jobs:
         id: openssl
         with:
           path: /musl/openssl
-          key: musl-openssl
+          key: musl-openssl-1-1-1f
       - name: Build OpenSSL
         if: steps.openssl.outputs.cache-hit != 'true'
         run: |
           sudo ln -s /usr/include/x86_64-linux-gnu/asm /usr/include/x86_64-linux-musl/asm
           sudo ln -s /usr/include/asm-generic /usr/include/x86_64-linux-musl/asm-generic
           sudo ln -s /usr/include/linux /usr/include/x86_64-linux-musl/linux
-          mkdir -p /musl/openssl
+          sudo mkdir -p /musl/openssl
           wget https://github.com/openssl/openssl/archive/OpenSSL_1_1_1f.tar.gz
           tar zxvf OpenSSL_1_1_1f.tar.gz
           cd openssl-OpenSSL_1_1_1f
