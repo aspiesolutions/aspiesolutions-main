@@ -4,7 +4,7 @@ on:
     - dev
 
 jobs:
-  build:
+  build-api:
     runs-on: ubuntu-latest
     environment: development
     env:
@@ -73,3 +73,17 @@ jobs:
         run: |
           docker push registry.digitalocean.com/aspiesolutions/rust-graphql-api:dev
           docker push registry.digitalocean.com/aspiesolutions/rust-graphql-api:${{github.sha}}
+  build-next-frontend:
+    runs-on: ubuntu-latest
+    needs: [build-api]
+    environment: development
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+      - name: Install node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16.16.*
+          cache: yarn
+      - name: Check for yarn
+        run: yarn install
