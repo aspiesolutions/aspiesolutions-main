@@ -101,6 +101,3 @@ jobs:
           cache: yarn
       - name: Install Dependencies
         run: yarn install
-      - name: Login to container registry
-        run: doctl registry login --expiry-seconds 1800
-      - name: Start Api and grab schema file
