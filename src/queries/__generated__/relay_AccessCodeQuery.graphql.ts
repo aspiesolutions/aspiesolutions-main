@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<8f89189c277f5ea737f27eaca5d3f1be>>
+ * @generated SignedSource<<19d1bed6a513d16f2344567e91216b7b>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -13,7 +13,7 @@ export type relay_AccessCodeQuery$variables = {};
 export type relay_AccessCodeQuery$data = {
   readonly accessCode: {
     readonly id: string;
-  };
+  } | null;
 };
 export type relay_AccessCodeQuery = {
   response: relay_AccessCodeQuery$data;
@@ -24,7 +24,13 @@ const node: ConcreteRequest = (function(){
 var v0 = [
   {
     "alias": null,
-    "args": null,
+    "args": [
+      {
+        "kind": "Literal",
+        "name": "id",
+        "value": "abcdefg"
+      }
+    ],
     "concreteType": "AccessCode",
     "kind": "LinkedField",
     "name": "accessCode",
@@ -38,7 +44,7 @@ var v0 = [
         "storageKey": null
       }
     ],
-    "storageKey": null
+    "storageKey": "accessCode(id:\"abcdefg\")"
   }
 ];
 return {
@@ -59,16 +65,16 @@ return {
     "selections": (v0/*: any*/)
   },
   "params": {
-    "cacheID": "81e0d04df873c898d98e70231bc7c327",
+    "cacheID": "fc3821544069b1289734a3fc8b0a2fa8",
     "id": null,
     "metadata": {},
     "name": "relay_AccessCodeQuery",
     "operationKind": "query",
-    "text": "query relay_AccessCodeQuery {\n  accessCode {\n    id\n  }\n}\n"
+    "text": "query relay_AccessCodeQuery {\n  accessCode(id: \"abcdefg\") {\n    id\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "c06fed2539b24e2c4090e62afb4dac4e";
+(node as any).hash = "ee4cbb75c0edfffad446256b159d1656";
 
 export default node;

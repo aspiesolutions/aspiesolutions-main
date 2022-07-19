@@ -1,14 +1,29 @@
-"""Exposes a URL that specifies the behaviour of this scalar."""
-directive @specifiedBy(
-  """The URL that specifies the behaviour of this scalar."""
-  url: String!
-) on SCALAR
+type Address implements Node {
+  id: ID!
+}
+
+type Mutation {
+  noop: String
+}
+
+type Query {
+  node(id: ID!): Node!
+  accessCode(id: ID!): AccessCode
+}
+
+interface Node {
+  id: Node
+}
 
 type AccessCode {
   id: ID!
 }
 
-type Query {
-  accessCode: AccessCode!
+type Session implements Node {
+  id: ID!
 }
 
+schema {
+  query: Query
+  mutation: Mutation
+}

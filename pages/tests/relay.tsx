@@ -7,7 +7,7 @@ import { createServerEnvironment } from '../../src/lib/server/relay-nextjs/serve
 // The $uuid variable is injected automatically from the route.
 const AccessCodeQuery = graphql`
   query relay_AccessCodeQuery {
-    accessCode {
+    accessCode(id:"abcdefg") {
       id
     }
   }

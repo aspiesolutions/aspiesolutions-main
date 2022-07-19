@@ -1,6 +1,6 @@
+use access_code::AccessCode;
 use address::Address;
 use juniper::GraphQLObject;
-use juniper::graphql_interface;
 use juniper::graphql_object;
 use session::SessionConnection;
 pub use juniper::EmptySubscription;
@@ -10,8 +10,9 @@ pub mod session;
 pub mod pageinfo;
 pub mod node;
 pub mod address;
+pub mod access_code;
 
-use node::{Node,NodeValue};
+use node::{NodeValue};
 // this module contains our graphql api
 pub struct Context;
 impl juniper::Context for Context {}
@@ -20,6 +21,9 @@ pub struct Query;
 impl Query {
     pub fn node(id: ID) -> NodeValue {
         NodeValue::Address(Address{id})
+    }
+    pub fn access_code(_id:ID) -> Option<AccessCode> {
+        None
     }
 }
 
