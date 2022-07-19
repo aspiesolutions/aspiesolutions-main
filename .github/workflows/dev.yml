@@ -93,7 +93,7 @@ jobs:
             target/
           key: ${{ runner.os }}-cargo-frontend-${{ hashFiles('**/Cargo.lock') }}
       - name: Write schema file for relay
-        run: SCHEMA_OUTPUT_PATH="./src/__generated__/schema.graphql" cargo run --bin output-schema
+        run: SCHEMA_OUTPUT_PATH="$PWD/src/__generated__/schema.graphql" cargo run --bin output-schema
       - name: Install node
         uses: actions/setup-node@v3
         with:
