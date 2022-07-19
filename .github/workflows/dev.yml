@@ -57,8 +57,8 @@ jobs:
         run: cargo test --workspace --target x86_64-unknown-linux-musl
       - name: Build Api for Development release with debug output
         run: RUST_LOG=debug cargo build --bin rust-graphql-api --target x86_64-unknown-linux-musl
-      - name: ls target
-        run: ls ./target/x86_64-unknown-linux-musl/debug/rust-graphql-api
+      - name: Output Schema file
+        run: SCHEMA_OUTPUT_PATH=./src/schema/__generated__/schema.graphql
       # - name: Build Api for Release with debug output
       #   run: RUST_LOG=debug cargo build --bin rust-graphql-api --target x86_64-unknown-linux-musl --release
       - name: Build Api Docker Image
@@ -75,16 +75,25 @@ jobs:
           docker push registry.digitalocean.com/aspiesolutions/rust-graphql-api:${{github.sha}}
   build-next-frontend:
     runs-on: ubuntu-latest
-    needs: [build-api]
     environment: development
     steps:
-      - name: Install doctl
-        uses: digitalocean/action-doctl@v2
-        with:
-          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
       - name: Checkout Repository
         uses: actions/checkout@v3
-
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+      - uses: actions/cache@v3
+        id: rust
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+          key: ${{ runner.os }}-cargo-frontend-${{ hashFiles('**/Cargo.lock') }}
+      - name: Write schema file for relay
+        run: SCHEMA_OUTPUT_DIR="./src/__generated__/schema.graphql" cargo run --bin output-schema
       - name: Install node
         uses: actions/setup-node@v3
         with:
