@@ -92,6 +92,9 @@ jobs:
             ~/.cargo/git/db/
             target/
           key: ${{ runner.os }}-cargo-frontend-${{ hashFiles('**/Cargo.lock') }}
+      - uses: digitalocean/action-doctl@v2
+        with:
+          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
       - name: Write schema file for relay
         run: SCHEMA_OUTPUT_DIRECTORY="$PWD/src/schema/__generated__" cargo run --bin output-schema
       - name: Install node
@@ -101,7 +104,13 @@ jobs:
           cache: yarn
       - name: Install yarn
         run: sudo npm install -g yarn
-      - name: Install Dependencies
-        run: yarn install
-      - name: Yarn Build
-        run: yarn build
+      - name: Build Container
+        run: docker build -t next-frontend:dev .
+      - name: Tag container
+        run: |
+          docker tag next-frontend:dev registry.digitalocean.com/aspiesolutions/next-frontend:dev
+          docker tag next-frontend:dev registry.digitalocean.com/aspiesolutions/next-frontend:${{github.sha}}
+      - name: Log into registry
+        run: doctl registry login --expiry-seconds 300
+      - name: Push Docker Image
+        run: docker push --all-tags registry.digitalocean.com/aspiesolutions/next-frontend
