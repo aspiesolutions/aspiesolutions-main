@@ -99,6 +99,8 @@ jobs:
         with:
           node-version: 16.16.*
           cache: yarn
+      - name: Install yarn
+        run: sudo npm install -g yarn
       - name: Install Dependencies
         run: yarn install
       - name: Yarn Build

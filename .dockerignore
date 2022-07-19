@@ -8,5 +8,6 @@ target/
 .vscode
 .vercel
 .env
+.secrets
 README.MD
 Dockerfile
