@@ -3,6 +3,9 @@ name="rust-graphql-api"
 version="0.0.1"
 edition="2021"
 
+
+
+
 [dependencies]
 rocket = {version="0.5.0-rc.2",features=["json"]}
 lib-graphql={path="../lib-graphql"}

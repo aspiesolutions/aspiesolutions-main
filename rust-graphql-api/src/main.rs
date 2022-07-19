@@ -3,7 +3,6 @@ pub mod routes;
 use rocket_db_pools::Database;
 pub use routes::*;
 pub mod lib;
-
 #[launch]
 fn rocket() -> _ {
     let schema = lib_graphql::Schema::new(

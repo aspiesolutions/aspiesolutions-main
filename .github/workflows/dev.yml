@@ -78,12 +78,20 @@ jobs:
     needs: [build-api]
     environment: development
     steps:
+      - name: Install doctl
+        uses: digitalocean/action-doctl@v2
+        with:
+          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
       - name: Checkout Repository
         uses: actions/checkout@v3
+
       - name: Install node
         uses: actions/setup-node@v3
         with:
           node-version: 16.16.*
           cache: yarn
-      - name: Check for yarn
+      - name: Install Dependencies
         run: yarn install
+      - name: Login to container registry
+        run: doctl registry login --expiry-seconds 1800
+      - name: Start Api and grab schema file

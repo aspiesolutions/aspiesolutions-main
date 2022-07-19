@@ -44,7 +44,6 @@ impl Mutation {
 }
 
 pub type Schema = juniper::RootNode<'static, Query, Mutation, EmptySubscription<Context>>;
-
 pub use juniper::execute;
 pub use juniper::execute_sync;
 
