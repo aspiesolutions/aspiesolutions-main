@@ -17,7 +17,7 @@ function AccessCode({ preloadedQuery }: RelayProps<{}, relay_AccessCodeQuery>) {
   const query = usePreloadedQuery(AccessCodeQuery, preloadedQuery);
 
   return (
-    <>Hello {query.accessCode}</>
+    <>Hello {query.accessCode.id}</>
   );
 }
 

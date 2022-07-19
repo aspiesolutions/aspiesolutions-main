@@ -101,5 +101,5 @@ jobs:
           cache: yarn
       - name: Install Dependencies
         run: yarn install
-      - name: Run Relay Compiler
-        run: yarn run relay
+      - name: Yarn Build
+        run: yarn build
