@@ -71,8 +71,8 @@ jobs:
         run: doctl registry login --expiry-seconds 600
       - name: Push Docker Image
         run: |
+          docker push registry.digitalocean.com/aspiesolutions/rust-graphql-api:dev-${{github.sha}}
           docker push registry.digitalocean.com/aspiesolutions/rust-graphql-api:dev
-          docker push registry.digitalocean.com/aspiesolutions/rust-graphql-api:${{github.sha}}
   build-next-frontend:
     runs-on: ubuntu-latest
     environment: development
@@ -108,8 +108,8 @@ jobs:
         run: docker build -t next-frontend:dev .
       - name: Tag container
         run: |
+          docker tag next-frontend:dev registry.digitalocean.com/aspiesolutions/next-frontend:dev-${{github.sha}}
           docker tag next-frontend:dev registry.digitalocean.com/aspiesolutions/next-frontend:dev
-          docker tag next-frontend:dev registry.digitalocean.com/aspiesolutions/next-frontend:${{github.sha}}
       - name: Log into registry
         run: doctl registry login --expiry-seconds 300
       - name: Push Docker Image
