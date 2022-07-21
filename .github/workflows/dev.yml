@@ -118,4 +118,4 @@ jobs:
       - name: Push Docker Image
         run: docker push --all-tags registry.digitalocean.com/aspiesolutions/next-frontend
       - name: Run custom app updater script
-        run: cargo run --release --bin doctl-helper -- app update $DOCTL_APP_ID spec.services.next-frontend.image.tag dev-${{github.sha}}
+        run: cargo run --release --bin do-helper -- app update $DOCTL_APP_ID spec.services.next-frontend.image.tag dev-${{github.sha}}
