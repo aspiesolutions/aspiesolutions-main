@@ -67,7 +67,7 @@ jobs:
       - name: Tag Docker image
         run: |
           docker tag rust-graphql-api:dev registry.digitalocean.com/aspiesolutions/rust-graphql-api:dev
-          docker tag rust-graphql-api:dev registry.digitalocean.com/aspiesolutions/rust-graphql-api:${{github.sha}}
+          docker tag rust-graphql-api:dev registry.digitalocean.com/aspiesolutions/rust-graphql-api:dev-${{github.sha}}
       - name: Log into registry
         run: doctl registry login --expiry-seconds 600
       - name: Push Docker Image
@@ -118,4 +118,4 @@ jobs:
       - name: Push Docker Image
         run: docker push --all-tags registry.digitalocean.com/aspiesolutions/next-frontend
       - name: Run custom app updater script
-        run: cargo run --bin doctl-helper -- app update $DOCTL_APP_ID spec.services.next-frontend.image.tag dev-${{github.sha}}
+        run: cargo run --release --bin doctl-helper -- app update $DOCTL_APP_ID spec.services.next-frontend.image.tag dev-${{github.sha}}
