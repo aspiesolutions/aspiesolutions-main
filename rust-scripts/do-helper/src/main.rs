@@ -1,7 +1,11 @@
 use clap::Parser;
 use serde::{Deserialize, Serialize};
 use serde_yaml::Value;
-use std::{collections::HashMap, process::Command, io::{Write, Read}};
+use std::{
+    collections::HashMap,
+    io::{Read, Write},
+    process::Command,
+};
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Github {
@@ -127,7 +131,7 @@ pub enum Operation {
     Update,
 }
 #[derive(clap::ValueEnum, Clone, Debug)]
-pub enum Context {
+pub enum Command {
     App,
 }
 
@@ -135,7 +139,7 @@ pub enum Context {
 #[clap(author, version, about, long_about = None)]
 pub struct Args {
     #[clap(value_enum)]
-    pub context: Context,
+    pub command: Command,
     #[clap(value_enum)]
     pub operation: Operation,
     #[clap(value_parser)]
@@ -172,15 +176,16 @@ impl std::fmt::Display for DoctlError {
 
 pub fn main() -> std::io::Result<()> {
     let args = Args::parse();
-    match (args.context, args.operation) {
-        (Context::App, Operation::Update) => {
-            // get a list of apps connected to this account
-            println!("Getting a list of apps...");
-            let apps_cmd = Command::new("doctl")
-                .arg("apps")
-                .arg("list")
-                .args(&["--output", "json"])
-                .output()?;
+    println!("Getting a list of apps...");
+    // get a list of apps connected to this account
+    let apps_cmd = Command::new("doctl")
+        .arg("apps")
+        .arg("list")
+        .args(&["--output", "json"])
+        .output()?;
+    match (args.command, args.operation) {
+        (Command::App, Operation::Update) => {
+
             // the command pipes this output to stdout. create a string slice
             let apps_cmd_stdout_str =
                 std::str::from_utf8(&apps_cmd.stdout).expect("Could not parse output as utf-8");
@@ -195,24 +200,59 @@ pub fn main() -> std::io::Result<()> {
             }
             // run serde_json and serialize the json into a struct
             println!("Serializing the result...");
-            let cmd_result_serialized: Vec<App> = serde_json::from_str(apps_cmd_stdout_str).unwrap();
+            let cmd_result_serialized: Vec<App> =
+                serde_json::from_str(apps_cmd_stdout_str).unwrap();
             // find the app with the given app id
-            let mut app = cmd_result_serialized.into_iter().find(|app| app.id == args.app_id).expect(&format!("No app with the app id {} was found", args.app_id)).to_owned();
+            let mut app = cmd_result_serialized
+                .into_iter()
+                .find(|app| app.id == args.app_id)
+                .expect(&format!("No app with the app id {} was found", args.app_id))
+                .to_owned();
             let path: Vec<&str> = args.path.split(".").collect();
             // enumerate the path to a given length, then match string slices and perform the update if supported
-            match (path.get(0),path.get(1),path.get(2),path.get(3),path.get(4)) {
-                (Some(&"spec"),Some(&"services"),Some(service_name),Some(&"image"),Some(&"tag")) => {
+            match (
+                path.get(0),
+                path.get(1),
+                path.get(2),
+                path.get(3),
+                path.get(4),
+            ) {
+                (
+                    Some(&"spec"),
+                    Some(&"services"),
+                    Some(service_name),
+                    Some(&"image"),
+                    Some(&"tag"),
+                ) => {
                     // find the service index for the service name
-                    println!("Trying to update app.spec.services.{}.image.tag for app \"{}\"",*service_name,args.app_id);
-                    let service_index = app.spec.services.iter().position(|service| service.name.as_str() == *service_name);
+                    println!(
+                        "Trying to update app.spec.services.{}.image.tag for app \"{}\"",
+                        *service_name, args.app_id
+                    );
+                    let service_index = app
+                        .spec
+                        .services
+                        .iter()
+                        .position(|service| service.name.as_str() == *service_name);
                     if service_index.is_none() {
-                        return Err(std::io::Error::new(std::io::ErrorKind::InvalidData, format!("No service with the name '{}' was found",service_name)))
+                        return Err(std::io::Error::new(
+                            std::io::ErrorKind::InvalidData,
+                            format!("No service with the name '{}' was found", service_name),
+                        ));
                     }
                     // get the service via the service index
-                    let mut service = app.spec.services.get(service_index.unwrap()).unwrap().to_owned();
+                    let mut service = app
+                        .spec
+                        .services
+                        .get(service_index.unwrap())
+                        .unwrap()
+                        .to_owned();
                     if service.image.is_none() {
                         // there isnt any support for writing this value yet as more data is needed
-                        panic!("path 'app.spec.services.{}.image' was not present. Refusing to update",service_name)
+                        panic!(
+                            "path 'app.spec.services.{}.image' was not present. Refusing to update",
+                            service_name
+                        )
                     }
                     // perform the update
                     let mut image = service.image.to_owned().unwrap();
@@ -221,23 +261,36 @@ pub fn main() -> std::io::Result<()> {
 
                     app.spec.services[service_index.unwrap()] = service;
                     // convert app.spec into a yaml string
-                    let app_spec_str = serde_yaml::to_string(&app.spec).expect("Failed to deserialize app.spec");
+                    let app_spec_str =
+                        serde_yaml::to_string(&app.spec).expect("Failed to deserialize app.spec");
                     // create and spawn the validation command, piping the app_spec_str to stdin
-                    let doctl_update_process = Command::new("doctl").arg("apps").arg("update").arg(app.id).arg("--wait").args(&["--spec","-"]).stdin(std::process::Stdio::piped()).stdout(std::process::Stdio::piped()).spawn().unwrap();
+                    let doctl_update_process = Command::new("doctl")
+                        .arg("apps")
+                        .arg("update")
+                        .arg(app.id)
+                        .arg("--wait")
+                        .args(&["--spec", "-"])
+                        .stdin(std::process::Stdio::piped())
+                        .stdout(std::process::Stdio::piped())
+                        .spawn()
+                        .unwrap();
 
                     // pipe the data to std_out
-                    doctl_update_process.stdin.unwrap().write_all(app_spec_str.as_bytes())?;
+                    doctl_update_process
+                        .stdin
+                        .unwrap()
+                        .write_all(app_spec_str.as_bytes())?;
                     let mut output: String = String::new();
-                    doctl_update_process.stdout.unwrap().read_to_string(&mut output)?;
-                    println!("{:#?}",output);
-
+                    doctl_update_process
+                        .stdout
+                        .unwrap()
+                        .read_to_string(&mut output)?;
+                    println!("{:#?}", output);
                 },
-                _=> panic!("Updating the path \"{}\" is not supported", args.path)
+                _ => panic!("Updating the path \"{}\" is not supported", args.path),
             }
-
-
         }
-       rest @ _  => panic!("Unsupported Arguments {:#?}", rest),
+        rest @ _ => panic!("Unsupported Arguments {:#?}", rest),
     }
 
     Ok(())

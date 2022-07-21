@@ -1,7 +1,7 @@
 use lib_graphql::{Schema, Context};
 use rocket::State;
 
-pub const GRAPHQL_PUBLIC_SEGMENT:&'static str ="/graphql";
+pub const GRAPHQL_PUBLIC_SEGMENT:&'static str ="/api/graphql";
 // we have to mount these paths as '/' and have the runners of this program choose whether to mount thim as '/' or as '/graphql'
 // for instances where we have external routing defined
 #[rocket::post("/",format="json",data="<body>")]

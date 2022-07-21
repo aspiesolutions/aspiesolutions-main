@@ -13,16 +13,7 @@ fn rocket() -> _ {
     );
     rocket::build()
     .attach(lib::Db::init()).manage(schema).mount(
-        // check for the existance of an environment variable. if found, mount this route at that path
-        // used for when external routing is also used
-        match std::env::var("GRAPHQL_HANLDER_PUBLIC_SEGMENT") {
-            Ok(s)=>{
-                s
-            }
-            _=>{
-                routes::GRAPHQL_PUBLIC_SEGMENT.to_string()
-            }
-        },
+        GRAPHQL_PUBLIC_SEGMENT,
         rocket::routes![
             handle_graphql_post_request,
             handle_graphql_get_request,
