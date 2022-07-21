@@ -11,6 +11,7 @@ jobs:
       PKG_CONFIG_ALLOW_CROSS: true
       OPENSSL_STATIC: true
       OPENSSL_DIR: /home/runner/musl/openssl
+      DOCTL_APP_ID: 64386bea-94ba-482c-81dc-7bfb67ae3547
     steps:
       - uses: actions/checkout@v3
       - uses: actions-rs/toolchain@v1
@@ -73,6 +74,8 @@ jobs:
         run: |
           docker push registry.digitalocean.com/aspiesolutions/rust-graphql-api:dev-${{github.sha}}
           docker push registry.digitalocean.com/aspiesolutions/rust-graphql-api:dev
+      - name: Run custom app updater script
+        run: cargo run --release --bin do-helper -- app update $DOCTL_APP_ID spec.services.rust-graphql-api.image.tag dev-${{github.sha}}
   build-next-frontend:
     runs-on: ubuntu-latest
     environment: development
@@ -114,3 +117,5 @@ jobs:
         run: doctl registry login --expiry-seconds 300
       - name: Push Docker Image
         run: docker push --all-tags registry.digitalocean.com/aspiesolutions/next-frontend
+      - name: Run custom app updater script
+        run: cargo run --bin doctl-helper -- app update $DOCTL_APP_ID spec.services.next-frontend.image.tag dev-${{github.sha}}
