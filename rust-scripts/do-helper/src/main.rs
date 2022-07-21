@@ -4,7 +4,6 @@ use serde_yaml::Value;
 use std::{
     collections::HashMap,
     io::{Read, Write},
-    process::Command,
 };
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
@@ -178,7 +177,7 @@ pub fn main() -> std::io::Result<()> {
     let args = Args::parse();
     println!("Getting a list of apps...");
     // get a list of apps connected to this account
-    let apps_cmd = Command::new("doctl")
+    let apps_cmd = std::process::Command::new("doctl")
         .arg("apps")
         .arg("list")
         .args(&["--output", "json"])
