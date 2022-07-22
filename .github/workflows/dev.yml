@@ -119,12 +119,12 @@ jobs:
       - name: Push Docker Image
         run: docker push --all-tags registry.digitalocean.com/aspiesolutions/next-frontend
   update-app:
-  runs-on: ubuntu-latest
-  needs: [build-next-frontend,build-api]
-  environment: development
-  env:
-    DOCTL_APP_ID: 64386bea-94ba-482c-81dc-7bfb67ae3547
-  steps:
-    - name: Update App spec
-      run: doctl apps get $DOCTL_APP_ID --output json | jq '.[0].spec.services[].image.tag = "dev-${{github.sha}}"' | jq '.[0].spec' | doctl apps update $DOCTL_APP_ID --spec -
+    runs-on: ubuntu-latest
+    needs: [build-next-frontend,build-api]
+    environment: development
+    env:
+      DOCTL_APP_ID: 64386bea-94ba-482c-81dc-7bfb67ae3547
+    steps:
+      - name: Update App spec
+        run: doctl apps get $DOCTL_APP_ID --output json | jq '.[0].spec.services[].image.tag = "dev-${{github.sha}}"' | jq '.[0].spec' | doctl apps update $DOCTL_APP_ID --spec -
 
