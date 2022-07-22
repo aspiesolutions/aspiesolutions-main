@@ -74,8 +74,7 @@ jobs:
         run: |
           docker push registry.digitalocean.com/aspiesolutions/rust-graphql-api:dev-${{github.sha}}
           docker push registry.digitalocean.com/aspiesolutions/rust-graphql-api:dev
-      - name: Update App spec
-        run: doctl apps get $DOCTL_APP_ID --output json | jq '.[0].spec.services[].image.tag = "dev-${{github.sha}}"' | jq '.[0].spec' | doctl apps update $DOCTL_APP_ID --spec -
+
   build-next-frontend:
     runs-on: ubuntu-latest
     environment: development
@@ -119,5 +118,13 @@ jobs:
         run: doctl registry login --expiry-seconds 300
       - name: Push Docker Image
         run: docker push --all-tags registry.digitalocean.com/aspiesolutions/next-frontend
-      - name: Update App spec
-        run: doctl apps get $DOCTL_APP_ID --output json | jq '.[0].spec.services[].image.tag = "dev-${{github.sha}}"' | jq '.[0].spec' | doctl apps update $DOCTL_APP_ID --spec -
+  update-app:
+  runs-on: ubuntu-latest
+  needs: [build-next-frontend,build-api]
+  environment: development
+  env:
+    DOCTL_APP_ID: 64386bea-94ba-482c-81dc-7bfb67ae3547
+  steps:
+    - name: Update App spec
+      run: doctl apps get $DOCTL_APP_ID --output json | jq '.[0].spec.services[].image.tag = "dev-${{github.sha}}"' | jq '.[0].spec' | doctl apps update $DOCTL_APP_ID --spec -
+
