@@ -11,6 +11,7 @@ path="./bin/output-schema.rs"
 [dependencies]
 serde_json="1.0"
 lazy_static = "1.4.0"
+sea-orm="0.8"
 [dependencies.serde]
 version="1.0"
 features=["derive"]

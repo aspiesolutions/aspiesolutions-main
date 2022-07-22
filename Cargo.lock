@@ -1221,6 +1221,7 @@ version = "0.0.2"
 dependencies = [
  "juniper",
  "lazy_static",
+ "sea-orm",
  "serde",
  "serde_json",
 ]
@@ -1968,6 +1969,7 @@ dependencies = [
  "async-trait",
  "juniper_rocket",
  "lib-graphql",
+ "migration",
  "rocket",
  "rocket_db_pools",
  "rust-lib-db-sea-orm",

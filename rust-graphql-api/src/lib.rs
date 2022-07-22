@@ -1,7 +1,5 @@
 
 use async_trait::async_trait;
-use rocket::data;
-use rocket::figment::providers::{Env, Toml, Format};
 use rocket_db_pools::Database;
 use rocket_db_pools::{rocket::figment::Figment, Config};
 

@@ -14,8 +14,12 @@ pub mod access_code;
 
 use node::{NodeValue};
 // this module contains our graphql api
-pub struct Context;
-impl juniper::Context for Context {}
+pub struct Context {
+    pub conn: sea_orm::DatabaseConnection
+}
+
+impl juniper::Context for Context {
+}
 pub struct Query;
 #[graphql_object(context=Context)]
 impl Query {
