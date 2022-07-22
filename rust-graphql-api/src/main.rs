@@ -1,4 +1,4 @@
-use rocket::{launch, State};
+use rocket::{launch};
 pub mod routes;
 use rocket_db_pools::Database;
 pub use routes::*;

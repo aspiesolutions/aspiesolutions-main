@@ -1,5 +1,4 @@
 use entity::user;
-use entity::user::Model;
 use sea_orm_migration::prelude::*;
 pub struct Migration;
 

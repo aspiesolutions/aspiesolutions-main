@@ -1,6 +1,6 @@
 use entity::account;
 use entity::user;
-use sea_orm_migration::{prelude::*, sea_orm::tests_cfg::cake_expanded::Column};
+use sea_orm_migration::prelude::*;
 pub struct Migration;
 
 impl MigrationName for Migration {
