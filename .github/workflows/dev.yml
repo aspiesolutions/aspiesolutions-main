@@ -28,8 +28,7 @@ jobs:
             ~/.cargo/git/db/
             target/
           key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
-      - name: Install Rust CLI Tools
-        run: cargo install sea-orm-cli
+
       - name: Install doctl
         uses: digitalocean/action-doctl@v2
         with:
@@ -55,7 +54,8 @@ jobs:
           make depend
           make -j$(nproc)
           make install_sw install_ssldirs
-
+      - name: Install Sea Orm Cli
+        run: cargo install sea-orm-cli
       - name: Test Rust Workspace
         run: cargo test --workspace --target x86_64-unknown-linux-musl
       - name: Build Api for Development release with debug output

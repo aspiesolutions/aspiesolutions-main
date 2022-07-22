@@ -8,4 +8,4 @@ path="src/mod.rs"
 
 
 [dependencies]
-sea-orm="0.8"
+sea-orm="0.9"
