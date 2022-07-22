@@ -53,8 +53,7 @@ jobs:
           make depend
           make -j$(nproc)
           make install_sw install_ssldirs
-      - name: Install Sea Orm Cli
-        run: cargo install sea-orm-cli
+
       - name: Test Rust Workspace
         run: cargo test --workspace --target x86_64-unknown-linux-musl
       - name: Build Api for Development release with debug output
@@ -119,15 +118,34 @@ jobs:
         run: doctl registry login --expiry-seconds 300
       - name: Push Docker Image
         run: docker push --all-tags registry.digitalocean.com/aspiesolutions/next-frontend
-  update-app:
+  deploy:
     runs-on: ubuntu-latest
     needs: [build-next-frontend,build-api]
     environment: development
+    env:
+      DATABASE_URL: ${{secrets.database_url}}
     steps:
       - name: Install doctl
         uses: digitalocean/action-doctl@v2
         with:
           token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+      - uses: actions/cache@v3
+        id: rust
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+          key: ${{ runner.os }}-cargo-deploy-${{ hashFiles('**/Cargo.lock') }}
+      - name: Install Sea Orm Cli
+        run: cargo install sea-orm-cli
+      - name: Run Migrations
+        run: sea-orm-cli migrate up
       - name: Update App spec
         run: doctl apps get ${{secrets.DOCTL_APP_ID}} --output json | jq '.[0].spec.services[].image.tag = "dev-${{github.sha}}"' | jq '.[0].spec' | doctl apps update ${{secrets.DOCTL_APP_ID}} --spec -
 

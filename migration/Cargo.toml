@@ -15,5 +15,5 @@ version= "1.19"
 features=["rt-multi-thread","macros"]
 
 [dependencies.sea-orm-migration]
-version = "^0.8.0"
+version = "^0.9.0"
 features=["sqlx-postgres","runtime-tokio-native-tls"]
