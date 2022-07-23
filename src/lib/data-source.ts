@@ -51,7 +51,7 @@ export const AppDataSource = new DataSource({
     username: PG_USERNAME,
     password: PG_PASSWORD,
     database: PG_DATABASE,
-    ssl: {ca:CA_CERTIFICATE},
+    ssl: {ca:CA_CERTIFICATE,rejectUnauthorized:process.env.NODE_ENV==="production"},
     synchronize: false,
     logging: false,
     entities: [User,Account, VerificationToken,Session,AccessCode, Address],

@@ -27,6 +27,7 @@
       "body-parser": "^1.20.0",
       "bun-framework-next": "^12.1.5",
       "class-validator": "^0.13.2",
+      "gqlmin": "^0.1.1",
       "graphql": "^15.3.0",
       "graphql-fields": "^2.0.3",
       "graphql-tools": "^8.2.12",

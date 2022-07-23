@@ -23,10 +23,10 @@ const nextConfig = {
         }
       }
     }
-    if(!isServer) {
-      config.plugins.push(new webpack.IgnorePlugin({resourceRegExp:/src\/lib\/server/}))
-      // config.plugins.push(new webpack.IgnorePlugin({resourceRegExp:/\.node$/}))
-    }
+    // if(!isServer) {
+    //   config.plugins.push(new webpack.IgnorePlugin({resourceRegExp:/src\/lib\/server/}))
+    //   // config.plugins.push(new webpack.IgnorePlugin({resourceRegExp:/\.node$/}))
+    // }
 
     return _.merge(defaultConfig,config)
   }

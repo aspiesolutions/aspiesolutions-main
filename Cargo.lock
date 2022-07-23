@@ -2086,7 +2086,6 @@ dependencies = [
  "async-trait",
  "juniper_rocket",
  "lib-graphql",
- "migration",
  "rocket",
  "rocket_db_pools",
  "rust-lib-db-sea-orm",

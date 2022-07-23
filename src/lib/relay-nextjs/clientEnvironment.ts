@@ -3,9 +3,12 @@ import { getRelaySerializedState } from 'relay-nextjs';
 import { withHydrateDatetime } from 'relay-nextjs/date';
 import { Environment, Network, Store, RecordSource } from 'relay-runtime';
 
+const API_URL = process.env.NODE_ENV === "production"? "/api/graphql" : "http://localhost:65535/api/graphql"
+
+
 export function createClientNetwork() {
   return Network.create(async (params, variables) => {
-    const response = await fetch('/api/graphql', {
+    const response = await fetch(API_URL, {
       method: 'POST',
       credentials: 'include',
       headers: {

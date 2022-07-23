@@ -15,7 +15,9 @@ const AccessCodeQuery = graphql`
 
 function AccessCode({ preloadedQuery }: RelayProps<{}, relay_AccessCodeQuery>) {
   const query = usePreloadedQuery(AccessCodeQuery, preloadedQuery);
-
+  if (!query.accessCode) {
+    return <>No access code returned</>
+  }
   return (
     <>Hello {query.accessCode.id}</>
   );
@@ -55,6 +57,6 @@ export default withRelay(AccessCode, AccessCodeQuery, {
     // you can remove this argument.
     // { token }: { token: string }
   ) => {
-    return createServerEnvironment();
+    return createServerEnvironment("A random nonsense token");
   },
 });
