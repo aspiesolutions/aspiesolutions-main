@@ -3,7 +3,9 @@ import { withRelay, RelayProps } from 'relay-nextjs';
 import { graphql, usePreloadedQuery } from 'react-relay/hooks';
 import { getClientEnvironment } from '../../src/lib/relay-nextjs/clientEnvironment';
 import { relay_AccessCodeQuery } from '../../src/queries/__generated__/relay_AccessCodeQuery.graphql';
-import { createServerEnvironment } from '../../src/lib/server/relay-nextjs/serverEnvironment';
+// import { createServerEnvironment } from '../../src/lib/server/relay-nextjs/serverEnvironment';
+import { NextApiRequest } from 'next';
+
 // The $uuid variable is injected automatically from the route.
 const AccessCodeQuery = graphql`
   query relay_AccessCodeQuery {
@@ -46,8 +48,15 @@ export default withRelay(AccessCode, AccessCodeQuery, {
     //     redirect: { destination: '/login', permanent: false },
     //   };
     // }
+    if(typeof window === 'object') {
+      return {token:""}
+    }
+    let  { unstable_getServerSession } = await import('next-auth');
+    let {authOptions} = await import("../../src/lib/nextAuth/index")
+    let token = await unstable_getServerSession(ctx.req as NextApiRequest,ctx.res,authOptions)
+    console.log("withRelay serverSideProps token",token);
 
-    return {};
+    return {token};
   },
   // Server-side props can be accessed as the second argument
   // to this function.
@@ -55,8 +64,8 @@ export default withRelay(AccessCode, AccessCodeQuery, {
     ctx,
     // The object returned from serverSideProps. If you don't need a token
     // you can remove this argument.
-    // { token }: { token: string }
+    { token }: { token: string }
   ) => {
-    return createServerEnvironment("A random nonsense token");
+    return (await import("../../src/lib/server/relay-nextjs/serverEnvironment")).createServerEnvironment(token);
   },
 });
