@@ -17,10 +17,17 @@ export function createServerNetwork(token:string) {
     console.log(params);
     console.log(variables);
     console.log("token",token);
-    let response = await axios.post(DEFAULT_URL,{query:params.text, variables},{headers:{"content-type":'application/json; charset=utf-8','authorization':`Bearer ${token}`}})
+    let data = {} as any;
+    try {
+      let response = await axios.post(DEFAULT_URL,{query:params.text, variables},{headers:{"content-type":'application/json; charset=utf-8','authorization':`Bearer ${token}`}})
+      data = response?.data;
 
-
-    return response.data;
+    }
+    catch (e) {
+      console.error(e)
+      data.errors=[e.toString()];
+    }
+    return data
   });
 }
 

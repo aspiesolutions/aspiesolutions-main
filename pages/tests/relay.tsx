@@ -1,16 +1,16 @@
 // src/pages/user/[uuid].tsx
-import { withRelay, RelayProps } from 'relay-nextjs';
-import { graphql, usePreloadedQuery } from 'react-relay/hooks';
-import { getClientEnvironment } from '../../src/lib/relay-nextjs/clientEnvironment';
-import { relay_AccessCodeQuery } from '../../src/queries/__generated__/relay_AccessCodeQuery.graphql';
+import { withRelay, RelayProps } from "relay-nextjs";
+import { graphql, usePreloadedQuery } from "react-relay/hooks";
+import { getClientEnvironment } from "../../src/lib/relay-nextjs/clientEnvironment";
+import { relay_AccessCodeQuery } from "../../src/queries/__generated__/relay_AccessCodeQuery.graphql";
 // import { createServerEnvironment } from '../../src/lib/server/relay-nextjs/serverEnvironment';
-import { NextApiRequest } from 'next';
-import { getSession } from 'next-auth/react';
+import { NextApiRequest } from "next";
+import { getSession } from "next-auth/react";
 
 // The $uuid variable is injected automatically from the route.
 const AccessCodeQuery = graphql`
   query relay_AccessCodeQuery {
-    accessCode(id:"abcdefg") {
+    accessCode(id: "abcdefg") {
       id
     }
   }
@@ -19,11 +19,9 @@ const AccessCodeQuery = graphql`
 function AccessCode({ preloadedQuery }: RelayProps<{}, relay_AccessCodeQuery>) {
   const query = usePreloadedQuery(AccessCodeQuery, preloadedQuery);
   if (!query.accessCode) {
-    return <>No access code returned</>
+    return <>No access code returned</>;
   }
-  return (
-    <>Hello {query.accessCode.id}</>
-  );
+  return <>Hello {query.accessCode.id}</>;
 }
 
 function Loading() {
@@ -37,7 +35,8 @@ export default withRelay(AccessCode, AccessCodeQuery, {
   // Create a Relay environment on the client-side.
   // Note: This function must always return the same value.
   createClientEnvironment: () => {
-    return getClientEnvironment()!},
+    return getClientEnvironment()!;
+  },
   // Gets server side props for the page.
   serverSideProps: async (ctx) => {
     // This is an example of getting an auth token from the request context.
@@ -51,20 +50,21 @@ export default withRelay(AccessCode, AccessCodeQuery, {
     //   };
     // }
     let req = ctx.req as NextApiRequest;
-      console.log(req.cookies['next-auth.session-token.0'])
-    let  { unstable_getServerSession } = await import('next-auth');
-    let {authOptions} = await import("../../src/lib/nextAuth/index")
+    let { getAccessToken } = await import("@auth0/nextjs-auth0");
 
-    let token = "";
-    let index = 0;
-    let cookie =req.cookies[`next-auth.session-token.${index}`];
-    while (cookie != null) {
-      token = token.concat(cookie)
-      cookie = req.cookies[`next-auth.session-token.${index}`];
-      index++;
-    }
-    console.log("assembled token",)
-    return {token};
+    // let {authOptions} = await import("../../src/lib/nextAuth/index")
+    let getTokenResult = await getAccessToken(ctx.req,ctx.res,{scopes:[]});
+
+    // let token = "";
+    // let index = 0;
+    // let cookie =req.cookies[`next-auth.session-token.${index}`];
+    // while (cookie != null) {
+    //   token = token.concat(cookie)
+    //   cookie = req.cookies[`next-auth.session-token.${index}`];
+    //   index++;
+    // }
+    console.log("assembled token");
+    return { token:getTokenResult.accessToken };
   },
   // Server-side props can be accessed as the second argument
   // to this function.
@@ -74,6 +74,8 @@ export default withRelay(AccessCode, AccessCodeQuery, {
     // you can remove this argument.
     { token }: { token: string }
   ) => {
-    return (await import("../../src/lib/server/relay-nextjs/serverEnvironment")).createServerEnvironment(token);
+    return (
+      await import("../../src/lib/server/relay-nextjs/serverEnvironment")
+    ).createServerEnvironment(token);
   },
 });
