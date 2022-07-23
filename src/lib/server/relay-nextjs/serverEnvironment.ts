@@ -16,7 +16,8 @@ export function createServerNetwork(token:string) {
     console.log("Relay network.create!");
     console.log(params);
     console.log(variables);
-    let response = await axios.post(DEFAULT_URL,{query:params.text, variables},{headers:{"content-type":'application/json; charset=utf-8'}})
+    console.log("token",token);
+    let response = await axios.post(DEFAULT_URL,{query:params.text, variables},{headers:{"content-type":'application/json; charset=utf-8','authorization':`Bearer ${token}`}})
 
 
     return response.data;

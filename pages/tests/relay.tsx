@@ -59,7 +59,7 @@ export default withRelay(AccessCode, AccessCodeQuery, {
     let index = 0;
     let cookie =req.cookies[`next-auth.session-token.${index}`];
     while (cookie != null) {
-      token.concat(cookie)
+      token = token.concat(cookie)
       cookie = req.cookies[`next-auth.session-token.${index}`];
       index++;
     }

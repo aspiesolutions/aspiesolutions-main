@@ -13,6 +13,7 @@ rust-lib-db-sea-orm={path="../rust-lib-db-sea-orm"}
 rocket_db_pools = "0.1.0-rc.2"
 sea-orm="0.9"
 async-trait = "0.1"
+serde = "1.0.140"
 # migration={path="../migration"}
 [dependencies.juniper_rocket]
 version="0.8"

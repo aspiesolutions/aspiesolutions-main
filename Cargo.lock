@@ -2090,6 +2090,7 @@ dependencies = [
  "rocket_db_pools",
  "rust-lib-db-sea-orm",
  "sea-orm 0.9.1",
+ "serde",
 ]
 
 [[package]]
