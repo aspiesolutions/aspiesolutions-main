@@ -5,6 +5,7 @@ import { getClientEnvironment } from '../../src/lib/relay-nextjs/clientEnvironme
 import { relay_AccessCodeQuery } from '../../src/queries/__generated__/relay_AccessCodeQuery.graphql';
 // import { createServerEnvironment } from '../../src/lib/server/relay-nextjs/serverEnvironment';
 import { NextApiRequest } from 'next';
+import { getSession } from 'next-auth/react';
 
 // The $uuid variable is injected automatically from the route.
 const AccessCodeQuery = graphql`
@@ -35,7 +36,8 @@ export default withRelay(AccessCode, AccessCodeQuery, {
   fallback: <Loading />,
   // Create a Relay environment on the client-side.
   // Note: This function must always return the same value.
-  createClientEnvironment: () => getClientEnvironment()!,
+  createClientEnvironment: () => {
+    return getClientEnvironment()!},
   // Gets server side props for the page.
   serverSideProps: async (ctx) => {
     // This is an example of getting an auth token from the request context.
