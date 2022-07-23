@@ -48,14 +48,20 @@ export default withRelay(AccessCode, AccessCodeQuery, {
     //     redirect: { destination: '/login', permanent: false },
     //   };
     // }
-    if(typeof window === 'object') {
-      return {token:""}
-    }
+    let req = ctx.req as NextApiRequest;
+      console.log(req.cookies['next-auth.session-token.0'])
     let  { unstable_getServerSession } = await import('next-auth');
     let {authOptions} = await import("../../src/lib/nextAuth/index")
-    let token = await unstable_getServerSession(ctx.req as NextApiRequest,ctx.res,authOptions)
-    console.log("withRelay serverSideProps token",token);
 
+    let token = "";
+    let index = 0;
+    let cookie =req.cookies[`next-auth.session-token.${index}`];
+    while (cookie != null) {
+      token.concat(cookie)
+      cookie = req.cookies[`next-auth.session-token.${index}`];
+      index++;
+    }
+    console.log("assembled token",)
     return {token};
   },
   // Server-side props can be accessed as the second argument

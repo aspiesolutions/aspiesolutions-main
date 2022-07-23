@@ -33,14 +33,14 @@ export const authOptions ={
         return session
 
       },
-      async jwt(token,user) {
-        console.log("token callback",token,user)
-        if (user) {
-          token = { accessToken: user.accessToken }
-      }
-  
-      return token
-      }
+      // async jwt(token,user) {
+      //   console.log("token callback",token,user)
+      //   if (user) {
+      //     token = { accessToken: user.accessToken }
+      // }
+
+      // return token
+      // }
     },
     providers: [
       Auth0Provider({
