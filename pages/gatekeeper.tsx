@@ -12,8 +12,8 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import styles from "../styles/Home.module.css";
 import { gql, useMutation, useQuery } from "urql";
 import { useRouter } from "next/router";
-import { NextAuthOptions, unstable_getServerSession } from "next-auth";
-import { getSession, signIn } from "next-auth/react";
+// import { NextAuthOptions, unstable_getServerSession } from "next-auth";
+// import { getSession, signIn } from "next-auth/react";
 import {
   REQUIRED_SCOPE_MISSING,
   UnauthorizedDatabaseTransaction,
@@ -196,7 +196,8 @@ export default function Home(props) {
           <span
             onClick={(e) => {
               e.preventDefault();
-              signIn(NEXTAUTH_DEFAULT_PROVIDER);
+              // signIn(NEXTAUTH_DEFAULT_PROVIDER);
+              throw new Error("UNIMPLMENTED")
             }}
           >
             Please click here to attempt to log in
@@ -234,6 +235,8 @@ export default function Home(props) {
 }
 
 export async function getServerSideProps(context) {
+  // just trying to get the server to compile for now, this service is unavailable
+  throw new Error("UNIMPLMENTED")
   // early initialize data structures
   let initialProps: ServerSideProps = {
     error: null,
