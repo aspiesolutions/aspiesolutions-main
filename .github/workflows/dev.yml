@@ -146,10 +146,12 @@ jobs:
             ~/.cargo/git/db/
             target/
           key: ${{ runner.os }}-cargo-deploy-${{ hashFiles('**/Cargo.lock') }}
-      - name: Install Sea Orm Cli
-        run: cargo install sea-orm-cli;
+
       - name: Run Migrations
-        run: ~/.cargo/bin/sea-orm-cli migrate up
+        # a custom binary that just runs the migration scripts
+        # this is used instead of the cli as its easier to use "cargo run" instead of "cargo install"
+        # because "cargo install" exits nonzero when the tool is already installed
+        run: cargo run --bin migrate --release
       - name: Update App spec
         run: doctl apps get ${{secrets.DOCTL_APP_ID}} --output json | jq '.[0].spec.services[].image.tag = "dev-${{github.sha}}"' | jq '.[0].spec' | doctl apps update ${{secrets.DOCTL_APP_ID}} --spec -
 
