@@ -7,7 +7,7 @@ edition="2021"
 
 
 [dependencies]
-rocket = {version="0.5.0-rc.2",features=["json"]}
+rocket = {version="0.5.0-rc.2",features=["json"],default-features=false}
 lib-graphql={path="../lib-graphql"}
 rust-lib-db-sea-orm={path="../rust-lib-db-sea-orm"}
 rocket_db_pools = "0.1.0-rc.2"
