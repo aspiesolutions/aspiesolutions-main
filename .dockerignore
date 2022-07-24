@@ -3,7 +3,8 @@ target/
 # # explicitly allow binaryies to be copied
 !./target/x86_64-unknown-linux-musl/debug/rust-graphql-api
 !./target/x86_64-unknown-linux-musl/debug/rust-graphql-api
-
+!./target/debug/rust-graphql-api
+!./target/debug/rust-graphql-api
 .next
 .vscode
 .vercel
