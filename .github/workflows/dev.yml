@@ -149,7 +149,7 @@ jobs:
       - name: Install Sea Orm Cli
         run: if ! hash ~/.cargo/bin/sea-orm-cli 2>/dev/null; then cargo install sea-orm-cli; fi;
       - name: Run Migrations
-        run: sea-orm-cli migrate up
+        run: ~/.cargo/bin/sea-orm-cli migrate up
       - name: Update App spec
         run: doctl apps get ${{secrets.DOCTL_APP_ID}} --output json | jq '.[0].spec.services[].image.tag = "dev-${{github.sha}}"' | jq '.[0].spec' | doctl apps update ${{secrets.DOCTL_APP_ID}} --spec -
 
