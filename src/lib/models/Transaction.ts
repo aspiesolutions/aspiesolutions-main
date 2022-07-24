@@ -9,7 +9,9 @@
 // How was the transaction paid?
 
 // this model is to implement only functionallity required on the JS side
-export class Transaction {
+export declare interface Transaction {
+    // identifies this transaction
+    id:string,
     // where did the money come from
     originatorId:string
     // who or what was the money sent to
@@ -35,5 +37,13 @@ export class Transaction {
     // what account the money was sent to
     recieverAccount:string
     // used to organize transactions
-    categories: string | null
+    categories: string | null,
+    // when was the transaction created
+    createdDate: Date,
+    // when was the transaction finalized
+    finalizedDate:Date | null,
+    // whether the transaction is pending, returned, or complete
+    status: string
+    // whether the transaction was handled with card,cash or ACH
+    method: string
 }
