@@ -1,4 +1,5 @@
 use alcoholic_jwt::Validation;
+use anyhow::Context;
 use async_trait::async_trait;
 use rocket::http::Status;
 use rocket::serde::Deserialize;
@@ -22,38 +23,26 @@ pub struct Auth0Config {
     pub client_id: String,
     pub client_secret: String,
 }
-#[derive(Deserialize, Debug)]
-pub struct Auth0JWK {
-    alg: String,
-    kty: String,
-    r#use: String,
-    n: String,
-    e: String,
-    kid: String,
-    x5t: String,
-    x5c: Vec<String>,
-}
-#[derive(Deserialize, Debug)]
-pub struct Auth0JWKS {
-    keys: Vec<Auth0JWK>,
-}
-
-impl Auth0JWKS {
-    pub fn get_signing_keys<'a>(&'a self) -> impl Iterator<Item = &'a Auth0JWK> {
-        self.keys.iter().filter(|jwk| jwk.r#use == "sig")
-    }
-    pub fn get_rs256_keys<'a>(&'a self) -> impl Iterator<Item = &'a Auth0JWK> {
-        self.keys.iter().filter(|jwk| jwk.alg == "rs256")
-    }
-}
 pub const AUTH0_ENV_PREFIX: &'static str = "AUTH0";
 impl Auth0Config {
+    fn get_key_with_prefix<'a>(key:&'a str) -> String {
+        format!("{AUTH0_ENV_PREFIX}_{}",key)
+    }
+    fn get_domain_key()->String {
+        Self::get_key_with_prefix("DOMAIN")
+    }
+    fn get_client_id_key() -> String {
+        Self::get_key_with_prefix("CLIENT_ID")
+    }
+    fn get_client_secret_key() -> String {
+        Self::get_key_with_prefix("CLIENT_SECRET")
+    }
     /// Constructs a new instance of this struct using std::env::var(AUTH0_FIELD) and forwards any errors to the caller
-    pub fn new_from_env() -> Result<Self, std::env::VarError> {
+    pub fn new_from_env() -> Result<Self, anyhow::Error> {
         Ok(Self {
-            domain: std::env::var(&format!("{AUTH0_ENV_PREFIX}_DOMAIN"))?,
-            client_id: std::env::var(&format!("{AUTH0_ENV_PREFIX}_CLIENT_ID"))?,
-            client_secret: std::env::var(&format!("{AUTH0_ENV_PREFIX}_CLIENT_SECRET"))?,
+            domain: std::env::var(&Self::get_domain_key()).with_context(|| Self::get_domain_key())?,
+            client_id: std::env::var(&Self::get_client_id_key()).with_context(||Self::get_client_id_key())?,
+            client_secret: std::env::var(&Self::get_client_secret_key()).with_context(||Self::get_client_secret_key())?,
         })
     }
     pub fn get_jwks_url(&self) -> String {
