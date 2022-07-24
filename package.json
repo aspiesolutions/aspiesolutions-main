@@ -1,5 +1,5 @@
 {
-   "name": "aspiesolutions-gatekeeper",
+   "name": "aspiesolutions-main",
    "version": "0.1.0",
    "private": true,
    "scripts": {
@@ -59,6 +59,7 @@
       "@types/relay-runtime": "^13.0.3",
       "babel-plugin-relay": "^14.0.0",
       "babel-plugin-transform-typescript-metadata": "^0.3.2",
+      "cypress": "^10.3.1",
       "eslint": "8.17.0",
       "eslint-config-next": "12.1.6",
       "get-graphql-schema": "^2.1.2",
