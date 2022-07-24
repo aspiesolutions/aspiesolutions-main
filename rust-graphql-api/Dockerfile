@@ -1,6 +1,10 @@
 
 FROM debian:stable AS runtime
 WORKDIR /app
+ENV DEBIAN_FRONTEND=noninteractive
+RUN apt-get update
+RUN apt-get install apt-utils
+RUN  apt-get install ca-certificates -y
 COPY ./target/debug/rust-graphql-api /usr/local/bin
 COPY ./Rocket.toml /app/Rocket.toml
 ENV ROCKET_DATABASES="{default={url=${DATABASE_URL}}}"
