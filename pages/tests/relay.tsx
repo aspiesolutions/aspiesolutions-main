@@ -5,6 +5,7 @@ import { getClientEnvironment } from "../../src/lib/relay-nextjs/clientEnvironme
 import { relay_AccessCodeQuery } from "../../src/queries/__generated__/relay_AccessCodeQuery.graphql";
 // import { createServerEnvironment } from '../../src/lib/server/relay-nextjs/serverEnvironment';
 import { NextApiRequest } from "next";
+import { withApiAuthRequired } from "@auth0/nextjs-auth0";
 
 // The $uuid variable is injected automatically from the route.
 const AccessCodeQuery = graphql`
@@ -73,6 +74,7 @@ export default withRelay(AccessCode, AccessCodeQuery, {
     // you can remove this argument.
     { token }: { token: string }
   ) => {
+    // withApiAuthRequired()
     return (
       await import("../../src/lib/server/relay-nextjs/serverEnvironment")
     ).createServerEnvironment(token);
