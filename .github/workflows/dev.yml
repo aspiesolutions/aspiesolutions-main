@@ -147,7 +147,7 @@ jobs:
             target/
           key: ${{ runner.os }}-cargo-deploy-${{ hashFiles('**/Cargo.lock') }}
       - name: Install Sea Orm Cli
-        run: then cargo install sea-orm-cli;
+        run: cargo install sea-orm-cli;
       - name: Run Migrations
         run: ~/.cargo/bin/sea-orm-cli migrate up
       - name: Update App spec
