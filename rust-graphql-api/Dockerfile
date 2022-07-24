@@ -1,5 +1,5 @@
 
-FROM debian:stable-slim AS runtime
+FROM debian:stable AS runtime
 WORKDIR /app
 COPY ./target/x86_64-unknown-linux-musl/debug/rust-graphql-api /usr/local/bin
 COPY ./Rocket.toml /app/Rocket.toml

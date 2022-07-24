@@ -2170,6 +2170,7 @@ dependencies = [
  "rust-lib-db-sea-orm",
  "sea-orm 0.9.1",
  "serde",
+ "serde_json",
 ]
 
 [[package]]

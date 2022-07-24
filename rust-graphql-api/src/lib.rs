@@ -11,7 +11,7 @@ use rocket_db_pools::{rocket::figment::Figment, Config};
 
 pub const JWKS_DISCOVERY_ENDPOINT: &'static str = ".well-known/jwks.json";
 /// the id of the public signing key. curerntly hardcoded.
-pub const JWKS_KEY_ID:&'static str = "yo4HXbTKFVHwdZ6_MD0CE";
+pub const JWKS_KEY_ID: &'static str = "yo4HXbTKFVHwdZ6_MD0CE";
 #[derive(Debug)]
 pub struct RocketDbPool {
     pub conn: sea_orm::DatabaseConnection,
@@ -25,10 +25,10 @@ pub struct Auth0Config {
 }
 pub const AUTH0_ENV_PREFIX: &'static str = "AUTH0";
 impl Auth0Config {
-    fn get_key_with_prefix<'a>(key:&'a str) -> String {
-        format!("{AUTH0_ENV_PREFIX}_{}",key)
+    fn get_key_with_prefix<'a>(key: &'a str) -> String {
+        format!("{AUTH0_ENV_PREFIX}_{}", key)
     }
-    fn get_domain_key()->String {
+    fn get_domain_key() -> String {
         Self::get_key_with_prefix("DOMAIN")
     }
     fn get_client_id_key() -> String {
@@ -40,9 +40,12 @@ impl Auth0Config {
     /// Constructs a new instance of this struct using std::env::var(AUTH0_FIELD) and forwards any errors to the caller
     pub fn new_from_env() -> Result<Self, anyhow::Error> {
         Ok(Self {
-            domain: std::env::var(&Self::get_domain_key()).with_context(|| Self::get_domain_key())?,
-            client_id: std::env::var(&Self::get_client_id_key()).with_context(||Self::get_client_id_key())?,
-            client_secret: std::env::var(&Self::get_client_secret_key()).with_context(||Self::get_client_secret_key())?,
+            domain: std::env::var(&Self::get_domain_key())
+                .with_context(|| Self::get_domain_key())?,
+            client_id: std::env::var(&Self::get_client_id_key())
+                .with_context(|| Self::get_client_id_key())?,
+            client_secret: std::env::var(&Self::get_client_secret_key())
+                .with_context(|| Self::get_client_secret_key())?,
         })
     }
     pub fn get_jwks_url(&self) -> String {
@@ -50,7 +53,10 @@ impl Auth0Config {
     }
     pub async fn get_jwks(&self) -> Result<alcoholic_jwt::JWKS, anyhow::Error> {
         let url = self.get_jwks_url();
-        Ok(reqwest::get(url).await?.json::<alcoholic_jwt::JWKS>().await?)
+        Ok(reqwest::get(url)
+            .await?
+            .json::<alcoholic_jwt::JWKS>()
+            .await?)
     }
 }
 
@@ -63,6 +69,7 @@ impl rocket_db_pools::Pool for RocketDbPool {
     async fn init(figment: &Figment) -> Result<Self, Self::Error> {
         let config = figment.extract::<Config>().unwrap();
 
+        println!("{}",config.url);
         let conn = sea_orm::Database::connect(&config.url).await.unwrap();
         return Ok(RocketDbPool { conn });
     }
@@ -80,7 +87,9 @@ pub struct Db(RocketDbPool);
 pub struct Auth0BearerToken(String);
 
 #[derive(Deserialize, Debug)]
-pub struct Auth0Jwt {}
+pub struct Auth0Jwt {
+    iss:String
+}
 
 use rocket::request::{self, FromRequest, Request};
 
@@ -111,7 +120,7 @@ impl<'r> FromRequest<'r> for Auth0BearerToken {
         // if this behavior is not correct, Auth0 also implements a 'kid' claim that can be used to get the signing key,
         let jwk_find_option = jwks.find(JWKS_KEY_ID);
         if jwk_find_option.is_none() {
-            return request::Outcome::Failure((Status::InternalServerError,None))
+            return request::Outcome::Failure((Status::InternalServerError, None));
         }
         let jwk = jwk_find_option.unwrap();
 
@@ -135,10 +144,17 @@ impl<'r> FromRequest<'r> for Auth0BearerToken {
         let validations = Vec::<Validation>::new();
 
         let valid_jwt = match alcoholic_jwt::validate(token, jwk, validations) {
-            Ok(jwt)=>jwt,
-            Err(e)=>return request::Outcome::Failure((Status::InternalServerError,Some(e.into())))
+            Ok(jwt) => jwt,
+            Err(e) => {
+                return request::Outcome::Failure((Status::InternalServerError, Some(e.into())))
+            }
         };
-        println!("valid jwt {:#?}",valid_jwt.claims);
+        let claims = match serde_json::from_value::<Auth0Jwt>(valid_jwt.claims) {
+            Ok(claims)=>claims,
+            Err(e)=> return request::Outcome::Failure((Status::InternalServerError,Some(e.into())))
+        };
+
+        println!("valid jwt {:#?}", claims);
         request::Outcome::Success(Self(token.to_string()))
     }
 }

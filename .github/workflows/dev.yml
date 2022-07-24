@@ -33,7 +33,7 @@ jobs:
         with:
           token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
       - name: Install Dependencies
-        run: sudo apt-get update && sudo apt-get install build-essential musl-tools linux-headers-$(uname -r) jq
+        run: sudo apt-get update && sudo apt-get install build-essential musl-tools linux-headers-$(uname -r) jq ca-certificates
       - uses: actions/cache@v3
         id: openssl
         with:
@@ -52,7 +52,7 @@ jobs:
           CC="musl-gcc -fPIE -pie" ./Configure no-shared no-async --prefix=/home/$(whoami)/musl/openssl --openssldir=/home/$(whoami)/musl/openssl/install linux-x86_64
           make depend
           make -j$(nproc)
-          make install_sw install_ssldirs
+          make install
 
       - name: Test Rust Workspace
         run: cargo test --workspace --target x86_64-unknown-linux-musl
