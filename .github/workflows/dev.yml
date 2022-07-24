@@ -27,7 +27,7 @@ jobs:
             ~/.cargo/registry/cache/
             ~/.cargo/git/db/
             target/
-          key: ${{ runner.os }}-cargo-${{TARGET}}-${{ hashFiles('**/Cargo.lock') }}
+          key: ${{ runner.os }}-cargo-$TARGET-${{ hashFiles('**/Cargo.lock') }}
 
       - name: Install doctl
         uses: digitalocean/action-doctl@v2
