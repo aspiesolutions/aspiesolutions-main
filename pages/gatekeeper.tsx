@@ -238,60 +238,60 @@ export async function getServerSideProps(context) {
   // just trying to get the server to compile for now, this service is unavailable
   throw new Error("UNIMPLMENTED")
   // early initialize data structures
-  let initialProps: ServerSideProps = {
-    error: null,
-    session: null,
-    address: {
-      data: null,
-      error: null,
-    },
-    accessCodes: {
-      data: null,
-      error: null,
-    },
-  };
-  // always check the session first. this mini-app deals with sensitive data that should not be publicly available
-  const { authOptions } = require("../src/lib/nextAuth");
-  let session = null;
-  try {
-    console.log("trying unstable_getServerSession")
-    session = await unstable_getServerSession(
-      context?.req,
-      context?.res,
-      authOptions
-    );
-  } catch (error) {
-    console.error(
-      "unstable_getServerSessionFailed. falling back to getSession"
-    );
-  }
-  if (session == null) {
-    // try again using getSession
-    console.log("trying again with getSession")
-    try {
-      session = await getSession({ req: context.req });
-    } catch (error) {
-      console.error(
-        "getSessionFailed. getting the server side session is unavailable unless another authentication method can be devised"
-      );
-      console.error(error)
-    }
-  }
-  initialProps.session = session;
-  // this is a client factory
+  // let initialProps: ServerSideProps = {
+  //   error: null,
+  //   session: null,
+  //   address: {
+  //     data: null,
+  //     error: null,
+  //   },
+  //   accessCodes: {
+  //     data: null,
+  //     error: null,
+  //   },
+  // };
+  // // always check the session first. this mini-app deals with sensitive data that should not be publicly available
+  // const { authOptions } = require("../src/lib/nextAuth");
+  // let session = null;
+  // try {
+  //   console.log("trying unstable_getServerSession")
+  //   session = await unstable_getServerSession(
+  //     context?.req,
+  //     context?.res,
+  //     authOptions
+  //   );
+  // } catch (error) {
+  //   console.error(
+  //     "unstable_getServerSessionFailed. falling back to getSession"
+  //   );
+  // }
+  // if (session == null) {
+  //   // try again using getSession
+  //   console.log("trying again with getSession")
+  //   try {
+  //     session = await getSession({ req: context.req });
+  //   } catch (error) {
+  //     console.error(
+  //       "getSessionFailed. getting the server side session is unavailable unless another authentication method can be devised"
+  //     );
+  //     console.error(error)
+  //   }
+  // }
+  // initialProps.session = session;
+  // // this is a client factory
 
-  if (initialProps.session == null) {
-    context.res.statusCode = 403;
-    initialProps.error = {
-      kind: ERROR_UNAUTHORIZED,
-      reason: REASON_NULL_SESSION,
-      action: ACTION_ATTEMPT_AUTHENTICATION,
-      message: MESSAGE_AUTHENTICATON_ATTEMPT_REQUIRED,
-    };
+  // if (initialProps.session == null) {
+  //   context.res.statusCode = 403;
+  //   initialProps.error = {
+  //     kind: ERROR_UNAUTHORIZED,
+  //     reason: REASON_NULL_SESSION,
+  //     action: ACTION_ATTEMPT_AUTHENTICATION,
+  //     message: MESSAGE_AUTHENTICATON_ATTEMPT_REQUIRED,
+  //   };
 
-  }
-  return {
-    props: initialProps,
-  };
-  // ORM is not set up yet. moving from prisma to typeorm
+  // }
+  // return {
+  //   props: initialProps,
+  // };
+  // // ORM is not set up yet. moving from prisma to typeorm
 }

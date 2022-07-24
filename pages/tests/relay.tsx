@@ -5,7 +5,6 @@ import { getClientEnvironment } from "../../src/lib/relay-nextjs/clientEnvironme
 import { relay_AccessCodeQuery } from "../../src/queries/__generated__/relay_AccessCodeQuery.graphql";
 // import { createServerEnvironment } from '../../src/lib/server/relay-nextjs/serverEnvironment';
 import { NextApiRequest } from "next";
-import { getSession } from "next-auth/react";
 
 // The $uuid variable is injected automatically from the route.
 const AccessCodeQuery = graphql`

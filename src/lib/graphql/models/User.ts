@@ -2,7 +2,6 @@ import { Entity, PrimaryColumn, Column, OneToMany, Generated } from "typeorm"
 import { Account } from "./Account"
 import type {Relation} from "typeorm"
 import { Session } from "./Session"
-import { AdapterUser } from "next-auth/adapters"
 // Relay requires all 'objects' to have globally unique identifiers to allow data refetching
 @Entity()
 export class User {
