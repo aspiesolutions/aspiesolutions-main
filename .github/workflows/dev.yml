@@ -47,26 +47,9 @@ jobs:
         # run: sudo apt-get update && sudo apt-get install build-essential musl-tools linux-headers-$(uname -r) jq ca-certificates
         run: sudo apt-get update && sudo apt-get install build-essential jq
 
-      # - uses: actions/cache@v3
-      #   id: openssl
-      #   with:
-      #     path: ~/musl/openssl
-      #     key: musl-openssl-1-1-1f
-      # - name: Build OpenSSL
-      #   if: steps.openssl.outputs.cache-hit != 'true'
-      #   run: |
-      #     sudo ln -s /usr/include/x86_64-linux-gnu/asm /usr/include/x86_64-linux-musl/asm
-      #     sudo ln -s /usr/include/asm-generic /usr/include/x86_64-linux-musl/asm-generic
-      #     sudo ln -s /usr/include/linux /usr/include/x86_64-linux-musl/linux
-      #     sudo mkdir -p /musl/openssl
-      #     wget https://github.com/openssl/openssl/archive/OpenSSL_1_1_1f.tar.gz
-      #     tar zxvf OpenSSL_1_1_1f.tar.gz
-      #     cd openssl-OpenSSL_1_1_1f
-      #     CC="musl-gcc -fPIE -pie" ./Configure no-shared no-async --prefix=/home/$(whoami)/musl/openssl --openssldir=/home/$(whoami)/musl/openssl/install linux-x86_64
-      #     make depend
-      #     make -j$(nproc)
-      #     make install
-
+      # run the migration script to bring up the database
+      - name: Run Migrations, create tables
+        run: cargo run --bin migrate --release
       - name: Test Rust Workspace
         run: cargo test --workspace
       - name: Build Api for Development release with debug output
