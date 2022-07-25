@@ -13,6 +13,7 @@ export default handleAuth({
           }
         });
       } catch (error) {
+        console.error(error)
         res.status(error.status || 400).end(error.message);
       }
     }
