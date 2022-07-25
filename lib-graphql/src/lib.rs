@@ -39,6 +39,7 @@ impl Query {
             entity::user::Entity::find_by_id(uuid).one(&context.conn),
             entity::session::Entity::find_by_id(uuid).one(&context.conn)
         )?;
+        // we only care about the some cases
         match results {
             (Some(user),_) => {
                 return Ok(Some(NodeValue::User(user.into())))

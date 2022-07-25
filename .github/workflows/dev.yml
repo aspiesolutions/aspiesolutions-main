@@ -12,11 +12,14 @@ jobs:
       # OPENSSL_STATIC: true
       # OPENSSL_DIR: /home/runner/musl/openssl
       TARGET: x86_64-unknown-linux-gnu
+      DATABASE_URL: postgres://postgres:postgres@postgres:5432/test
     services:
       postgres:
         image: postgres:14
         env:
-          A: hello world
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_USER: postgres
+          POSTGRES_DB: test
         ports:
           - 5432:5432
     steps:
