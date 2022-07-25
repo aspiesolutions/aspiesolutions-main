@@ -22,3 +22,8 @@ impl Node for Session {
         Some(NodeValue::Session(self.to_owned()))
     }
 }
+impl std::convert::From<entity::session::Model> for Session {
+    fn from(entity : entity::session::Model) -> Self {
+        Self { id: ID::new(entity.id.to_string()) }
+    }
+}

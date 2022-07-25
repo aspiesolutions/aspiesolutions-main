@@ -735,7 +735,12 @@ dependencies = [
 name = "entity"
 version = "0.0.1"
 dependencies = [
+ "anyhow",
+ "dotenv",
+ "log",
  "sea-orm 0.9.1",
+ "thiserror",
+ "tokio",
 ]
 
 [[package]]
@@ -1323,11 +1328,13 @@ checksum = "e2abad23fbc42b3700f2f279844dc832adb2b2eb069b2df918f455c4e18cc646"
 name = "lib-graphql"
 version = "0.0.2"
 dependencies = [
+ "entity",
  "juniper",
  "lazy_static",
  "sea-orm 0.9.1",
  "serde",
  "serde_json",
+ "tokio",
 ]
 
 [[package]]
@@ -3122,6 +3129,7 @@ dependencies = [
  "mio",
  "num_cpus",
  "once_cell",
+ "parking_lot 0.12.1",
  "pin-project-lite",
  "signal-hook-registry",
  "socket2",

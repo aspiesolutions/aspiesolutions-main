@@ -1,0 +1,34 @@
+type Address implements Node {
+  id: ID!
+}
+
+type Mutation {
+  noop: String
+}
+
+type Query {
+  node(id: ID!): Node!
+  accessCode(id: ID!): AccessCode
+  user(id: ID!): User
+}
+
+interface Node {
+  id: Node
+}
+
+type AccessCode {
+  id: ID!
+}
+
+type Session implements Node {
+  id: ID!
+}
+
+type User {
+  id: ID!
+}
+
+schema {
+  query: Query
+  mutation: Mutation
+}
