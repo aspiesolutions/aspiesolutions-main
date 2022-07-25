@@ -12,6 +12,13 @@ jobs:
       # OPENSSL_STATIC: true
       # OPENSSL_DIR: /home/runner/musl/openssl
       TARGET: x86_64-unknown-linux-gnu
+    services:
+      postgres:
+        image: postgres:14
+        env:
+          A: hello world
+        ports:
+          - 5432:5432
     steps:
       - uses: actions/checkout@v3
       - uses: actions-rs/toolchain@v1
