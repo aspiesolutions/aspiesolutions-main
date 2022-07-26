@@ -25,11 +25,17 @@ impl MigrationTrait for Migration {
                             .unique_key(),
                     )
                     .col(ColumnDef::new(user::Column::Name).text())
-                    .col(ColumnDef::new(user::Column::Email).text().not_null().unique_key())
+                    .col(
+                        ColumnDef::new(user::Column::Email)
+                            .text()
+                            .not_null()
+                            .unique_key(),
+                    )
                     .col(ColumnDef::new(user::Column::EmailVerified).timestamp_with_time_zone())
-                    .col(ColumnDef::new(user::Column::Image).text()).to_owned(),
-
-            ).await
+                    .col(ColumnDef::new(user::Column::Image).text())
+                    .to_owned(),
+            )
+            .await
     }
 
     async fn down(&self, manager: &SchemaManager) -> Result<(), DbErr> {

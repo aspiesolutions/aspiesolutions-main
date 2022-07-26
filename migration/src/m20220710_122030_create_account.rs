@@ -25,11 +25,22 @@ impl MigrationTrait for Migration {
                     )
                     .col(ColumnDef::new(account::Column::Type).text().not_null())
                     .col(ColumnDef::new(account::Column::Provider).text().not_null())
-                    .col(ColumnDef::new(account::Column::ProviderAccountId).text().not_null())
+                    .col(
+                        ColumnDef::new(account::Column::ProviderAccountId)
+                            .text()
+                            .not_null(),
+                    )
                     .col(ColumnDef::new(account::Column::RefreshToken).text())
-                    .col(ColumnDef::new(account::Column::AccessToken).text().not_null())
-
-                    .col(ColumnDef::new(account::Column::AccessTokenExpiresAt).timestamp_with_time_zone().not_null())
+                    .col(
+                        ColumnDef::new(account::Column::AccessToken)
+                            .text()
+                            .not_null(),
+                    )
+                    .col(
+                        ColumnDef::new(account::Column::AccessTokenExpiresAt)
+                            .timestamp_with_time_zone()
+                            .not_null(),
+                    )
                     .col(ColumnDef::new(account::Column::IdToken).text())
                     .col(ColumnDef::new(account::Column::TokenType).text().not_null())
                     .col(ColumnDef::new(account::Column::Scope).text().not_null())
@@ -38,10 +49,21 @@ impl MigrationTrait for Migration {
                     .to_owned(),
             )
             .await?;
-            manager.create_foreign_key(ForeignKey::create().from_tbl(account::Entity).from_col(account::Column::UserId).to_tbl(user::Entity).to_col(user::Column::Id).to_owned()).await
+        manager
+            .create_foreign_key(
+                ForeignKey::create()
+                    .from_tbl(account::Entity)
+                    .from_col(account::Column::UserId)
+                    .to_tbl(user::Entity)
+                    .to_col(user::Column::Id)
+                    .to_owned(),
+            )
+            .await
     }
 
     async fn down(&self, manager: &SchemaManager) -> Result<(), DbErr> {
-        manager.drop_table(Table::drop().table(account::Entity).to_owned()).await
+        manager
+            .drop_table(Table::drop().table(account::Entity).to_owned())
+            .await
     }
 }

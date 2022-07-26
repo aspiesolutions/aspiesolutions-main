@@ -1,5 +1,8 @@
 use entity::transaction;
-use sea_orm_migration::{prelude::*, sea_orm::prelude::{ChronoDateTimeUtc, DateTimeWithTimeZone, DateTimeUtc}};
+use sea_orm_migration::{
+    prelude::*,
+    sea_orm::prelude::{ChronoDateTimeUtc, DateTimeUtc, DateTimeWithTimeZone},
+};
 
 #[derive(DeriveMigrationName)]
 pub struct Migration;
@@ -19,18 +22,59 @@ impl MigrationTrait for Migration {
                             .uuid()
                             .not_null()
                             .primary_key(),
-                    ).col(ColumnDef::new(transaction::Column::OriginatorId).uuid().not_null())
-                    .col(ColumnDef::new(transaction::Column::RecieverId).uuid().not_null())
+                    )
+                    .col(
+                        ColumnDef::new(transaction::Column::OriginatorId)
+                            .uuid()
+                            .not_null(),
+                    )
+                    .col(
+                        ColumnDef::new(transaction::Column::RecieverId)
+                            .uuid()
+                            .not_null(),
+                    )
                     .col(ColumnDef::new(transaction::Column::SenderId).uuid().null())
-                    .col(ColumnDef::new(transaction::Column::OriginatingLocation).text().null())
-                    .col(ColumnDef::new(transaction::Column::RecievingLocation).text().null())
-                    .col(ColumnDef::new(transaction::Column::SendingLocation).text().null())
+                    .col(
+                        ColumnDef::new(transaction::Column::OriginatingLocation)
+                            .text()
+                            .null(),
+                    )
+                    .col(
+                        ColumnDef::new(transaction::Column::RecievingLocation)
+                            .text()
+                            .null(),
+                    )
+                    .col(
+                        ColumnDef::new(transaction::Column::SendingLocation)
+                            .text()
+                            .null(),
+                    )
                     .col(ColumnDef::new(transaction::Column::Items).text().null())
-                    .col(ColumnDef::new(transaction::Column::Categories).text().null())
-                    .col(ColumnDef::new(transaction::Column::CreatedDate).timestamp_with_time_zone().not_null())
-                    .col(ColumnDef::new(transaction::Column::FinalizedDate).timestamp_with_time_zone().not_null())
-                    .col(ColumnDef::new(transaction::Column::Status).text().not_null())
-                    .col(ColumnDef::new(transaction::Column::Method).text().not_null())
+                    .col(
+                        ColumnDef::new(transaction::Column::Categories)
+                            .text()
+                            .null(),
+                    )
+                    .col(
+                        ColumnDef::new(transaction::Column::CreatedDate)
+                            .timestamp_with_time_zone()
+                            .not_null(),
+                    )
+                    .col(
+                        ColumnDef::new(transaction::Column::FinalizedDate)
+                            .timestamp_with_time_zone()
+                            .not_null(),
+                    )
+                    .col(
+                        ColumnDef::new(transaction::Column::Status)
+                            .text()
+                            .not_null(),
+                    )
+                    .col(
+                        ColumnDef::new(transaction::Column::Method)
+                            .text()
+                            .not_null(),
+                    )
                     // .col(ColumnDef::new(Post::Title).string().not_null())
                     // .col(ColumnDef::new(Post::Text).string().not_null())
                     .to_owned(),

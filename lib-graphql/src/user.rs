@@ -1,15 +1,18 @@
-use juniper::ID;
-use juniper::GraphQLObject;
 use crate::node::NodeValue;
-#[derive(GraphQLObject,Clone)]
+use juniper::GraphQLObject;
+use juniper::ID;
+#[derive(GraphQLObject, Clone)]
 pub struct User {
     id: ID,
-    idp_id:Option<String>
+    idp_id: Option<String>,
 }
 // allow calling into to convert from the entity to the graphql user type
 impl std::convert::From<entity::user::Model> for User {
     fn from(entity: entity::user::Model) -> Self {
-        Self { id: ID::new(entity.id().to_string()),idp_id:entity.idp_id }
+        Self {
+            id: ID::new(entity.id().to_string()),
+            idp_id: entity.idp_id,
+        }
     }
 }
 impl crate::node::Node for User {
@@ -22,16 +25,15 @@ impl crate::node::Node for User {
 #[derive(juniper::GraphQLInputObject)]
 pub struct CreateUserInput {
     // the provider id must be known at this point
-    pub idp_id:String
+    pub idp_id: String,
 }
-
 
 impl User {
     /// converts an Option<Model> into an Option<User>. implementing std:;convert::from is not allowed in this case
-    pub fn map_model_opt(opt_model:Option<entity::user::Model>) -> Option<User> {
+    pub fn map_model_opt(opt_model: Option<entity::user::Model>) -> Option<User> {
         match opt_model {
             Some(model) => Some(model.into()),
-            None=>None
+            None => None,
         }
     }
 }
