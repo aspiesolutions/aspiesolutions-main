@@ -5,8 +5,12 @@ use sea_orm::{entity::prelude::*};
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel)]
 #[sea_orm(table_name = "user")]
 pub struct Model {
+    /// the primary identifier for our system
     #[sea_orm(primary_key, auto_increment = false)]
     id: Uuid,
+    /// used to link our IDP with our user
+    #[sea_orm(nullable,unique)]
+    idp_id:Option<String>,
     #[sea_orm(column_type = "Text", nullable)]
     pub name: Option<String>,
     #[sea_orm(column_type = "Text", nullable, unique)]
@@ -21,6 +25,7 @@ impl std::default::Default for Model {
     fn default() -> Self {
         Self {
             id: Uuid::new_v4(),
+            idp_id:None,
             name: None,
             email: None,
             email_verified: None,
