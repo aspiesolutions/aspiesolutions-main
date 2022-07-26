@@ -93,31 +93,3 @@ impl Related<super::transaction::Entity> for Entity {
     }
 }
 impl ActiveModelBehavior for ActiveModel {}
-
-// #[cfg(test)]
-// pub mod test {
-//     #[tokio::test]
-//     pub async fn test_user_crud() {
-//         dotenv::dotenv().unwrap();
-//         // create a new instance of this struct by calling default
-//         let conn = sea_orm::Database::connect(std::env::var("DATABASE_URL").expect("DATABASE_URL should be defined")).await.expect("Database connection failed");
-//         let mut user = super::Model::default();
-//         // set whatever fields need to be set on the model
-//         user.name = Some("Jordan Morris".to_string());
-//         user.email = Some("jthecybertinkerer@gmail.com".to_string());
-//         user.email_verified = None;
-//         // once you have set the fields you want, you call instance.create(&db)
-
-//         user.create(&conn).await.expect("Create user failed");
-//         // in order to update, set values on this struct and then call update
-//         // the name field doesnt have any unique constraints so it should pass
-//         let new_name =Some("Joe Podunck hicktown".to_string());
-//         user.name = new_name.clone();
-//         user = user.update(&conn).await.expect("update failed");
-//         assert_eq!(user.name,new_name);
-//         //
-
-
-//         user.delete_by_id(&conn).await.expect("delete user failed");
-//     }
-// }

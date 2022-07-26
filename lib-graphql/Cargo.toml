@@ -14,6 +14,7 @@ lazy_static = "1.4.0"
 sea-orm="0.9"
 entity={path="../entity"}
 tokio={vesrion="1",features=["full"]}
+aspiesolutions_core={path="../aspiesolutions_core"}
 [dependencies.serde]
 version="1.0"
 features=["derive"]

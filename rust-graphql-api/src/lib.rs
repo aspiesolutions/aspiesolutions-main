@@ -8,8 +8,10 @@ use rocket_db_pools::Database;
 use rocket_db_pools::{rocket::figment::Figment, Config};
 
 // for now, we will hard code the jwks endpoint
-
-pub const JWKS_DISCOVERY_ENDPOINT: &'static str = ".well-known/jwks.json";
+pub use aspiesolutions_core::constants::{
+    ENV_KEY_AUTH0_CLIENT_ID, ENV_KEY_AUTH0_CLIENT_SECRET, ENV_KEY_AUTH0_DOMAIN, AUTH0_ENV_PREFIX,
+    AUTH0_JWKS_DISCOVERY_ENDPOINT as JWKS_DISCOVERY_ENDPOINT,
+};
 /// the id of the public signing key. curerntly hardcoded.
 pub const JWKS_KEY_ID: &'static str = "yo4HXbTKFVHwdZ6_MD0CE";
 #[derive(Debug)]
@@ -23,29 +25,17 @@ pub struct Auth0Config {
     pub client_id: String,
     pub client_secret: String,
 }
-pub const AUTH0_ENV_PREFIX: &'static str = "AUTH0";
 impl Auth0Config {
-    fn get_key_with_prefix<'a>(key: &'a str) -> String {
-        format!("{AUTH0_ENV_PREFIX}_{}", key)
-    }
-    fn get_domain_key() -> String {
-        Self::get_key_with_prefix("DOMAIN")
-    }
-    fn get_client_id_key() -> String {
-        Self::get_key_with_prefix("CLIENT_ID")
-    }
-    fn get_client_secret_key() -> String {
-        Self::get_key_with_prefix("CLIENT_SECRET")
-    }
+
     /// Constructs a new instance of this struct using std::env::var(AUTH0_FIELD) and forwards any errors to the caller
     pub fn new_from_env() -> Result<Self, anyhow::Error> {
         Ok(Self {
-            domain: std::env::var(&Self::get_domain_key())
-                .with_context(|| Self::get_domain_key())?,
-            client_id: std::env::var(&Self::get_client_id_key())
-                .with_context(|| Self::get_client_id_key())?,
-            client_secret: std::env::var(&Self::get_client_secret_key())
-                .with_context(|| Self::get_client_secret_key())?,
+            domain: std::env::var(ENV_KEY_AUTH0_DOMAIN)
+                .with_context(|| ENV_KEY_AUTH0_DOMAIN)?,
+            client_id: std::env::var(ENV_KEY_AUTH0_CLIENT_ID)
+                .with_context(|| ENV_KEY_AUTH0_CLIENT_ID)?,
+            client_secret: std::env::var(ENV_KEY_AUTH0_CLIENT_SECRET)
+                .with_context(|| ENV_KEY_AUTH0_CLIENT_SECRET)?,
         })
     }
     pub fn get_jwks_url(&self) -> String {
@@ -69,7 +59,7 @@ impl rocket_db_pools::Pool for RocketDbPool {
     async fn init(figment: &Figment) -> Result<Self, Self::Error> {
         let config = figment.extract::<Config>().unwrap();
 
-        println!("{}",config.url);
+        println!("{}", config.url);
         let conn = sea_orm::Database::connect(&config.url).await.unwrap();
         return Ok(RocketDbPool { conn });
     }
@@ -84,17 +74,17 @@ impl rocket_db_pools::Pool for RocketDbPool {
 pub struct Db(RocketDbPool);
 
 #[derive(Debug, Clone)]
-pub struct Auth0BearerToken{
-    token:String,
-    claims:Auth0Jwt,
+pub struct Auth0BearerToken {
+    token: String,
+    claims: Auth0Jwt,
 }
 
-#[derive(Deserialize, Debug,Clone)]
+#[derive(Deserialize, Debug, Clone)]
 pub struct Auth0Jwt {
-    iss:String,
-    sub:String,
-    aud:String,
-    scope:Option<String>
+    iss: String,
+    sub: String,
+    aud: String,
+    scope: Option<String>,
 }
 
 use rocket::request::{self, FromRequest, Request};
@@ -156,11 +146,16 @@ impl<'r> FromRequest<'r> for Auth0BearerToken {
             }
         };
         let claims = match serde_json::from_value::<Auth0Jwt>(valid_jwt.claims) {
-            Ok(claims)=>claims,
-            Err(e)=> return request::Outcome::Failure((Status::InternalServerError,Some(e.into())))
+            Ok(claims) => claims,
+            Err(e) => {
+                return request::Outcome::Failure((Status::InternalServerError, Some(e.into())))
+            }
         };
 
         println!("valid jwt {:#?}", claims);
-        request::Outcome::Success(Self{token:token.to_string(),claims})
+        request::Outcome::Success(Self {
+            token: token.to_string(),
+            claims,
+        })
     }
 }

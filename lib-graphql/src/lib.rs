@@ -25,6 +25,12 @@ pub struct Context {
     pub conn: sea_orm::DatabaseConnection
 }
 
+
+pub struct AuthContext {
+    id:String,
+    scopes:String
+}
+
 impl juniper::Context for Context {
 }
 pub struct Query;
@@ -95,7 +101,7 @@ pub use juniper::execute_sync;
 
 #[cfg(test)]
 pub mod test {
-
+    use aspiesolutions_core::constants::ENV_KEY_DATABASE_URL;
     use std::collections::HashMap;
 
     use juniper::InputValue;
@@ -112,7 +118,7 @@ pub mod test {
         }
         "#;
         let schema = Schema::new(crate::Query,crate::Mutation,crate::EmptySubscription::<crate::Context>::default());
-        let conn = sea_orm::Database::connect(std::env::var("DATABASE_URL").unwrap()).await.unwrap();
+        let conn = sea_orm::Database::connect(std::env::var(ENV_KEY_DATABASE_URL).unwrap()).await.unwrap();
         let context = crate::Context { conn };
         let variables: HashMap<String,InputValue> = HashMap::new();
         let execution_result = juniper::execute(query, None, &schema, &variables, &context).await.expect("Query Failed");

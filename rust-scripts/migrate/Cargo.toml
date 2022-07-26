@@ -1,8 +1,0 @@
-[package]
-name="migrate"
-version="0.0.1"
-edition="2021"
-[dependencies]
-sea-orm={version="0.9",features=["sqlx-postgres","runtime-tokio-native-tls"]}
-migration={path="../../migration"}
-tokio={version="1",features=["rt-multi-thread","net","time"]}

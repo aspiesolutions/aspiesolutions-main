@@ -1,0 +1,7 @@
+[package]
+name="aspiesolutions_core"
+version="0.0.1"
+edition="2018"
+
+[dependencies]
+const_format = "0.2.26"
