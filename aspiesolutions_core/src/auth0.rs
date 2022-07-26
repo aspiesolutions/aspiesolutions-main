@@ -6,3 +6,7 @@ pub struct TokenClaims {
     aud: String,
     scope: Option<String>,
 }
+#[derive(Deserialize, Debug, Clone)]
+pub struct Context {
+    claims: Option<TokenClaims>,
+}

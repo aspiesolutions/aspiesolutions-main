@@ -1,12 +1,14 @@
 [package]
 name="aspiesolutions_core"
 version="0.0.1"
-edition="2018"
+edition="2021"
 
 [dependencies]
 const_format = "0.2.26"
 serde = {version="1.0.140",features=["derive"]}
 thiserror = "1.0.31"
+uuid = "1.1.2"
+async-trait = "0.1.56"
 alcoholic_jwt = {version="4091.0.0",optional=true}
 reqwest = {version= "0.11.11",optional=true}
 serde_json = {version="1.0.82",optional=true}

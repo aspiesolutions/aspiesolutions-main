@@ -19,11 +19,11 @@ use node::NodeValue;
 // this module contains our graphql api
 pub struct Context {
     pub conn: sea_orm::DatabaseConnection,
+    pub auth: Option<AuthContext>,
 }
-
 pub struct AuthContext {
-    id: String,
-    scopes: String,
+    token: Option<String>,
+    claims: Option<aspiesolutions_core::auth0::TokenClaims>,
 }
 
 impl juniper::Context for Context {}
@@ -69,7 +69,24 @@ impl Query {
         Ok(user_opt)
     }
 }
-
+pub fn try_authenticate<T: aspiesolutions_core::StructNameSnakeCase>(
+    op: &str,
+    context: &Context,
+) -> Result<(), aspiesolutions_core::Error> {
+    if context.auth.is_none() {
+        return Err(aspiesolutions_core::Error::Unauthorized(
+            "Authorization Context missing in request".to_string(),
+        ));
+    }
+    let auth_context = context.auth.as_ref().unwrap();
+    if auth_context.claims.is_none() {
+        return Err(aspiesolutions_core::Error::Unauthorized(
+            "Missing Authorization claims in request".to_string(),
+        ));
+    }
+    let claims = auth_context.claims.as_ref().unwrap();
+    Ok(())
+}
 pub struct Mutation;
 #[graphql_object(context=Context)]
 impl Mutation {
@@ -78,7 +95,8 @@ impl Mutation {
     }
     // create the user from the auth context
     pub async fn create_user<'context>(context: &'context Context) -> FieldResult<user::User> {
-        todo!();
+        try_authenticate::<user::User>("create", context)?;
+        todo!()
         // let mut entity = entity::user::Model::default();
         // let mut active_model = entity.into_active_model();
         // active_model.idp_id = sea_orm::ActiveValue::Set(Some(input.idp_id));
@@ -94,6 +112,7 @@ pub use juniper::execute_sync;
 
 #[cfg(test)]
 pub mod test {
+    use super::AuthContext;
     use aspiesolutions_core::constants::ENV_KEY_DATABASE_URL;
     use std::collections::HashMap;
 
@@ -118,7 +137,13 @@ pub mod test {
         let conn = sea_orm::Database::connect(std::env::var(ENV_KEY_DATABASE_URL).unwrap())
             .await
             .unwrap();
-        let context = crate::Context { conn };
+        let context = crate::Context {
+            conn,
+            auth: Some(AuthContext {
+                token: None,
+                claims: None,
+            }),
+        };
         let variables: HashMap<String, InputValue> = HashMap::new();
         let execution_result = juniper::execute(query, None, &schema, &variables, &context)
             .await

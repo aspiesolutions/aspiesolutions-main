@@ -114,12 +114,14 @@ name = "aspiesolutions_core"
 version = "0.0.1"
 dependencies = [
  "alcoholic_jwt",
+ "async-trait",
  "const_format",
  "reqwest",
  "rocket",
  "serde",
  "serde_json",
  "thiserror",
+ "uuid 1.1.2",
 ]
 
 [[package]]

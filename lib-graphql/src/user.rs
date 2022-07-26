@@ -37,3 +37,9 @@ impl User {
         }
     }
 }
+
+impl aspiesolutions_core::StructNameSnakeCase for User {
+    fn struct_name_snake_case() -> &'static str {
+        "user"
+    }
+}

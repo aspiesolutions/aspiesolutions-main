@@ -60,7 +60,7 @@ impl<'r> FromRequest<'r> for Auth0BearerToken {
     async fn from_request(req: &'r Request<'_>) -> request::Outcome<Self, Self::Error> {
         let config = match req.guard::<&State<Auth0Config>>().await {
             Success(config) => config,
-            Failure((status, e)) => {
+            Failure((status, _)) => {
                 return Failure((
                     status,
                     Self::Error::CustomString(String::from(

@@ -1,6 +1,12 @@
 pub mod auth0;
 pub mod config;
 pub mod constants;
+pub mod permissions;
+
+// the global type for all identifers
+pub type Id = uuid::Uuid;
+
+pub struct VarError(std::env::VarError);
 
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
@@ -18,6 +24,8 @@ pub enum Error {
     #[cfg(feature = "rocket")]
     #[cfg_attr(feature = "rocket", error("Missing Required Header '{0}' in Request"))]
     HttpRequiredHeaderMissing(String),
+    #[error("Unauthorized: {0}")]
+    Unauthorized(String),
     #[error("{0}")]
     CustomString(String),
     #[error("None")]
@@ -33,10 +41,7 @@ impl std::convert::From<()> for Error {
         Self::None
     }
 }
-// #[cfg(feature="rocket")]
-// impl std::convert::Into<Error> for (rocket::request::Status,()) {
-//     fn into(outcome:(rocket::http::Status,Error)) -> Self {
-//         (outcome.0,())
-
-//     }
-// }
+// retrieves the name of the current struct at runtime. easier than creating a derive macro
+pub trait StructNameSnakeCase {
+    fn struct_name_snake_case() -> &'static str;
+}
