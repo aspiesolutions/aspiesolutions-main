@@ -1,2 +1,5 @@
 [workspace]
-members=["lib-graphql","rust-graphql-api","entity","migration","rust-lib-db-sea-orm","rust-scripts/migrate"]
+members=["lib-graphql","rust-graphql-api","entity","migration","rust-lib-db-sea-orm","rust-scripts/migrate","aspiesolutions-core"]
+
+[profile.release]
+lto=true

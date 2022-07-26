@@ -10,7 +10,7 @@ pub struct Model {
     id: Uuid,
     /// used to link our IDP with our user
     #[sea_orm(nullable,unique)]
-    idp_id:Option<String>,
+    pub idp_id:Option<String>,
     #[sea_orm(column_type = "Text", nullable)]
     pub name: Option<String>,
     #[sea_orm(column_type = "Text", nullable, unique)]

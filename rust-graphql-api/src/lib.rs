@@ -84,11 +84,17 @@ impl rocket_db_pools::Pool for RocketDbPool {
 pub struct Db(RocketDbPool);
 
 #[derive(Debug, Clone)]
-pub struct Auth0BearerToken(String);
+pub struct Auth0BearerToken{
+    token:String,
+    claims:Auth0Jwt,
+}
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug,Clone)]
 pub struct Auth0Jwt {
-    iss:String
+    iss:String,
+    sub:String,
+    aud:String,
+    scope:Option<String>
 }
 
 use rocket::request::{self, FromRequest, Request};
@@ -155,6 +161,6 @@ impl<'r> FromRequest<'r> for Auth0BearerToken {
         };
 
         println!("valid jwt {:#?}", claims);
-        request::Outcome::Success(Self(token.to_string()))
+        request::Outcome::Success(Self{token:token.to_string(),claims})
     }
 }

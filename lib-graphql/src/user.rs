@@ -3,12 +3,13 @@ use juniper::GraphQLObject;
 use crate::node::NodeValue;
 #[derive(GraphQLObject,Clone)]
 pub struct User {
-    id: ID
+    id: ID,
+    idp_id:Option<String>
 }
 // allow calling into to convert from the entity to the graphql user type
 impl std::convert::From<entity::user::Model> for User {
     fn from(entity: entity::user::Model) -> Self {
-        Self { id: ID::new(entity.id().to_string()) }
+        Self { id: ID::new(entity.id().to_string()),idp_id:entity.idp_id }
     }
 }
 impl crate::node::Node for User {
@@ -17,6 +18,13 @@ impl crate::node::Node for User {
         Some(NodeValue::User(self.to_owned()))
     }
 }
+
+#[derive(juniper::GraphQLInputObject)]
+pub struct CreateUserInput {
+    // the provider id must be known at this point
+    pub idp_id:String
+}
+
 
 impl User {
     /// converts an Option<Model> into an Option<User>. implementing std:;convert::from is not allowed in this case

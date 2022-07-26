@@ -2,9 +2,12 @@ use std::str::FromStr;
 
 use access_code::AccessCode;
 use address::Address;
+use juniper::FieldResult;
 use juniper::GraphQLObject;
 use juniper::graphql_object;
+use sea_orm::ActiveModelTrait;
 use sea_orm::EntityTrait;
+use sea_orm::IntoActiveModel;
 use session::SessionConnection;
 pub use juniper::EmptySubscription;
 use juniper::ID;
@@ -73,6 +76,16 @@ pub struct Mutation;
 impl Mutation {
     pub fn noop() -> Option<String> {
         None
+    }
+    // create the user from the auth context
+    pub async fn create_user<'context>(context: &'context Context) -> FieldResult<user::User> {
+        todo!();
+        // let mut entity = entity::user::Model::default();
+        // let mut active_model = entity.into_active_model();
+        // active_model.idp_id = sea_orm::ActiveValue::Set(Some(input.idp_id));
+
+        // entity = active_model.insert(&context.conn).await?;
+        // Ok(entity.into())
     }
 }
 
