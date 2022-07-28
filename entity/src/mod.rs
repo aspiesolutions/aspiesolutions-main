@@ -5,11 +5,13 @@ pub enum Error {
     DbError(#[from] sea_orm::error::DbErr),
 }
 
-pub mod prelude;
-
 pub mod access_code;
 pub mod account;
+pub mod group;
+pub mod object;
+pub mod prelude;
 pub mod session;
 pub mod transaction;
 pub mod user;
+pub mod user_group;
 pub mod verification_token;

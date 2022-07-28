@@ -3,6 +3,7 @@ use std::str::FromStr;
 use access_code::AccessCode;
 use juniper::graphql_object;
 use juniper::FieldResult;
+use sea_orm::ColumnTrait;
 use sea_orm::EntityTrait;
 
 pub use juniper::EmptySubscription;
@@ -23,7 +24,8 @@ pub struct Context {
 }
 pub struct AuthContext {
     token: Option<String>,
-    claims: Option<aspiesolutions_core::auth0::TokenClaims>,
+    claims: aspiesolutions_core::auth0::TokenClaims,
+    subject: user,
 }
 
 impl juniper::Context for Context {}
@@ -58,15 +60,62 @@ impl Query {
         _id: ID,
         context: &'context Context,
     ) -> juniper::FieldResult<Option<user::User>> {
+        // we need to know who is performing this action
         use sea_orm::prelude::Uuid;
+        if context.auth.is_none() {
+            return Err(aspiesolutions_core::Error::Unauthorized(
+                "Permission denied. no auth context present".to_string(),
+            ));
+        }
+        let auth_context = context.auth.unwrap();
+        let subject_model = match entity::user::Entity::find()
+            .filter(entity::user::Column::IdpId.eq(auth_context.claims.sub))
+            .one(&context.conn)
+            .await?
+        {
+            Some(subject) => subject,
+            None => {
+                return Err(aspiesolutions_core::Error::UserNotFoundError(format!(
+                    "with idp_id of {}",
+                    auth_context.claims.sub
+                )));
+            }
+        };
+
         // try to parse the id into a uuid
         let uuid = Uuid::from_str(&*_id)?;
         // if that works, then try to find the entity
-        let model_opt = entity::user::Entity::find_by_id(uuid)
+        let object = match entity::user::Entity::find_by_id(uuid)
             .one(&context.conn)
+            .await?
+        {
+            Some(o) => o,
+            None => {
+                return Err(aspiesolutions_core::Error::UserNotFoundError(format!(
+                    "with id {uuid}"
+                )))
+            }
+        };
+        let meta_permissions = std::collections::HashMap::new();
+        let scopes = context.auth.unwrap().claims.scope.unwrap_or(String::new());
+        let access_decision: aspiesolutions_core::permissions::Access =
+            aspiesolutions_core::permissions::enforce_access_async::<
+                entity::user::Model,
+                entity::user::Model,
+            >(subject, &object, action, scopes.as_str(), meta_permissions)
             .await?;
-        let user_opt = user::User::map_model_opt(model_opt);
-        Ok(user_opt)
+        match access_decision {
+            aspiesolutions_core::permissions::Access::Allow => Ok(Some(user::User {
+                id: ID::new(subject_model.id().to_string()),
+                idp_id: subject_model.idp_id,
+            })),
+            aspiesolutions_core::permissions::Access::Deny => {
+                Err(aspiesolutions_core::Error::Unauthorized(String::from(
+                    "You do not have permission to perform this action. No other reason given",
+                )))
+            }
+        }
+        // let user_opt = user::User::map_model_opt(model_opt);
     }
 }
 pub fn try_authenticate<T: aspiesolutions_core::StructNameSnakeCase>(
@@ -109,6 +158,7 @@ impl Mutation {
 pub type Schema = juniper::RootNode<'static, Query, Mutation, EmptySubscription<Context>>;
 pub use juniper::execute;
 pub use juniper::execute_sync;
+use sea_orm::QueryFilter;
 
 #[cfg(test)]
 pub mod test {
@@ -148,6 +198,6 @@ pub mod test {
         let execution_result = juniper::execute(query, None, &schema, &variables, &context)
             .await
             .expect("Query Failed");
-        println!("{execution_result:#?}");
+        println!("{ex&ecution_result:#?}");
     }
 }

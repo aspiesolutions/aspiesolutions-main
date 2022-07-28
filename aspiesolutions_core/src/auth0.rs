@@ -1,10 +1,10 @@
 use serde::Deserialize;
 #[derive(Deserialize, Debug, Clone)]
 pub struct TokenClaims {
-    iss: String,
-    sub: String,
-    aud: String,
-    scope: Option<String>,
+    pub iss: String,
+    pub sub: String,
+    pub aud: String,
+    pub scope: Option<String>,
 }
 #[derive(Deserialize, Debug, Clone)]
 pub struct Context {

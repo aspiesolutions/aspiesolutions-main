@@ -11,7 +11,12 @@ impl MigrationTrait for Migration {
             .alter_table(
                 Table::alter()
                     .table(user::Entity)
-                    .add_column_if_not_exists(ColumnDef::new(user::Column::IdpId).text().null())
+                    .add_column_if_not_exists(
+                        ColumnDef::new(user::Column::IdpId)
+                            .text()
+                            .unique_key()
+                            .null(),
+                    )
                     .to_owned(),
             )
             .await
@@ -19,9 +24,10 @@ impl MigrationTrait for Migration {
 
     async fn down(&self, manager: &SchemaManager) -> Result<(), DbErr> {
         // Replace the sample below with your own migration scripts
-
-        manager
-            .alter_table(Table::alter().drop_column(user::Column::IdpId).to_owned())
-            .await
+        let stmt = Table::alter()
+            .table(user::Entity)
+            .drop_column(user::Column::IdpId)
+            .to_owned();
+        manager.alter_table(stmt).await
     }
 }

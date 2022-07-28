@@ -46,7 +46,7 @@ pub struct Db(RocketDbPool);
 #[derive(Debug, Clone)]
 pub struct Auth0BearerToken {
     token: String,
-    claims: Auth0TokenClaims,
+    claims: aspiesolutions_core::auth0::TokenClaims,
 }
 
 // pub fn from_option_into_failure<T>(t:T,e:Option<aspiesolutions_core::Error>)-> rocket::request::Outcome<T,>

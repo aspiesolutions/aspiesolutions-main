@@ -26,8 +26,17 @@ pub enum Error {
     HttpRequiredHeaderMissing(String),
     #[error("Unauthorized: {0}")]
     Unauthorized(String),
-    #[error("{0}")]
+    #[error("Error: {0}")]
     CustomString(String),
+    #[error("Failed to convert from str: {0}")]
+    FromStrError(String),
+    #[error("Error: {0}")]
+    UuidError(#[from] uuid::Error),
+    #[cfg_attr(feature = "sea-orm", error("{0}"))]
+    #[cfg(feature = "sea-orm")]
+    DbError(#[from] sea_orm::error::DbErr),
+    #[error("User not found {0}")]
+    UserNotFoundError(String),
     #[error("None")]
     None,
 }

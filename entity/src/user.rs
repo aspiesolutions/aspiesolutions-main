@@ -37,32 +37,6 @@ impl Model {
     pub fn id(&self) -> &Uuid {
         &self.id
     }
-    // /// Creates an instance of this model in the database.
-    // ///
-    // /// if you need to create a new instance of this struct, please call Model::default
-    // pub async fn create(&self, conn:&sea_orm::DatabaseConnection) -> Result<Self,crate::Error> {
-
-    //     let user = self::ActiveModel {
-    //         id: ActiveValue::Set(self.id),
-    //         name: ActiveValue::Set(self.name.clone()),
-    //         email: ActiveValue::Set(self.email.clone()),
-    //         email_verified:ActiveValue::Set(self.email_verified),
-    //         image: ActiveValue::Set(self.image.clone()),
-    //     };
-    //     Ok(user.insert(conn).await?)
-    // }
-    // /// deletes an instance of this model in the database
-    // pub async fn delete_by_id(&self,conn:&sea_orm::DatabaseConnection) -> Result<DeleteResult,crate::Error> {
-    //    Ok(Entity::delete_by_id(self.id).exec(conn).await?)
-    // }
-    // pub async fn update(&self,conn:&sea_orm::DatabaseConnection) -> Result<Self, crate::Error> {
-    //     let active_model = ActiveModel::from(self.clone());
-    //     // active model defaults to ActiveModel::unchanged when calling from;
-    //     // explicitly set vailues
-    //     active_model.id = self.set(c, v)
-    //     println!("{active_model:#?}");
-    //     Ok(active_model.update(conn).await?)
-    // }
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
@@ -89,6 +63,14 @@ impl Related<super::session::Entity> for Entity {
 impl Related<super::transaction::Entity> for Entity {
     fn to() -> RelationDef {
         Relation::Transaction.def()
+    }
+}
+impl Related<super::group::Entity> for Entity {
+    fn to() -> RelationDef {
+        super::user_group::Relation::Group.def()
+    }
+    fn via() -> Option<RelationDef> {
+        Some(super::user_group::Relation::User.def().rev())
     }
 }
 impl ActiveModelBehavior for ActiveModel {}
