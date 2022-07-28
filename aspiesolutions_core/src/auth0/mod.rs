@@ -1,6 +1,6 @@
 use std::time::SystemTime;
 
-#[cfg(feature="reqwest")]
+#[cfg(feature = "reqwest")]
 pub mod client;
 use serde::Deserialize;
 #[derive(Deserialize, Debug, Clone)]
@@ -10,33 +10,25 @@ pub struct TokenClaims {
     pub aud: String,
     pub scope: Option<String>,
 }
-#[derive(Deserialize, Debug, Clone)]
-pub struct Context {
-    claims: Option<TokenClaims>,
-}
+// #[derive(Deserialize, Debug, Clone)]
+// pub struct Context {
+//     claims: Option<TokenClaims>,
+// }
 
 #[derive(Debug, Clone)]
 pub struct Auth0BearerToken {
     pub value: String,
     pub claims: TokenClaims,
 }
-#[derive(Deserialize, Clone)]
+#[derive(Deserialize, Clone,Default)]
+#[allow(unused)]
 pub struct Auth0GetManagmentTokenSuccess {
     access_token: String,
     scope: String,
     expires_in: u64,
     token_type: String,
 }
-impl std::default::Default for Auth0GetManagmentTokenSuccess {
-    fn default() -> Self {
-        Self {
-            access_token: String::new(),
-            scope: String::new(),
-            expires_in: 0,
-            token_type: String::new(),
-        }
-    }
-}
+
 lazy_static::lazy_static! {
     static ref MANAGEMENT_API_TOKEN_RESPONSE: std::sync::Arc<tokio::sync::Mutex<Option<Auth0GetManagmentTokenSuccess>>> = std::sync::Arc::new(tokio::sync::Mutex::new(None));
     static ref MANAGMENT_API_TOKEN_CREATED: std::sync::Arc<tokio::sync::Mutex<Option<SystemTime>>> = std::sync::Arc::new(tokio::sync::Mutex::new(None));
@@ -46,16 +38,13 @@ lazy_static::lazy_static! {
 #[cfg(feature = "reqwest")]
 pub async fn get_managment_token(
     config: &crate::config::Auth0Config,
-    use_cached_response: bool,
+    // use_cached_response: bool,
 ) -> Result<Auth0GetManagmentTokenSuccess, crate::Error> {
     use std::collections::HashMap;
-    let mut response = Auth0GetManagmentTokenSuccess::default();
-    let current_time = std::time::SystemTime::now();
-    let mut cached_management_api_token_response = MANAGEMENT_API_TOKEN_RESPONSE
-        .lock().await;
-        
-    let mut cached_management_api_token_created = MANAGMENT_API_TOKEN_CREATED
-        .lock().await;
+    // let current_time = std::time::SystemTime::now();
+    let mut cached_management_api_token_response = MANAGEMENT_API_TOKEN_RESPONSE.lock().await;
+
+    let mut cached_management_api_token_created = MANAGMENT_API_TOKEN_CREATED.lock().await;
     if cached_management_api_token_response.is_some()
         && cached_management_api_token_created.is_some()
     {
@@ -77,32 +66,31 @@ pub async fn get_managment_token(
     form.insert("client_id", config.client_id.clone());
     form.insert("client_secret", config.client_secret.clone());
     form.insert("audience", format!("https://{}/api/v2", config.domain));
-    response = client
+    Ok(client
         .post(format!("https://{}/oauth/token", config.domain))
         .form(&form)
         .send()
         .await?
         .json()
-        .await?;
-
-    Ok(response)
+        .await?)
 }
-pub async fn get_client(
-    config: &Auth0Config,
-    access_token: &str,
-    client_id: &str,
-) -> Result<(), crate::Error> {
-    let client = reqwest::Client::new();
-    let response = client
-        .get(format!(
-            "https://{}/api/v2/clients/{}",
-            config.domain, config.client_id
-        ))
-        .header("authorization", format!("Bearer {}", access_token)).send().await?;
-        println!("response {response:#?}");
-    Ok(())
-}
-use crate::config::Auth0Config;
+// pub async fn get_client(
+//     config: &Auth0Config,
+//     access_token: &str,
+//     client_id: &str,
+// ) -> Result<(), crate::Error> {
+//     let client = reqwest::Client::new();
+//     let response = client
+//         .get(format!(
+//             "https://{}/api/v2/clients/{}",
+//             config.domain, config.client_id
+//         ))
+//         .header("authorization", format!("Bearer {}", access_token))
+//         .send()
+//         .await?;
+//     println!("response {response:#?}");
+//     Ok(())
+// }
 // pub fn from_option_into_failure<T>(t:T,e:Option<aspiesolutions_core::Error>)-> rocket::request::Outcome<T,>
 use crate::constants::HTTP_HEADER_NAME_AUTHORIZATION;
 use rocket::outcome::Outcome::*;
@@ -129,20 +117,52 @@ impl<'r> FromRequest<'r> for Auth0BearerToken {
             }
             Forward(()) => return Forward(()),
         };
-        let manament_api_token_response = match get_managment_token(&**config, true).await {
-            Ok(response)=>response,
-            Err(e)=> return Failure((Status::InternalServerError,e))
+        let managment_client = match req
+            .guard::<&rocket::State<crate::auth0::client::Auth0ManagementClient>>()
+            .await
+        {
+            Success(client) => client,
+            Failure((status, _error)) => return Failure((status, crate::Error::RocketMissingState)),
+            Forward(status) => return Forward(status),
         };
+        // we now have a managment api client to be able to fetch the siging keys
+        let signing_keys = match managment_client.get_all_application_signing_keys().await {
+            Ok(Ok(keys)) => keys,
+            Ok(Err(client_error)) => {
+                return Failure((
+                    rocket::http::Status::InternalServerError,
+                    crate::Error::CustomString(client_error.to_string()),
+                ))
+            }
+            Err(reqwest_error) => {
+                return Failure((
+                    rocket::http::Status::InternalServerError,
+                    crate::Error::CustomString(reqwest_error.to_string()),
+                ))
+            }
+        };
+        let signing_key = match signing_keys.get_current_key() {
+            Some(key) => key,
+            None => {
+                return Failure((
+                    rocket::http::Status::InternalServerError,
+                    crate::Error::CustomString(
+                        "Could not get signing key as no current key is available".to_string(),
+                    ),
+                ))
+            }
+        };
+        // I am unsure if the JWT can be verified from the cert and pkcs7 and thumbprint returned from this backchannel communication.
+        // all we really cared about is getting the kid of the current token being used.As such, we have to fetch the JWK from the public endpoint
 
         let jwks = match config.get_jwks().await {
             Ok(keys) => keys,
             Err(e) => return Failure((Status::InternalServerError, e)),
         };
         // this request guard assumes that the alg is RS256
-        // the signing key id is currently hardcoded and we will need to ask the auth0 management api at some point for the key id
-        // this request guard assumes that the first key that matches is the signing key being used.
-        // if this behavior is not correct, Auth0 also implements a 'kid' claim that can be used to get the signing key,
-        let jwk = match jwks.find("some non existant key string") {
+        // the signing key id is retrieved using backchannel communication that determines the active key being used
+
+        let jwk = match jwks.find(signing_key.kid()) {
             Some(jwk) => jwk,
             None => {
                 return request::Outcome::Failure((
@@ -160,7 +180,7 @@ impl<'r> FromRequest<'r> for Auth0BearerToken {
                 None => {
                     return request::Outcome::Failure((
                         Status::Unauthorized,
-                        Self::Error::HttpRequiredHeaderMissing(
+                        Self::Error::RocketHttpRequiredHeaderMissing(
                             HTTP_HEADER_NAME_AUTHORIZATION.to_string(),
                         ),
                     ))
@@ -198,6 +218,4 @@ impl<'r> FromRequest<'r> for Auth0BearerToken {
     }
 }
 #[cfg(test)]
-pub mod tests {
-    
-}
+pub mod tests {}

@@ -4,7 +4,7 @@ use juniper::{GraphQLObject, ID};
 #[derive(GraphQLObject)]
 pub struct SessionConnection {
     edges: Vec<SessionEdge>,
-    pageInfo: PageInfo,
+    page_info: PageInfo,
 }
 #[derive(GraphQLObject)]
 pub struct SessionEdge {

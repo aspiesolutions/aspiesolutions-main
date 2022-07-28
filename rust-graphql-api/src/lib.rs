@@ -1,9 +1,4 @@
-use alcoholic_jwt::Validation;
-use anyhow::Context;
 use async_trait::async_trait;
-use rocket::http::Status;
-use rocket::serde::Deserialize;
-use rocket::State;
 use rocket_db_pools::Database;
 use rocket_db_pools::{rocket::figment::Figment, Config};
 
@@ -14,7 +9,7 @@ pub use aspiesolutions_core::constants::{
     ENV_KEY_AUTH0_CLIENT_ID, ENV_KEY_AUTH0_CLIENT_SECRET, ENV_KEY_AUTH0_DOMAIN,
 };
 /// the id of the public signing key. curerntly hardcoded.
-pub const JWKS_KEY_ID: &'static str = "yo4HXbTKFVHwdZ6_MD0CE";
+pub const JWKS_KEY_ID: &str = "yo4HXbTKFVHwdZ6_MD0CE";
 #[derive(Debug)]
 pub struct RocketDbPool {
     pub conn: sea_orm::DatabaseConnection,

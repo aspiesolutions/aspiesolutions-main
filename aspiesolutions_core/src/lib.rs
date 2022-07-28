@@ -1,5 +1,3 @@
-use rocket::response::status::Unauthorized;
-
 pub mod auth0;
 pub mod config;
 pub mod constants;
@@ -25,7 +23,10 @@ pub enum Error {
     AlcoholicJwtValidationError(#[from] alcoholic_jwt::ValidationError),
     #[cfg(feature = "rocket")]
     #[cfg_attr(feature = "rocket", error("Missing Required Header '{0}' in Request"))]
-    HttpRequiredHeaderMissing(String),
+    RocketHttpRequiredHeaderMissing(String),
+    #[cfg(feature = "rocket")]
+    #[cfg_attr(feature = "rocket", error("Missing managed state in request"))]
+    RocketMissingState,
     #[error("Unauthorized: {0}")]
     Unauthorized(String),
     #[error("Error: {0}")]
@@ -53,7 +54,7 @@ impl<'r, 'o: 'r> rocket::response::Responder<'r, 'o> for Error {
                 log::error!("Unauthorized {}", message);
                 Err(Status::Unauthorized)
             }
-            Error::HttpRequiredHeaderMissing(_) | Error::AlcoholicJwtValidationError(_) => {
+            Error::RocketHttpRequiredHeaderMissing(_) | Error::AlcoholicJwtValidationError(_) => {
                 Err(Status::BadRequest)
             }
             Error::UserNotFoundError(_) => Err(Status::NotFound),

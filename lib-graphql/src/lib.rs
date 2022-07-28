@@ -48,8 +48,8 @@ impl Query {
         )?;
         // we only care about the some cases
         match results {
-            (Some(user), _) => return Ok(Some(NodeValue::User(user.into()))),
-            (_, Some(session)) => return Ok(Some(NodeValue::Session(session.into()))),
+            (Some(user), _) => Ok(Some(NodeValue::User(user.into()))),
+            (_, Some(session)) =>  Ok(Some(NodeValue::Session(session.into()))),
             _ => Ok(None),
         }
     }
@@ -88,7 +88,7 @@ impl Query {
         // try to parse the id into a uuid
         let uuid = Uuid::from_str(&*_id)?;
         // if that works, then try to find the entity
-        let object = match entity::user::Entity::find_by_id(uuid)
+        let _object = match entity::user::Entity::find_by_id(uuid)
             .one(&context.conn)
             .await?
         {
@@ -101,7 +101,7 @@ impl Query {
             }
         };
         // let meta_permissions = std::collections::HashMap::new();
-        let scopes = context
+        let _scopes = context
             .auth
             .as_ref()
             .unwrap()
@@ -116,19 +116,6 @@ impl Query {
         // let user_opt = user::User::map_model_opt(model_opt);
     }
 }
-// pub fn try_authenticate<T: aspiesolutions_core::StructNameSnakeCase>(
-//     op: &str,
-//     context: &Context,
-// ) -> Result<(), aspiesolutions_core::Error> {
-//     if context.auth.is_none() {
-//         return Err(aspiesolutions_core::Error::Unauthorized(
-//             "Authorization Context missing in request".to_string(),
-//         ));
-//     }
-//     let auth_context = context.auth.as_ref().unwrap();
-//     let claims = auth_context.claims;
-//     Ok(())
-// }
 pub struct Mutation;
 #[graphql_object(context=Context)]
 impl Mutation {
@@ -136,7 +123,7 @@ impl Mutation {
         None
     }
     // create the user from the auth context
-    pub async fn create_user<'context>(context: &'context Context) -> FieldResult<user::User> {
+    pub async fn create_user<'context>(_context: &'context Context) -> FieldResult<user::User> {
         // try_authenticate::<user::User>("create", context)?;
         todo!()
         // let mut entity = entity::user::Model::default();

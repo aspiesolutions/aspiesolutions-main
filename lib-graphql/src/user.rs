@@ -32,10 +32,7 @@ pub struct CreateUserInput {
 impl User {
     /// converts an Option<Model> into an Option<User>. implementing std:;convert::from is not allowed in this case
     pub fn map_model_opt(opt_model: Option<entity::user::Model>) -> Option<User> {
-        match opt_model {
-            Some(model) => Some(model.into()),
-            None => None,
-        }
+        opt_model.map(|model|model.into())
     }
 }
 

@@ -1,19 +1,19 @@
 use const_format::concatcp;
-use reqwest::{header, Response, StatusCode};
+use reqwest::{ StatusCode};
 use serde::Deserialize;
 
-const GRANT_TYPE_CLIENT_CREDENTIALS: &'static str = "client_credentials";
-const HEADER_NAME_AUTHENTICATION: &'static str = "authorization";
-const HEADER_NAME_CONTENT_TYPE: &'static str = "content-typ";
-const FORM_DATA_KEY_GRANT_TYPE: &'static str = "grant_type";
-const FORM_DATA_KEY_CLIENT_ID: &'static str = "client_id";
-const FORM_DATA_KEY_CLIENT_SECRET: &'static str = "client_secret";
-const FORM_DATA_KEY_AUDIENCE: &'static str = "audience";
+const GRANT_TYPE_CLIENT_CREDENTIALS: & str = "client_credentials";
+const HEADER_NAME_AUTHENTICATION: & str = "authorization";
+// const HEADER_NAME_CONTENT_TYPE: & str = "content-type";
+const FORM_DATA_KEY_GRANT_TYPE: & str = "grant_type";
+const FORM_DATA_KEY_CLIENT_ID: & str = "client_id";
+const FORM_DATA_KEY_CLIENT_SECRET: & str = "client_secret";
+const FORM_DATA_KEY_AUDIENCE: & str = "audience";
 
-const SCOPE_SEPERATOR: &'static str = ":";
-const SCOPE_ACTION_READ: &'static str = "read";
-const SCOPE_SUBJECT_SIGNING_KEYS: &'static str = "signing_keys";
-const SCOPE_READ_SIGNING_KEYS: &'static str = concatcp!(
+const SCOPE_SEPERATOR: & str = ":";
+const SCOPE_ACTION_READ: & str = "read";
+const SCOPE_SUBJECT_SIGNING_KEYS: & str = "signing_keys";
+const SCOPE_READ_SIGNING_KEYS: & str = concatcp!(
     SCOPE_ACTION_READ,
     SCOPE_SEPERATOR,
     SCOPE_SUBJECT_SIGNING_KEYS
@@ -28,6 +28,7 @@ pub struct Auth0Client {
 }
 
 #[derive(Deserialize, Clone, Debug)]
+#[allow(unused)]
 pub struct Auth0GetManagmentTokenResponse {
     access_token: String,
     token_type: String,
@@ -35,6 +36,7 @@ pub struct Auth0GetManagmentTokenResponse {
     scope: String,
 }
 #[derive(Deserialize, Clone, Debug)]
+#[allow(unused)]
 pub struct Auth0ErrorResponse {
     error: String,
     error_description: String,
@@ -51,6 +53,7 @@ pub enum Auth0GetManagmentTokenError {
     Unauthorized(Auth0ErrorResponse),
 }
 #[derive(Deserialize, Clone, Debug)]
+#[allow(unused)]
 pub struct Auth0ApplicationSigningKey {
     kid: String,
     cert: String,
@@ -64,34 +67,38 @@ pub struct Auth0ApplicationSigningKey {
     revoked: Option<bool>,
     revoked_at: Option<String>,
 }
-#[derive(Deserialize,Debug,Clone)]
-pub struct Auth0ApplicationSigningKeys(Vec::<Auth0ApplicationSigningKey>);
+impl Auth0ApplicationSigningKey {
+    pub fn kid(&self) -> &str {
+        &self.kid
+    }
+}
+#[derive(Deserialize, Debug, Clone)]
+pub struct Auth0ApplicationSigningKeys(Vec<Auth0ApplicationSigningKey>);
 impl Auth0ApplicationSigningKeys {
-    pub fn get_current_key(&self)->Option<&Auth0ApplicationSigningKey> {
-        self.0.iter().find(|k|k.current == Some(true))
+    pub fn get_current_key(&self) -> Option<&Auth0ApplicationSigningKey> {
+        self.0.iter().find(|k| k.current == Some(true))
     }
 }
 impl Auth0Client {
-    fn create_reqwest_client(access_token:&str) -> Result<reqwest::Client, reqwest::Error> {
+    fn create_reqwest_client(access_token: &str) -> Result<reqwest::Client, reqwest::Error> {
         // create the header map
         let mut headers = reqwest::header::HeaderMap::new();
         // the access token is a raw string without a prefix. it has to be prefixed with "Bearer " to be accepted by the authentication server
         let bearer_token_string = format!("Bearer {}", access_token);
         // create the header value to be placed in the map
         let mut access_token_header_value =
-        reqwest::header::HeaderValue::from_str(&bearer_token_string)
-            .expect("Failed to build authentication header value for Auth0Client");
-        
-   
-    // the token is sensitive information
-    access_token_header_value.set_sensitive(true);
-    headers.insert(HEADER_NAME_AUTHENTICATION, access_token_header_value);
-    Ok(reqwest::ClientBuilder::new()
-    .timeout(std::time::Duration::from_secs(60_u64))
-    .default_headers(headers)
-    .https_only(true)
-    .build()
-    .expect("Failed to build reqwest::Client for Auth0Client"))
+            reqwest::header::HeaderValue::from_str(&bearer_token_string)
+                .expect("Failed to build authentication header value for Auth0Client");
+
+        // the token is sensitive information
+        access_token_header_value.set_sensitive(true);
+        headers.insert(HEADER_NAME_AUTHENTICATION, access_token_header_value);
+        Ok(reqwest::ClientBuilder::new()
+            .timeout(std::time::Duration::from_secs(60_u64))
+            .default_headers(headers)
+            .https_only(true)
+            .build()
+            .expect("Failed to build reqwest::Client for Auth0Client"))
     }
     pub async fn try_new_management_client_async(
         config: &crate::config::Auth0Config,
@@ -135,6 +142,7 @@ impl Auth0Client {
         Ok(Err(Auth0ClientError::Unauthorized(error_response_body)))
     }
     /// use this function when the token expires. gets a new managment token
+    #[allow(unused)]
     async fn refresh_managment_client(
         &mut self,
     ) -> Result<Result<(), Auth0ClientError>, reqwest::Error> {
@@ -172,11 +180,8 @@ impl Auth0Client {
         let status = response.status();
         match status {
             StatusCode::OK => {
-                let body = response
-                .json::<Auth0ApplicationSigningKeys>()
-                .await?;
-                println!("{:#?}",body);
-                return Ok(Ok(body));
+                let body = response.json::<Auth0ApplicationSigningKeys>().await?;
+                Ok(Ok(body))
             }
             StatusCode::UNAUTHORIZED => {
                 let body = response.text().await?;
@@ -225,5 +230,20 @@ pub mod tests {
             .await
             .expect("Auth0Client get_all_application_signing_keys() request failed!")
             .expect("the client returned an error. Make sure that you have correctly configured your domain and that you have scopes neccessary to perform this action");
+    }
+}
+#[derive(Debug, Clone)]
+#[repr(transparent)]
+/// Rocket can only manage one instance of Auth0Client at a time. a wrapper is neeeded
+pub struct Auth0ManagementClient(Auth0Client);
+
+impl Auth0ManagementClient {
+    pub fn new(client: Auth0Client) -> Self {
+        Self(client)
+    }
+    pub async fn get_all_application_signing_keys(
+        &self,
+    ) -> Result<Result<Auth0ApplicationSigningKeys, Auth0ClientError>, reqwest::Error> {
+        self.0.management_get_all_application_signing_keys().await
     }
 }

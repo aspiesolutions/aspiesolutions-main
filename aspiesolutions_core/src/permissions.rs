@@ -1,5 +1,3 @@
-use std::fmt::write;
-
 use async_trait::async_trait;
 use const_format::concatcp;
 
@@ -9,36 +7,36 @@ use serde::{Deserialize, Serialize};
 // Owner group
 
 /// used to seperate and combine scope segments
-pub const SCOPE_SEPERATOR: &'static str = ":";
+pub const SCOPE_SEPERATOR: & str = ":";
 ///  used to separate and combine lists of scopes;
-pub const SCOPE_LIST_SEPERATOR: &'static str = " ";
+pub const SCOPE_LIST_SEPERATOR: & str = " ";
 /// the label given for access equivelent to 'root' permissions
-pub const SUPERUSER_SCOPE_PREFIX: &'static str = "superuser";
-pub const ACTION_READ_STR: &'static str = "read";
-pub const ACTION_UPDATE_STR: &'static str = "update";
-pub const ACTION_CREATE_STR: &'static str = "create";
-pub const ACTION_DELETE_STR: &'static str = "delete";
+pub const SUPERUSER_SCOPE_PREFIX: & str = "superuser";
+pub const ACTION_READ_STR: & str = "read";
+pub const ACTION_UPDATE_STR: & str = "update";
+pub const ACTION_CREATE_STR: & str = "create";
+pub const ACTION_DELETE_STR: & str = "delete";
 /// A special case in the auth system to allow full READ access.
 ///
 /// USE CAREFULLY AND REQUIRE ADDITIONAL PROTECTION FOR SUPERUSERS
-pub const SUPERUSER_READ_SCOPE: &'static str =
+pub const SUPERUSER_READ_SCOPE: & str =
     concatcp!(SUPERUSER_SCOPE_PREFIX, SCOPE_SEPERATOR, ACTION_READ_STR);
 /// A special case in the auth system to allow full UPDATE access.
 ///
 /// USE CAREFULLY AND REQUIRE ADDITIONAL PROTECTION FOR SUPERUSERS
-pub const SUPERUSER_UPDATE_SCOPE: &'static str =
+pub const SUPERUSER_UPDATE_SCOPE: & str =
     concatcp!(SUPERUSER_SCOPE_PREFIX, SCOPE_SEPERATOR, ACTION_UPDATE_STR);
 /// A special case in the auth system to allow full DELETE access.
 ///
 /// USE CAREFULLY AND REQUIRE ADDITIONAL PROTECTION FOR SUPERUSERS
-pub const SUPERUSER_DELETE_SCOPE: &'static str =
+pub const SUPERUSER_DELETE_SCOPE: & str =
     concatcp!(SUPERUSER_SCOPE_PREFIX, SCOPE_SEPERATOR, ACTION_DELETE_STR);
 /// A special case in the auth system to allow full CREATE access.
 ///
 /// USE CAREFULLY AND REQUIRE ADDITIONAL PROTECTION FOR SUPERUSERS
-pub const SUPERUSER_CREATE_SCOPE: &'static str =
+pub const SUPERUSER_CREATE_SCOPE: & str =
     concatcp!(SUPERUSER_SCOPE_PREFIX, SCOPE_SEPERATOR, ACTION_CREATE_STR);
-pub const OFFLINE_ACCESS_SCOPE: &'static str = "offline_access";
+pub const OFFLINE_ACCESS_SCOPE: & str = "offline_access";
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq)]
 // what actions the user can perform
 
@@ -115,6 +113,7 @@ impl std::default::Default for Access {
 }
 
 pub struct Permission {
+    #[allow(unused)]
     id: crate::Id,
     subject: crate::Id,
     // if the action referrs to another object, we need it here
@@ -192,14 +191,14 @@ pub async fn enforce_access_async<
             .get(&subject_id)
             .unwrap()
             .iter()
-            .find(|p| {
+            .any(|p| {
                 p.subject == subject_id
                     && p.access_type == access_type
                     && p.struct_name == subject_struct_name
                     && p.action == *action
                     && p.access == Access::Deny
             })
-            .is_some()
+
     {
         log::info!("Subject has an explicit deny entry in the meta-permissions. Denying access");
         return Ok(Access::Deny);
@@ -215,14 +214,13 @@ pub async fn enforce_access_async<
             .get(&owner_id)
             .unwrap()
             .iter()
-            .find(|p| {
+            .any(|p| {
                 p.subject == subject_id
                     && p.struct_name == subject_struct_name
                     && p.access_type == access_type
                     && p.action == *action
                     && p.access == Access::Allow
             })
-            .is_some()
     {
         log::info!("The owner '{owner_id}' of the current object '{object_id}' has granted access to the current object. allowing access");
         return Ok(Access::Allow);
