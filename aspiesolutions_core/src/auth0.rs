@@ -18,7 +18,7 @@ pub struct Auth0BearerToken {
     pub value: String,
     pub claims: TokenClaims,
 }
-#[derive(Deserialize)]
+#[derive(Deserialize, Clone)]
 pub struct Auth0GetManagmentTokenSuccess {
     access_token: String,
     scope: String,
@@ -36,40 +36,44 @@ impl std::default::Default for Auth0GetManagmentTokenSuccess {
     }
 }
 lazy_static::lazy_static! {
-    static ref MANAGEMENT_API_TOKEN_RESPONSE: std::sync::Arc<std::sync::Mutex<Option<Auth0GetManagmentTokenSuccess>>> = std::sync::Arc::new(std::sync::Mutex::new(None));
-    static ref MANAGMENT_API_TOKEN_CREATED: std::sync::Arc<std::sync::Mutex<Option<SystemTime>>> = std::sync::Arc::new(std:;sync::Mutex::new(None));
+    static ref MANAGEMENT_API_TOKEN_RESPONSE: std::sync::Arc<tokio::sync::Mutex<Option<Auth0GetManagmentTokenSuccess>>> = std::sync::Arc::new(tokio::sync::Mutex::new(None));
+    static ref MANAGMENT_API_TOKEN_CREATED: std::sync::Arc<tokio::sync::Mutex<Option<SystemTime>>> = std::sync::Arc::new(tokio::sync::Mutex::new(None));
 }
 
 // gets a managment token
 #[cfg(feature = "reqwest")]
 pub async fn get_managment_token(
-    config: Option<crate::config::Auth0Config>,
+    config: &crate::config::Auth0Config,
     use_cached_response: bool,
 ) -> Result<Auth0GetManagmentTokenSuccess, crate::Error> {
     use std::collections::HashMap;
     let mut response = Auth0GetManagmentTokenSuccess::default();
     let current_time = std::time::SystemTime::now();
-    let cached_management_api_token_response = MANAGEMENT_API_TOKEN_RESPONSE.get_mut().expect("Failed to get mutable reference");
-    let MANAGMENT_API_TOKEN_CREATED
-    if MANAGEMENT_API_TOKEN_RESPONSE.is_some() && MANAGMENT_API_TOKEN_CREATED.is_some() {
-        let cached = MANAGEMENT_API_TOKEN_RESPONSE.unwrap();
-        let duration = MANAGMENT_API_TOKEN_CREATED
+    let mut cached_management_api_token_response = MANAGEMENT_API_TOKEN_RESPONSE
+        .lock().await;
+        
+    let mut cached_management_api_token_created = MANAGMENT_API_TOKEN_CREATED
+        .lock().await;
+    if cached_management_api_token_response.is_some()
+        && cached_management_api_token_created.is_some()
+    {
+        let cached = cached_management_api_token_response.as_ref().unwrap();
+        let duration = cached_management_api_token_created
             .unwrap()
             .elapsed()
             .expect("Failed to get elapsed duration");
         if duration.as_secs() < cached.expires_in {
-            response = cached;
+            return Ok(cached.clone());
         } else {
-            MANAGEMENT_API_TOKEN_RESPONSE = None;
-            MANAGMENT_API_TOKEN_CREATED = None;
+            *cached_management_api_token_response = None;
+            *cached_management_api_token_created = None;
         }
     }
-    let config = config.unwrap_or(crate::config::Auth0Config::new_from_env()?);
     let client = reqwest::Client::new();
     let mut form = HashMap::<&str, String>::new();
     form.insert("grant_type", String::from("client_credentials"));
-    form.insert("client_id", config.client_id);
-    form.insert("client_secret", config.client_secret);
+    form.insert("client_id", config.client_id.clone());
+    form.insert("client_secret", config.client_secret.clone());
     form.insert("audience", format!("https://{}/api/v2", config.domain));
     response = client
         .post(format!("https://{}/oauth/token", config.domain))
@@ -79,9 +83,24 @@ pub async fn get_managment_token(
         .json()
         .await?;
 
-    Ok(String::new())
+    Ok(response)
 }
-
+pub async fn get_client(
+    config: &Auth0Config,
+    access_token: &str,
+    client_id: &str,
+) -> Result<(), crate::Error> {
+    let client = reqwest::Client::new();
+    let response = client
+        .get(format!(
+            "https://{}/api/v2/clients/{}",
+            config.domain, config.client_id
+        ))
+        .header("authorization", format!("Bearer {}", access_token)).send().await?;
+        println!("response {response:#?}");
+    Ok(())
+}
+use crate::config::Auth0Config;
 // pub fn from_option_into_failure<T>(t:T,e:Option<aspiesolutions_core::Error>)-> rocket::request::Outcome<T,>
 use crate::constants::HTTP_HEADER_NAME_AUTHORIZATION;
 use rocket::outcome::Outcome::*;
@@ -92,6 +111,7 @@ impl<'r> FromRequest<'r> for Auth0BearerToken {
     type Error = crate::Error;
 
     async fn from_request(req: &'r Request<'_>) -> rocket::request::Outcome<Self, Self::Error> {
+        use rocket::http::Status;
         let config = match req
             .guard::<&rocket::State<crate::config::Auth0Config>>()
             .await
@@ -107,6 +127,11 @@ impl<'r> FromRequest<'r> for Auth0BearerToken {
             }
             Forward(()) => return Forward(()),
         };
+        let manament_api_token_response = match get_managment_token(&**config, true).await {
+            Ok(response)=>response,
+            Err(e)=> return Failure((Status::InternalServerError,e))
+        };
+
         let jwks = match config.get_jwks().await {
             Ok(keys) => keys,
             Err(e) => return Failure((Status::InternalServerError, e)),
@@ -115,7 +140,7 @@ impl<'r> FromRequest<'r> for Auth0BearerToken {
         // the signing key id is currently hardcoded and we will need to ask the auth0 management api at some point for the key id
         // this request guard assumes that the first key that matches is the signing key being used.
         // if this behavior is not correct, Auth0 also implements a 'kid' claim that can be used to get the signing key,
-        let jwk = match jwks.find(JWKS_KEY_ID) {
+        let jwk = match jwks.find("some non existant key string") {
             Some(jwk) => jwk,
             None => {
                 return request::Outcome::Failure((
@@ -160,7 +185,7 @@ impl<'r> FromRequest<'r> for Auth0BearerToken {
             Ok(jwt) => jwt,
             Err(e) => return request::Outcome::Failure((Status::InternalServerError, e.into())),
         };
-        let claims = match serde_json::from_value::<Auth0TokenClaims>(valid_jwt.claims) {
+        let claims = match serde_json::from_value::<TokenClaims>(valid_jwt.claims) {
             Ok(claims) => claims,
             Err(e) => return request::Outcome::Failure((Status::InternalServerError, e.into())),
         };

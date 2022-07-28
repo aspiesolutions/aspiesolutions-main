@@ -163,34 +163,34 @@ pub mod test {
 
     use crate::Schema;
 
-    #[tokio::test]
-    pub async fn test_user_query() {
-        let query = r#"query testQuery
-        {
-            user(id:"627ecff7-a969-4e9a-b433-ad8e61154cee") {
-                id
-            }
-        }
-        "#;
-        let schema = Schema::new(
-            crate::Query,
-            crate::Mutation,
-            crate::EmptySubscription::<crate::Context>::default(),
-        );
-        let conn = sea_orm::Database::connect(std::env::var(ENV_KEY_DATABASE_URL).unwrap())
-            .await
-            .unwrap();
-        let context = crate::Context {
-            conn,
-            auth: Some(AuthContext {
-                token: None,
-                claims: None,
-            }),
-        };
-        let variables: HashMap<String, InputValue> = HashMap::new();
-        let execution_result = juniper::execute(query, None, &schema, &variables, &context)
-            .await
-            .expect("Query Failed");
-        println!("{ex&ecution_result:#?}");
-    }
+    // #[tokio::test]
+    // pub async fn test_user_query() {
+    //     let query = r#"query testQuery
+    //     {
+    //         user(id:"627ecff7-a969-4e9a-b433-ad8e61154cee") {
+    //             id
+    //         }
+    //     }
+    //     "#;
+    //     let schema = Schema::new(
+    //         crate::Query,
+    //         crate::Mutation,
+    //         crate::EmptySubscription::<crate::Context>::default(),
+    //     );
+    //     let conn = sea_orm::Database::connect(std::env::var(ENV_KEY_DATABASE_URL).unwrap())
+    //         .await
+    //         .unwrap();
+    //     let context = crate::Context {
+    //         conn,
+    //         auth: Some(AuthContext {
+    //             token: None,
+    //             claims: None,
+    //         }),
+    //     };
+    //     let variables: HashMap<String, InputValue> = HashMap::new();
+    //     let execution_result = juniper::execute(query, None, &schema, &variables, &context)
+    //         .await
+    //         .expect("Query Failed");
+    //     println!("{ex&ecution_result:#?}");
+    // }
 }

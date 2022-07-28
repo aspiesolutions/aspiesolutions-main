@@ -15,14 +15,14 @@ pub struct Auth0Config {
 }
 
 impl Auth0Config {
-    /// Constructs a new instance of this struct using std::env::var(AUTH0_FIELD) and forwards any errors to the caller
-    pub fn new_from_env() -> Result<Self, crate::Error> {
-        Ok(Self {
-            domain: std::env::var(ENV_KEY_AUTH0_DOMAIN)?,
-            client_id: std::env::var(ENV_KEY_AUTH0_CLIENT_ID)?,
-            client_secret: std::env::var(ENV_KEY_AUTH0_CLIENT_SECRET)?,
-            audience: std::env::var(ENV_KEY_AUTH0_AUDIENCE)?,
-        })
+    /// Constructs a new instance of this struct using std::env::var(AUTH0_FIELD) and panics if not present
+    pub fn new_from_env() -> Self {
+        Self {
+            domain: std::env::var(ENV_KEY_AUTH0_DOMAIN).expect(&format!("Envrionment Variable {} must be defined",ENV_KEY_AUTH0_DOMAIN)),
+            client_id: std::env::var(ENV_KEY_AUTH0_CLIENT_ID).expect(&format!("Envrionment Variable {} must be defined",ENV_KEY_AUTH0_DOMAIN)),
+            client_secret: std::env::var(ENV_KEY_AUTH0_CLIENT_SECRET).expect(&format!("Envrionment Variable {} must be defined",ENV_KEY_AUTH0_DOMAIN)),
+            audience: std::env::var(ENV_KEY_AUTH0_AUDIENCE).expect(&format!("Envrionment Variable {} must be defined",ENV_KEY_AUTH0_DOMAIN)),
+        }
     }
     pub fn get_jwks_url(&self) -> String {
         format!("https://{}/{AUTH0_JWKS_DISCOVERY_ENDPOINT}", self.domain)

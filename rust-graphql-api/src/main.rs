@@ -13,7 +13,7 @@ fn rocket() -> _ {
         lib_graphql::EmptySubscription::default(),
     );
     // create this config from an environtment variable. Dont ever let the server start unless the values are present. use unwrap or expect.
-    let auth0_config = Auth0Config::new_from_env().unwrap();
+    let auth0_config = Auth0Config::new_from_env();
     rocket::build()
         .attach(lib::Db::init())
         .manage(schema)
