@@ -116,6 +116,7 @@ dependencies = [
  "alcoholic_jwt",
  "async-trait",
  "const_format",
+ "dotenv",
  "lazy_static",
  "log",
  "reqwest",

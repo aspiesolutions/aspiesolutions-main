@@ -1,5 +1,7 @@
 use std::time::SystemTime;
 
+#[cfg(feature="reqwest")]
+pub mod client;
 use serde::Deserialize;
 #[derive(Deserialize, Debug, Clone)]
 pub struct TokenClaims {
@@ -194,4 +196,8 @@ impl<'r> FromRequest<'r> for Auth0BearerToken {
             claims,
         })
     }
+}
+#[cfg(test)]
+pub mod tests {
+    
 }

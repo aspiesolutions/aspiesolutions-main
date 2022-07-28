@@ -4,7 +4,7 @@ use crate::constants::{
     AUTH0_JWKS_DISCOVERY_ENDPOINT, ENV_KEY_AUTH0_AUDIENCE, ENV_KEY_AUTH0_CLIENT_ID,
     ENV_KEY_AUTH0_CLIENT_SECRET, ENV_KEY_AUTH0_DOMAIN,
 };
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug,Clone)]
 pub struct Auth0Config {
     pub domain: String,
     pub client_id: String,
