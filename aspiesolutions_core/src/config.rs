@@ -11,6 +11,7 @@ pub struct Auth0Config {
     pub client_secret: String,
     // the string used to identify this api. used to verfiy that tokens were meant for this api
     pub audience: String,
+    // pub jwks_key_id: String,
 }
 
 impl Auth0Config {

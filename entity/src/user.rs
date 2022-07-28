@@ -19,20 +19,21 @@ pub struct Model {
     pub email_verified: Option<DateTimeWithTimeZone>,
     #[sea_orm(column_type = "Text", nullable)]
     pub image: Option<String>,
+    pub object_id: Uuid,
 }
 
-impl std::default::Default for Model {
-    fn default() -> Self {
-        Self {
-            id: Uuid::new_v4(),
-            idp_id: None,
-            name: None,
-            email: None,
-            email_verified: None,
-            image: None,
-        }
-    }
-}
+// impl std::default::Default for Model {
+//     fn default() -> Self {
+//         Self {
+//             id: Uuid::new_v4(),
+//             idp_id: None,
+//             name: None,
+//             email: None,
+//             email_verified: None,
+//             image: None,
+//         }
+//     }
+// }
 impl Model {
     pub fn id(&self) -> &Uuid {
         &self.id
@@ -47,6 +48,8 @@ pub enum Relation {
     Session,
     #[sea_orm(has_many = "super::transaction::Entity")]
     Transaction,
+    #[sea_orm(has_many = "super::object::Entity")]
+    Object,
 }
 
 impl Related<super::account::Entity> for Entity {
@@ -71,6 +74,11 @@ impl Related<super::group::Entity> for Entity {
     }
     fn via() -> Option<RelationDef> {
         Some(super::user_group::Relation::User.def().rev())
+    }
+}
+impl Related<super::object::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::Object.def()
     }
 }
 impl ActiveModelBehavior for ActiveModel {}

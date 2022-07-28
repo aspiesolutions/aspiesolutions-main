@@ -23,9 +23,9 @@ pub struct Context {
     pub auth: Option<AuthContext>,
 }
 pub struct AuthContext {
-    token: Option<String>,
-    claims: aspiesolutions_core::auth0::TokenClaims,
-    subject: user,
+    pub token: Option<String>,
+    pub claims: aspiesolutions_core::auth0::TokenClaims,
+    pub user: entity::user::Model,
 }
 
 impl juniper::Context for Context {}
@@ -65,11 +65,13 @@ impl Query {
         if context.auth.is_none() {
             return Err(aspiesolutions_core::Error::Unauthorized(
                 "Permission denied. no auth context present".to_string(),
-            ));
+            )
+            .into());
         }
-        let auth_context = context.auth.unwrap();
+        let auth_context = context.auth.as_ref().unwrap();
+        let claims = &auth_context.claims;
         let subject_model = match entity::user::Entity::find()
-            .filter(entity::user::Column::IdpId.eq(auth_context.claims.sub))
+            .filter(entity::user::Column::IdpId.eq(claims.sub.as_str()))
             .one(&context.conn)
             .await?
         {
@@ -78,7 +80,8 @@ impl Query {
                 return Err(aspiesolutions_core::Error::UserNotFoundError(format!(
                     "with idp_id of {}",
                     auth_context.claims.sub
-                )));
+                ))
+                .into());
             }
         };
 
@@ -93,49 +96,39 @@ impl Query {
             None => {
                 return Err(aspiesolutions_core::Error::UserNotFoundError(format!(
                     "with id {uuid}"
-                )))
+                ))
+                .into())
             }
         };
-        let meta_permissions = std::collections::HashMap::new();
-        let scopes = context.auth.unwrap().claims.scope.unwrap_or(String::new());
-        let access_decision: aspiesolutions_core::permissions::Access =
-            aspiesolutions_core::permissions::enforce_access_async::<
-                entity::user::Model,
-                entity::user::Model,
-            >(subject, &object, action, scopes.as_str(), meta_permissions)
-            .await?;
-        match access_decision {
-            aspiesolutions_core::permissions::Access::Allow => Ok(Some(user::User {
-                id: ID::new(subject_model.id().to_string()),
-                idp_id: subject_model.idp_id,
-            })),
-            aspiesolutions_core::permissions::Access::Deny => {
-                Err(aspiesolutions_core::Error::Unauthorized(String::from(
-                    "You do not have permission to perform this action. No other reason given",
-                )))
-            }
-        }
+        // let meta_permissions = std::collections::HashMap::new();
+        let scopes = context
+            .auth
+            .as_ref()
+            .unwrap()
+            .claims
+            .scope
+            .as_ref()
+            .unwrap_or(&String::new());
+        Ok(Some(user::User {
+            id: ID::new(subject_model.id().to_string()),
+            idp_id: subject_model.idp_id,
+        }))
         // let user_opt = user::User::map_model_opt(model_opt);
     }
 }
-pub fn try_authenticate<T: aspiesolutions_core::StructNameSnakeCase>(
-    op: &str,
-    context: &Context,
-) -> Result<(), aspiesolutions_core::Error> {
-    if context.auth.is_none() {
-        return Err(aspiesolutions_core::Error::Unauthorized(
-            "Authorization Context missing in request".to_string(),
-        ));
-    }
-    let auth_context = context.auth.as_ref().unwrap();
-    if auth_context.claims.is_none() {
-        return Err(aspiesolutions_core::Error::Unauthorized(
-            "Missing Authorization claims in request".to_string(),
-        ));
-    }
-    let claims = auth_context.claims.as_ref().unwrap();
-    Ok(())
-}
+// pub fn try_authenticate<T: aspiesolutions_core::StructNameSnakeCase>(
+//     op: &str,
+//     context: &Context,
+// ) -> Result<(), aspiesolutions_core::Error> {
+//     if context.auth.is_none() {
+//         return Err(aspiesolutions_core::Error::Unauthorized(
+//             "Authorization Context missing in request".to_string(),
+//         ));
+//     }
+//     let auth_context = context.auth.as_ref().unwrap();
+//     let claims = auth_context.claims;
+//     Ok(())
+// }
 pub struct Mutation;
 #[graphql_object(context=Context)]
 impl Mutation {
@@ -144,7 +137,7 @@ impl Mutation {
     }
     // create the user from the auth context
     pub async fn create_user<'context>(context: &'context Context) -> FieldResult<user::User> {
-        try_authenticate::<user::User>("create", context)?;
+        // try_authenticate::<user::User>("create", context)?;
         todo!()
         // let mut entity = entity::user::Model::default();
         // let mut active_model = entity.into_active_model();

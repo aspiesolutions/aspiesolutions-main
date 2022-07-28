@@ -1,3 +1,5 @@
+use rocket::response::status::Unauthorized;
+
 pub mod auth0;
 pub mod config;
 pub mod constants;
@@ -37,20 +39,25 @@ pub enum Error {
     DbError(#[from] sea_orm::error::DbErr),
     #[error("User not found {0}")]
     UserNotFoundError(String),
-    #[error("None")]
-    None,
 }
-impl std::default::Default for Error {
-    fn default() -> Self {
-        Self::None
-    }
-}
-impl std::convert::From<()> for Error {
-    fn from(_: ()) -> Self {
-        Self::None
-    }
-}
-// retrieves the name of the current struct at runtime. easier than creating a derive macro
 pub trait StructNameSnakeCase {
     fn struct_name_snake_case() -> &'static str;
+}
+#[cfg(feature = "rocket")]
+impl<'r, 'o: 'r> rocket::response::Responder<'r, 'o> for Error {
+    fn respond_to(self, _request: &'r rocket::Request<'_>) -> rocket::response::Result<'o> {
+        use rocket::http::Status;
+        log::error!("{}", &self);
+        match self {
+            Error::Unauthorized(message) => {
+                log::error!("Unauthorized {}", message);
+                Err(Status::Unauthorized)
+            }
+            Error::HttpRequiredHeaderMissing(_) | Error::AlcoholicJwtValidationError(_) => {
+                Err(Status::BadRequest)
+            }
+            Error::UserNotFoundError(_) => Err(Status::NotFound),
+            _ => Err(Status::InternalServerError),
+        }
+    }
 }

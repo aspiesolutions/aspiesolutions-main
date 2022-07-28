@@ -3,9 +3,10 @@ use juniper::GraphQLObject;
 use juniper::ID;
 #[derive(GraphQLObject, Clone)]
 pub struct User {
-    id: ID,
-    idp_id: Option<String>,
+    pub id: ID,
+    pub idp_id: Option<String>,
 }
+
 // allow calling into to convert from the entity to the graphql user type
 impl std::convert::From<entity::user::Model> for User {
     fn from(entity: entity::user::Model) -> Self {
