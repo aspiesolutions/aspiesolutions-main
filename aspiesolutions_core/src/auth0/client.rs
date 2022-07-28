@@ -61,8 +61,15 @@ pub struct Auth0ApplicationSigningKey {
     current_since: Option<String>,
     current_until: Option<String>,
     fingerprint: String,
-    // revoked: bool,
-    // revoked_at: String,
+    revoked: Option<bool>,
+    revoked_at: Option<String>,
+}
+#[derive(Deserialize,Debug,Clone)]
+pub struct Auth0ApplicationSigningKeys(Vec::<Auth0ApplicationSigningKey>);
+impl Auth0ApplicationSigningKeys {
+    pub fn get_current_key(&self)->Option<&Auth0ApplicationSigningKey> {
+        self.0.iter().find(|k|k.current == Some(true))
+    }
 }
 impl Auth0Client {
     fn create_reqwest_client(access_token:&str) -> Result<reqwest::Client, reqwest::Error> {
@@ -144,7 +151,7 @@ impl Auth0Client {
     }
     pub async fn management_get_all_application_signing_keys(
         &self,
-    ) -> Result<Result<Vec<Auth0ApplicationSigningKey>, Auth0ClientError>, reqwest::Error> {
+    ) -> Result<Result<Auth0ApplicationSigningKeys, Auth0ClientError>, reqwest::Error> {
         if !self.scope.contains(SCOPE_READ_SIGNING_KEYS) {
             log::debug!(
                 "self.scope does not contain scope '{}'. request will fail",
@@ -166,7 +173,7 @@ impl Auth0Client {
         match status {
             StatusCode::OK => {
                 let body = response
-                .json::<Vec<Auth0ApplicationSigningKey>>()
+                .json::<Auth0ApplicationSigningKeys>()
                 .await?;
                 println!("{:#?}",body);
                 return Ok(Ok(body));
