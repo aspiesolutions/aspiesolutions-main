@@ -6,6 +6,8 @@ edition="2021"
 [lib]
 path="src/mod.rs"
 
+[features]
+enable_derive_debug=[]
 
 [dependencies]
 sea-orm="0.9"

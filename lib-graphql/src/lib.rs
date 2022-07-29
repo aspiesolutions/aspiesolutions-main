@@ -1,5 +1,7 @@
 use std::str::FromStr;
 
+// the next line derives debug only when not release
+// #[cfg_attr(any(test,debug_assertions,feature="enable_derive_debug",derive(Debug)))]
 use access_code::AccessCode;
 use aspiesolutions_core::constants::scopes::SCOPE_READ_USER;
 use juniper::graphql_object;
@@ -19,11 +21,20 @@ pub mod user;
 
 use node::NodeValue;
 // this module contains our graphql api
+#[cfg_attr(
+    any(test, debug_assertions, feature = "enable_derive_debug"),
+    derive(Debug)
+)]
+#[derive(Clone)]
 pub struct Context {
     pub conn: sea_orm::DatabaseConnection,
     pub auth: Option<AuthContext>,
 }
 #[derive(Clone, Default)]
+#[cfg_attr(
+    any(test, debug_assertions, feature = "enable_derive_debug"),
+    derive(Debug)
+)]
 pub struct AuthContext {
     // pub token: Option<String>,
     pub claims: aspiesolutions_core::auth0::TokenClaims,

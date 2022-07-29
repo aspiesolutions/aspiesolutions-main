@@ -1,33 +1,39 @@
 use const_format::concatcp;
-use reqwest::{ StatusCode};
+use reqwest::StatusCode;
 use serde::Deserialize;
 
-const GRANT_TYPE_CLIENT_CREDENTIALS: & str = "client_credentials";
-const HEADER_NAME_AUTHENTICATION: & str = "authorization";
+const GRANT_TYPE_CLIENT_CREDENTIALS: &str = "client_credentials";
+const HEADER_NAME_AUTHENTICATION: &str = "authorization";
 // const HEADER_NAME_CONTENT_TYPE: & str = "content-type";
-const FORM_DATA_KEY_GRANT_TYPE: & str = "grant_type";
-const FORM_DATA_KEY_CLIENT_ID: & str = "client_id";
-const FORM_DATA_KEY_CLIENT_SECRET: & str = "client_secret";
-const FORM_DATA_KEY_AUDIENCE: & str = "audience";
+const FORM_DATA_KEY_GRANT_TYPE: &str = "grant_type";
+const FORM_DATA_KEY_CLIENT_ID: &str = "client_id";
+const FORM_DATA_KEY_CLIENT_SECRET: &str = "client_secret";
+const FORM_DATA_KEY_AUDIENCE: &str = "audience";
 
-const SCOPE_SEPERATOR: & str = ":";
-const SCOPE_ACTION_READ: & str = "read";
-const SCOPE_SUBJECT_SIGNING_KEYS: & str = "signing_keys";
-const SCOPE_READ_SIGNING_KEYS: & str = concatcp!(
+const SCOPE_SEPERATOR: &str = ":";
+const SCOPE_ACTION_READ: &str = "read";
+const SCOPE_SUBJECT_SIGNING_KEYS: &str = "signing_keys";
+const SCOPE_READ_SIGNING_KEYS: &str = concatcp!(
     SCOPE_ACTION_READ,
     SCOPE_SEPERATOR,
     SCOPE_SUBJECT_SIGNING_KEYS
 );
-
-#[derive(Debug, Clone)]
+#[cfg_attr(
+    any(test, debug_assertions, feature = "enable_derive_debug"),
+    derive(Debug)
+)]
+#[derive(Clone)]
 pub struct Auth0Client {
     auth0_config: std::sync::Arc<crate::config::Auth0Config>,
     access_token: String,
     scope: String,
     client: std::sync::Arc<reqwest::Client>,
 }
-
-#[derive(Deserialize, Clone, Debug)]
+#[cfg_attr(
+    any(test, debug_assertions, feature = "enable_derive_debug"),
+    derive(Debug)
+)]
+#[derive(Deserialize, Clone)]
 #[allow(unused)]
 pub struct Auth0GetManagmentTokenResponse {
     access_token: String,
@@ -35,24 +41,41 @@ pub struct Auth0GetManagmentTokenResponse {
     expires_in: u64,
     scope: String,
 }
-#[derive(Deserialize, Clone, Debug)]
+#[cfg_attr(
+    any(test, debug_assertions, feature = "enable_derive_debug"),
+    derive(Debug)
+)]
+#[derive(Deserialize, Clone)]
 #[allow(unused)]
 pub struct Auth0ErrorResponse {
     error: String,
     error_description: String,
 }
+impl std::fmt::Display for Auth0ErrorResponse {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        writeln!(f, "{}: {}", self.error, self.error_description)
+    }
+}
 #[derive(Clone, Debug, thiserror::Error)]
 pub enum Auth0ClientError {
-    #[error("Unauthorized: {0:#?}")]
-    Unauthorized(Auth0ErrorResponse),
+    #[error("Unauthorized: {0}")]
+    Unauthorized(String),
     #[error("Unauthorized: Client does not have permission to use scope(s) '{0}'")]
     RequiredScopeMissing(String),
 }
-#[derive(Clone, Debug)]
+#[cfg_attr(
+    any(test, debug_assertions, feature = "enable_derive_debug"),
+    derive(Debug)
+)]
+#[derive(Clone)]
 pub enum Auth0GetManagmentTokenError {
     Unauthorized(Auth0ErrorResponse),
 }
-#[derive(Deserialize, Clone, Debug)]
+#[cfg_attr(
+    any(test, debug_assertions, feature = "enable_derive_debug"),
+    derive(Debug)
+)]
+#[derive(Deserialize, Clone)]
 #[allow(unused)]
 pub struct Auth0ApplicationSigningKey {
     kid: String,
@@ -72,7 +95,11 @@ impl Auth0ApplicationSigningKey {
         &self.kid
     }
 }
-#[derive(Deserialize, Debug, Clone)]
+#[cfg_attr(
+    any(test, debug_assertions, feature = "enable_derive_debug"),
+    derive(Debug)
+)]
+#[derive(Deserialize, Clone)]
 pub struct Auth0ApplicationSigningKeys(Vec<Auth0ApplicationSigningKey>);
 impl Auth0ApplicationSigningKeys {
     pub fn get_current_key(&self) -> Option<&Auth0ApplicationSigningKey> {
@@ -139,7 +166,9 @@ impl Auth0Client {
                 .await?));
         }
         let error_response_body: Auth0ErrorResponse = response.json().await?;
-        Ok(Err(Auth0ClientError::Unauthorized(error_response_body)))
+        Ok(Err(Auth0ClientError::Unauthorized(
+            error_response_body.to_string(),
+        )))
     }
     /// use this function when the token expires. gets a new managment token
     #[allow(unused)]
@@ -232,7 +261,11 @@ pub mod tests {
             .expect("the client returned an error. Make sure that you have correctly configured your domain and that you have scopes neccessary to perform this action");
     }
 }
-#[derive(Debug, Clone)]
+#[cfg_attr(
+    any(test, debug_assertions, feature = "enable_derive_debug"),
+    derive(Debug)
+)]
+#[derive(Clone)]
 #[repr(transparent)]
 /// Rocket can only manage one instance of Auth0Client at a time. a wrapper is neeeded
 pub struct Auth0ManagementClient(Auth0Client);

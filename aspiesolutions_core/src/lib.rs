@@ -5,8 +5,8 @@ pub mod permissions;
 
 // the global type for all identifers
 pub type Id = uuid::Uuid;
-
-pub struct VarError(std::env::VarError);
+// the next line derives debug only when not release
+// #[cfg_attr(any(test,debug_assertions,feature="enable_derive_debug"),derive(Debug))]
 
 #[derive(thiserror::Error, Debug)]
 pub enum Error {

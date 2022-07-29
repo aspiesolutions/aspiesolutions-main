@@ -3,6 +3,8 @@ name="lib-graphql"
 version="0.0.2"
 edition="2021"
 
+[features]
+enable_derive_debug=["aspiesolutions_core/enable_derive_debug"]
 
 [[bin]]
 name="output-schema"

@@ -4,9 +4,11 @@ pub enum Error {
     #[error("DatabaseError {0}")]
     DbError(#[from] sea_orm::error::DbErr),
 }
-
+// the next line derives debug only when not release
+// #[cfg_attr(any(test,debug_assertions,feature="enable_derive_debug",derive(Debug)))]
 pub mod access_code;
 pub mod account;
+pub mod financial_planner;
 pub mod group;
 pub mod object;
 pub mod prelude;

@@ -3,6 +3,8 @@ name="aspiesolutions_core"
 version="0.0.1"
 edition="2021"
 
+[features]
+enable_derive_debug=[]
 [dependencies]
 const_format = "0.2.26"
 serde = {version="1.0.140",features=["derive"]}
