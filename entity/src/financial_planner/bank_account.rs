@@ -8,6 +8,8 @@ use sea_orm::sea_query;
 pub struct Model {
     #[sea_orm(primary_key, auto_increment = false)]
     id: Uuid,
+    created: ChronoDateTimeUtc,
+    starting_balance_when_created: Decimal,
     account_type: AccountType,
     user_id: Uuid,
 }

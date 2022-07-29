@@ -5,7 +5,8 @@ mod m20220710_115953_create_session;
 mod m20220710_122030_create_account;
 mod m20220724_163650_create_transaction;
 mod m20220725_204232_update_user_add_idp_id;
-mod m20220729_123208_create_financial_planner;
+mod m20220729_123208_create_financial_planner_bank_account;
+mod m20220729_154512_create_financial_planner_bills;
 pub struct Migrator;
 
 #[async_trait::async_trait]
@@ -17,7 +18,8 @@ impl MigratorTrait for Migrator {
             Box::new(m20220710_122030_create_account::Migration),
             Box::new(m20220724_163650_create_transaction::Migration),
             Box::new(m20220725_204232_update_user_add_idp_id::Migration),
-            Box::new(m20220729_123208_create_financial_planner::Migration),
+            Box::new(m20220729_123208_create_financial_planner_bank_account::Migration),
+            Box::new(m20220729_154512_create_financial_planner_bills::Migration),
         ]
     }
 }

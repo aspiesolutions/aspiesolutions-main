@@ -10,6 +10,8 @@ pub struct Model {
     bank_account_id: Uuid,
     #[sea_orm(db_type = "uuid")]
     user_id: Uuid,
+    created: ChronoDateTimeUtc,
+    payee: String,
     /// decimal is chosen here because of the sensitive nature of money
     /// and we need to store large values without crashing.
     ///
