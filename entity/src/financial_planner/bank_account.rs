@@ -1,11 +1,12 @@
 use sea_orm::prelude::*;
+use sea_orm::sea_query;
 /// Models a bank account to use as a reference to a real bank account
 /// for a financial planner.
 
 #[derive(Debug, Clone, DeriveEntityModel)]
 #[sea_orm(table_name = "financial_planner_bank_account")]
 pub struct Model {
-    #[sea_orm(primary_key)]
+    #[sea_orm(primary_key, auto_increment = false)]
     id: Uuid,
     account_type: AccountType,
     user_id: Uuid,
@@ -23,7 +24,7 @@ pub enum Relation {
     #[sea_orm(has_many = "super::transaction::Entity")]
     FinancialPlannerTransaction,
 }
-#[derive(EnumIter, DeriveActiveEnum, Debug, Clone, PartialEq)]
+#[derive(EnumIter, DeriveActiveEnum, Iden, Debug, Clone, PartialEq)]
 #[sea_orm(
     rs_type = "String",
     db_type = "Enum",

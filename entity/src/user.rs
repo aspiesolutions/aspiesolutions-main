@@ -38,6 +38,10 @@ pub enum Relation {
     Transaction,
     #[sea_orm(has_many = "super::financial_planner::bank_account::Entity")]
     FinancialPlannerBankAccount,
+    #[sea_orm(has_many = "super::financial_planner::transaction::Entity")]
+    FinancialPlannerTransaction,
+    #[sea_orm(has_many = "super::financial_planner::bills::Entity")]
+    FinancialPlannerBills,
 }
 
 impl Related<super::account::Entity> for Entity {
