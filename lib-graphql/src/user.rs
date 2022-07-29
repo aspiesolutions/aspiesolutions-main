@@ -1,10 +1,24 @@
 use crate::node::NodeValue;
 use juniper::GraphQLObject;
 use juniper::ID;
-#[derive(GraphQLObject, Clone)]
+#[derive(GraphQLObject, Debug, Clone)]
 pub struct User {
     pub id: ID,
-    pub idp_id: Option<String>,
+    pub idp_id: String,
+}
+impl std::default::Default for User {
+    fn default() -> Self {
+        Self {
+            id: ID::new(""),
+            idp_id: String::new(),
+        }
+    }
+}
+/// A response type that allows sending recoverable errors to the client
+#[derive(Debug, GraphQLObject, Default)]
+pub struct GetUserResult {
+    pub user: Option<User>,
+    pub errors: Vec<String>,
 }
 
 // allow calling into to convert from the entity to the graphql user type
@@ -32,7 +46,7 @@ pub struct CreateUserInput {
 impl User {
     /// converts an Option<Model> into an Option<User>. implementing std:;convert::from is not allowed in this case
     pub fn map_model_opt(opt_model: Option<entity::user::Model>) -> Option<User> {
-        opt_model.map(|model|model.into())
+        opt_model.map(|model| model.into())
     }
 }
 

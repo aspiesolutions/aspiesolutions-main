@@ -17,12 +17,12 @@ pub async fn create_user_from_token(
     use sea_orm::prelude::*;
     let conn = db.into_inner();
     let active_model = entity::user::ActiveModel {
-        idp_id: sea_orm::ActiveValue::Set(Some(token.claims.sub)),
+        idp_id: sea_orm::ActiveValue::Set(token.claims.sub),
         email: sea_orm::ActiveValue::Set(None),
         email_verified: sea_orm::ActiveValue::Set(None),
         image: sea_orm::ActiveValue::Set(None),
         name: sea_orm::ActiveValue::Set(None),
-        object_id: sea_orm::ActiveValue::NotSet,
+        // object_id: sea_orm::ActiveValue::NotSet,
         id: sea_orm::ActiveValue::NotSet,
     };
     active_model.insert(&conn).await?;
@@ -56,9 +56,9 @@ pub async fn handle_graphql_post_request(
     let context = Context {
         conn,
         auth: Some(AuthContext {
-            token: Some(token.value),
+            // token: Some(token.value),
             claims: token.claims,
-            user,
+            // user,
         }),
     };
     Ok(body.execute(&*schema, &context).await)
@@ -78,26 +78,48 @@ pub async fn handle_graphql_get_query(
     // we must call into inner here to get the underlying databsae connection
     println!("got bearer token {:#?}", token);
     let conn = db.into_inner();
-    let user = match entity::user::Entity::find()
-        .filter(entity::user::Column::IdpId.eq(token.claims.sub.as_str()))
-        .one(&conn)
-        .await?
-    {
-        Some(u) => u,
-        None => {
-            return Err(aspiesolutions_core::Error::UserNotFoundError(
-                "Could not find a user reference with the given subject".to_string(),
-            ))
-        }
-    };
 
     let context = Context {
         conn,
         auth: Some(AuthContext {
-            token: Some(token.value),
             claims: token.claims,
-            user,
         }),
     };
     Ok(query.execute(&*schema, &context).await)
+}
+#[cfg(test)]
+pub mod tests {
+    // use std::collections::HashMap;
+
+    use rocket::{futures::TryFutureExt, http::ContentType};
+
+    #[tokio::test]
+    pub async fn test_post_graphql() {
+        let rocket = crate::rocket().await;
+        let client = rocket::local::asynchronous::Client::tracked(rocket)
+            .unwrap_or_else(|error| panic!("Failed to build rocket instance {error}"))
+            .await;
+        // let mut body = HashMap::<&str, &str>::new();
+        let test_query = r#"
+        {"source":"
+            query testQuery {
+                accessCode(id:\"abcd\") {
+                    user: {
+                        id
+                    }
+                    errors
+                }
+            }
+        "}"#;
+        // body.insert("source", test_query);
+        let response = client
+            .post("/api/graphql")
+            .header(ContentType::JSON)
+            .body(test_query)
+            .dispatch()
+            .await;
+        // let status = response.status();
+        let response_text = response.into_string().await;
+        println!("{:#?}", response_text)
+    }
 }

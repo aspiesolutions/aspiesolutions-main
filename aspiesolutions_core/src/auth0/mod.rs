@@ -3,7 +3,7 @@ use std::time::SystemTime;
 #[cfg(feature = "reqwest")]
 pub mod client;
 use serde::Deserialize;
-#[derive(Deserialize, Debug, Clone)]
+#[derive(Deserialize, Debug, Clone, Default)]
 pub struct TokenClaims {
     pub iss: String,
     pub sub: String,
@@ -20,7 +20,7 @@ pub struct Auth0BearerToken {
     pub value: String,
     pub claims: TokenClaims,
 }
-#[derive(Deserialize, Clone,Default)]
+#[derive(Deserialize, Clone, Default)]
 #[allow(unused)]
 pub struct Auth0GetManagmentTokenSuccess {
     access_token: String,
@@ -93,15 +93,16 @@ pub async fn get_managment_token(
 // }
 // pub fn from_option_into_failure<T>(t:T,e:Option<aspiesolutions_core::Error>)-> rocket::request::Outcome<T,>
 use crate::constants::HTTP_HEADER_NAME_AUTHORIZATION;
-use rocket::outcome::Outcome::*;
-use rocket::request::{self, FromRequest, Request};
 #[cfg_attr(feature = "rocket", rocket::async_trait)]
 #[cfg(feature = "rocket")]
-impl<'r> FromRequest<'r> for Auth0BearerToken {
+impl<'r> rocket::request::FromRequest<'r> for Auth0BearerToken {
     type Error = crate::Error;
 
-    async fn from_request(req: &'r Request<'_>) -> rocket::request::Outcome<Self, Self::Error> {
+    async fn from_request(
+        req: &'r rocket::Request<'_>,
+    ) -> rocket::request::Outcome<Self, Self::Error> {
         use rocket::http::Status;
+        use rocket::outcome::Outcome::*;
         let config = match req
             .guard::<&rocket::State<crate::config::Auth0Config>>()
             .await
@@ -122,7 +123,9 @@ impl<'r> FromRequest<'r> for Auth0BearerToken {
             .await
         {
             Success(client) => client,
-            Failure((status, _error)) => return Failure((status, crate::Error::RocketMissingState)),
+            Failure((status, _error)) => {
+                return Failure((status, crate::Error::RocketMissingState))
+            }
             Forward(status) => return Forward(status),
         };
         // we now have a managment api client to be able to fetch the siging keys
@@ -165,7 +168,7 @@ impl<'r> FromRequest<'r> for Auth0BearerToken {
         let jwk = match jwks.find(signing_key.kid()) {
             Some(jwk) => jwk,
             None => {
-                return request::Outcome::Failure((
+                return Failure((
                     Status::InternalServerError,
                     Self::Error::CustomString(
                         "Could Not Find a jwk to validate against".to_string(),
@@ -178,7 +181,7 @@ impl<'r> FromRequest<'r> for Auth0BearerToken {
             match req.headers().get_one(HTTP_HEADER_NAME_AUTHORIZATION) {
                 Some(h) => h,
                 None => {
-                    return request::Outcome::Failure((
+                    return Failure((
                         Status::Unauthorized,
                         Self::Error::RocketHttpRequiredHeaderMissing(
                             HTTP_HEADER_NAME_AUTHORIZATION.to_string(),
@@ -205,13 +208,13 @@ impl<'r> FromRequest<'r> for Auth0BearerToken {
         let valid_jwt = match alcoholic_jwt::validate(authorization_header_field, jwk, validations)
         {
             Ok(jwt) => jwt,
-            Err(e) => return request::Outcome::Failure((Status::InternalServerError, e.into())),
+            Err(e) => return Failure((Status::InternalServerError, e.into())),
         };
         let claims = match serde_json::from_value::<TokenClaims>(valid_jwt.claims) {
             Ok(claims) => claims,
-            Err(e) => return request::Outcome::Failure((Status::InternalServerError, e.into())),
+            Err(e) => return Failure((Status::InternalServerError, e.into())),
         };
-        request::Outcome::Success(Self {
+        Success(Self {
             value: authorization_header_field.to_string(),
             claims,
         })

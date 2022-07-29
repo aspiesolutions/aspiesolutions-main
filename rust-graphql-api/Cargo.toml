@@ -21,6 +21,9 @@ base64="0.13.0"
 serde_json = "1.0"
 entity={path="../entity"}
 aspiesolutions_core={path="../aspiesolutions_core",features=["alcoholic_jwt","reqwest","serde_json","rocket"]}
+dotenv = "0.15.0"
 # migration={path="../migration"}
 [dependencies.juniper_rocket]
 version="0.8"
+[dev-dependencies]
+tokio={version="1.0",features=["full"]}

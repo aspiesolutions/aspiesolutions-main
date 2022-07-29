@@ -1312,6 +1312,7 @@ dependencies = [
  "entity",
  "juniper",
  "lazy_static",
+ "log",
  "sea-orm",
  "serde",
  "serde_json",
@@ -2134,6 +2135,7 @@ dependencies = [
  "aspiesolutions_core",
  "async-trait",
  "base64",
+ "dotenv",
  "entity",
  "juniper_rocket",
  "lib-graphql",
@@ -2144,6 +2146,7 @@ dependencies = [
  "sea-orm",
  "serde",
  "serde_json",
+ "tokio",
 ]
 
 [[package]]

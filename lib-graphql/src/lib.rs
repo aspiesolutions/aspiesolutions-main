@@ -1,10 +1,11 @@
 use std::str::FromStr;
 
 use access_code::AccessCode;
+use aspiesolutions_core::constants::scopes::SCOPE_READ_USER;
 use juniper::graphql_object;
 use juniper::FieldResult;
-use sea_orm::ColumnTrait;
 use sea_orm::EntityTrait;
+use user::GetUserResult;
 
 pub use juniper::EmptySubscription;
 use juniper::ID;
@@ -22,10 +23,11 @@ pub struct Context {
     pub conn: sea_orm::DatabaseConnection,
     pub auth: Option<AuthContext>,
 }
+#[derive(Clone, Default)]
 pub struct AuthContext {
-    pub token: Option<String>,
+    // pub token: Option<String>,
     pub claims: aspiesolutions_core::auth0::TokenClaims,
-    pub user: entity::user::Model,
+    // pub user: crate::user::User,
 }
 
 impl juniper::Context for Context {}
@@ -49,7 +51,7 @@ impl Query {
         // we only care about the some cases
         match results {
             (Some(user), _) => Ok(Some(NodeValue::User(user.into()))),
-            (_, Some(session)) =>  Ok(Some(NodeValue::Session(session.into()))),
+            (_, Some(session)) => Ok(Some(NodeValue::Session(session.into()))),
             _ => Ok(None),
         }
     }
@@ -59,60 +61,40 @@ impl Query {
     pub async fn user<'context>(
         _id: ID,
         context: &'context Context,
-    ) -> juniper::FieldResult<Option<user::User>> {
+    ) -> juniper::FieldResult<GetUserResult> {
         // we need to know who is performing this action
         use sea_orm::prelude::Uuid;
         if context.auth.is_none() {
-            return Err(aspiesolutions_core::Error::Unauthorized(
-                "Permission denied. no auth context present".to_string(),
-            )
-            .into());
+            log::error!("Query user: auth context is None. returning null");
+            return Ok(GetUserResult {
+                user: None,
+                errors: vec![String::from("Authorization Required")],
+            });
         }
-        let auth_context = context.auth.as_ref().unwrap();
-        let claims = &auth_context.claims;
-        let subject_model = match entity::user::Entity::find()
-            .filter(entity::user::Column::IdpId.eq(claims.sub.as_str()))
-            .one(&context.conn)
-            .await?
-        {
-            Some(subject) => subject,
-            None => {
-                return Err(aspiesolutions_core::Error::UserNotFoundError(format!(
-                    "with idp_id of {}",
-                    auth_context.claims.sub
-                ))
-                .into());
-            }
-        };
-
+        let scopes = context.auth.as_ref().unwrap().claims.scope.as_ref();
+        // check required scopes
+        if scopes.is_none() || !scopes.unwrap().contains(SCOPE_READ_USER) {
+            return Ok(GetUserResult {
+                user: None,
+                errors: vec![String::from(
+                    "You dont have permission to perform this action",
+                )],
+            });
+        }
         // try to parse the id into a uuid
         let uuid = Uuid::from_str(&*_id)?;
         // if that works, then try to find the entity
-        let _object = match entity::user::Entity::find_by_id(uuid)
+        let user: Option<crate::user::User> = entity::user::Entity::find_by_id(uuid)
             .one(&context.conn)
             .await?
-        {
-            Some(o) => o,
-            None => {
-                return Err(aspiesolutions_core::Error::UserNotFoundError(format!(
-                    "with id {uuid}"
-                ))
-                .into())
-            }
-        };
+            .map(|m| m.into());
+
         // let meta_permissions = std::collections::HashMap::new();
-        let _scopes = context
-            .auth
-            .as_ref()
-            .unwrap()
-            .claims
-            .scope
-            .as_ref()
-            .unwrap_or(&String::new());
-        Ok(Some(user::User {
-            id: ID::new(subject_model.id().to_string()),
-            idp_id: subject_model.idp_id,
-        }))
+
+        Ok(GetUserResult {
+            user,
+            errors: vec![],
+        })
         // let user_opt = user::User::map_model_opt(model_opt);
     }
 }
@@ -150,34 +132,39 @@ pub mod test {
 
     use crate::Schema;
 
-    // #[tokio::test]
-    // pub async fn test_user_query() {
-    //     let query = r#"query testQuery
-    //     {
-    //         user(id:"627ecff7-a969-4e9a-b433-ad8e61154cee") {
-    //             id
-    //         }
-    //     }
-    //     "#;
-    //     let schema = Schema::new(
-    //         crate::Query,
-    //         crate::Mutation,
-    //         crate::EmptySubscription::<crate::Context>::default(),
-    //     );
-    //     let conn = sea_orm::Database::connect(std::env::var(ENV_KEY_DATABASE_URL).unwrap())
-    //         .await
-    //         .unwrap();
-    //     let context = crate::Context {
-    //         conn,
-    //         auth: Some(AuthContext {
-    //             token: None,
-    //             claims: None,
-    //         }),
-    //     };
-    //     let variables: HashMap<String, InputValue> = HashMap::new();
-    //     let execution_result = juniper::execute(query, None, &schema, &variables, &context)
-    //         .await
-    //         .expect("Query Failed");
-    //     println!("{ex&ecution_result:#?}");
-    // }
+    #[tokio::test]
+    pub async fn test_get_user() {
+        let query = r#"query testQuery
+        {
+            user(id:"627ecff7-a969-4e9a-b433-ad8e61154cee") {
+                user {
+                    id
+                }
+                errors
+            }
+        }
+        "#;
+        let schema = Schema::new(
+            crate::Query,
+            crate::Mutation,
+            crate::EmptySubscription::<crate::Context>::default(),
+        );
+        let conn = sea_orm::Database::connect(std::env::var(ENV_KEY_DATABASE_URL).unwrap())
+            .await
+            .unwrap();
+        let context = crate::Context {
+            conn,
+            auth: Some(AuthContext {
+                // token: None,
+                claims: Default::default(),
+            }),
+        };
+        let variables: HashMap<String, InputValue> = HashMap::new();
+        let execution_result = juniper::execute(query, None, &schema, &variables, &context).await;
+        // we should not error unless its unrecoverable
+        assert_eq!(execution_result.is_ok(), true);
+        let (_value, errors) = execution_result.unwrap();
+        assert_eq!(errors.len(), 0);
+        // .expect("Query Failed");
+    }
 }

@@ -15,7 +15,7 @@ impl MigrationTrait for Migration {
                         ColumnDef::new(user::Column::IdpId)
                             .text()
                             .unique_key()
-                            .null(),
+                            .not_null(),
                     )
                     .to_owned(),
             )

@@ -4,13 +4,14 @@ use sea_orm::entity::prelude::*;
 
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel)]
 #[sea_orm(table_name = "user")]
+#[sea_orm(schema_name = "public")]
 pub struct Model {
     /// the primary identifier for our system
     #[sea_orm(primary_key, auto_increment = false)]
     id: Uuid,
     /// used to link our IDP with our user
-    #[sea_orm(nullable, unique)]
-    pub idp_id: Option<String>,
+    #[sea_orm(unique)]
+    pub idp_id: String,
     #[sea_orm(column_type = "Text", nullable)]
     pub name: Option<String>,
     #[sea_orm(column_type = "Text", nullable, unique)]
@@ -19,7 +20,7 @@ pub struct Model {
     pub email_verified: Option<DateTimeWithTimeZone>,
     #[sea_orm(column_type = "Text", nullable)]
     pub image: Option<String>,
-    pub object_id: Uuid,
+    // pub object_id: Uuid,
 }
 
 // impl std::default::Default for Model {
@@ -48,8 +49,8 @@ pub enum Relation {
     Session,
     #[sea_orm(has_many = "super::transaction::Entity")]
     Transaction,
-    #[sea_orm(has_many = "super::object::Entity")]
-    Object,
+    // #[sea_orm(has_many = "super::object::Entity")]
+    // Object,
 }
 
 impl Related<super::account::Entity> for Entity {
@@ -68,17 +69,17 @@ impl Related<super::transaction::Entity> for Entity {
         Relation::Transaction.def()
     }
 }
-impl Related<super::group::Entity> for Entity {
-    fn to() -> RelationDef {
-        super::user_group::Relation::Group.def()
-    }
-    fn via() -> Option<RelationDef> {
-        Some(super::user_group::Relation::User.def().rev())
-    }
-}
-impl Related<super::object::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::Object.def()
-    }
-}
+// impl Related<super::group::Entity> for Entity {
+//     fn to() -> RelationDef {
+//         super::user_group::Relation::Group.def()
+//     }
+//     fn via() -> Option<RelationDef> {
+//         Some(super::user_group::Relation::User.def().rev())
+//     }
+// }
+// impl Related<super::object::Entity> for Entity {
+//     fn to() -> RelationDef {
+//         Relation::Object.def()
+//     }
+// }
 impl ActiveModelBehavior for ActiveModel {}
