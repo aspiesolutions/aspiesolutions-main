@@ -30,12 +30,11 @@ export function createClientNetwork(getAuthTokenFn?: ()=>Promise<any>) {
     let relay_response = { data: null, errors: null };
     let response = null;
     try {
-      response = await fetch(API_URL, {
+      response = await fetch("/api/gqlProxy", {
         method: "POST",
         credentials: "include",
         headers: {
           "Content-Type": "application/json",
-          authorization: "Bearer someinvalidtoken",
         },
         body: JSON.stringify({
           query: params.text,

@@ -9,14 +9,14 @@ export default async function gqlProxy(req: NextApiRequest, res: NextApiResponse
     }
     console.log(EXTERNAL_GRAPHQL_API_URL)
     if (req.method !== "POST") {
-        res.status(403).send({ data: { fatal_errors: ["Invalid Request method. expecting POST"] } })
+        res.status(200).send({ data: { fatal_errors: ["Invalid Request method. expecting POST"] } })
         return;
     }
     if (!req.headers["content-type"].includes("application/json")) {
-        res.status(415).send({ data: { fatal_errors: [`This handler only understands 'application/json' got ${req.headers['content-type']}`] } })
+        res.status(200).send({ data: { fatal_errors: [`This handler only understands 'application/json' got ${req.headers['content-type']}`] } })
     }
     if (req.body == null) {
-        res.status(400).send({ data: { fatal_errors: ["Bad Request: Missing request body"] } })
+        res.status(200).send({ data: { fatal_errors: ["Bad Request: Missing request body"] } })
         return
     }
     let accessToken = null;;
@@ -25,10 +25,10 @@ export default async function gqlProxy(req: NextApiRequest, res: NextApiResponse
     }
     catch (e) {
         if (e instanceof AccessTokenError) {
-            res.status(401).send({ data: { fatal_errors: [e.toString()], errors: null } });
+            res.status(200).send({ data: { fatal_errors: [e.toString()], errors: null } });
             return
         }
-        res.status(500).send({ data: { fatal_errors: [e.toString()], errors: null } })
+        res.status(200).send({ data: { fatal_errors: [e.toString()], errors: null } })
     }
     let proxyResponse = await axios.post(EXTERNAL_GRAPHQL_API_URL, req.body, { withCredentials: true, headers: { ...req.headers as any, "authorization": `Bearer ${accessToken?.token}` } });
     res.status(proxyResponse.status)
