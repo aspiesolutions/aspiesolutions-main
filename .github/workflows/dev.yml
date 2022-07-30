@@ -54,7 +54,7 @@ jobs:
 
       # run the migration script to bring up the database
       - name: Run Migrations, create tables
-        run: cargo run --bin migrate --release
+        run: cargo run --bin migration --release
       - name: Test Rust Workspace
         run: cargo test --workspace
       - name: Build Api for Development release with debug output
