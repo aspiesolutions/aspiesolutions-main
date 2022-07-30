@@ -5,7 +5,7 @@ import { getClientEnvironment } from "../../src/lib/relay-nextjs/clientEnvironme
 import { relay_AccessCodeQuery } from "../../src/queries/__generated__/relay_AccessCodeQuery.graphql";
 // import { createServerEnvironment } from '../../src/lib/server/relay-nextjs/serverEnvironment';
 import { NextApiRequest } from "next";
-import { withApiAuthRequired } from "@auth0/nextjs-auth0";
+import { withPageAuthRequired } from "@auth0/nextjs-auth0";
 
 // The $uuid variable is injected automatically from the route.
 const AccessCodeQuery = graphql`
@@ -18,8 +18,10 @@ const AccessCodeQuery = graphql`
 
 function AccessCode({ preloadedQuery }: RelayProps<{}, relay_AccessCodeQuery>) {
   const query = usePreloadedQuery(AccessCodeQuery, preloadedQuery);
-  if (!query.accessCode) {
-    return <>No access code returned</>;
+  if (!query.accessCode && query.errors) {
+    return <>No access code returned because the request failed</>;
+  } else if (!query.accessCode) {
+    return <>no access code was returned because it was not found</>;
   }
   return <>Hello {query.accessCode.id}</>;
 }
@@ -28,7 +30,7 @@ function Loading() {
   return <div>Loading...</div>;
 }
 
-export default withRelay(AccessCode, AccessCodeQuery, {
+export default withRelay(withPageAuthRequired(AccessCode), AccessCodeQuery, {
   // Fallback to render while the page is loading.
   // This property is optional.
   fallback: <Loading />,
@@ -50,21 +52,33 @@ export default withRelay(AccessCode, AccessCodeQuery, {
     //   };
     // }
     let req = ctx.req as NextApiRequest;
-    let { getAccessToken } = await import("@auth0/nextjs-auth0");
-
+    let { getAccessToken, AccessTokenError } = await import(
+      "@auth0/nextjs-auth0"
+    );
     // let {authOptions} = await import("../../src/lib/nextAuth/index")
-    let getTokenResult = await getAccessToken(ctx.req,ctx.res,{scopes:[]});
+    let getTokenResult = null;
+    try {
+      getTokenResult = await getAccessToken(ctx.req, ctx.res, { scopes: [] });
+    } catch (e) {
+      if (e instanceof AccessTokenError && e.code == "invalid_session") {
+        console.info("user not logged in or session expired");
+        ctx.res.statusCode = 307;
+        ctx.res.setHeader("location", `/api/auth/login`);
+        ctx.res.end();
+        return;
+      } else {
+        console.warn(
+          "Could not handle an invalid token error. redirecting user to homepage"
+        );
+        ctx.res.statusCode = 307;
+        ctx.res.setHeader("location", "/");
+        ctx.res.end();
+        return;
+      }
+    }
 
-    // let token = "";
-    // let index = 0;
-    // let cookie =req.cookies[`next-auth.session-token.${index}`];
-    // while (cookie != null) {
-    //   token = token.concat(cookie)
-    //   cookie = req.cookies[`next-auth.session-token.${index}`];
-    //   index++;
-    // }
     console.log("assembled token");
-    return { token:getTokenResult.accessToken };
+    return { token: getTokenResult?.accessToken };
   },
   // Server-side props can be accessed as the second argument
   // to this function.
