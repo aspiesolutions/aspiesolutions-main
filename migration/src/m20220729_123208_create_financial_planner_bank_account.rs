@@ -78,9 +78,14 @@ impl MigrationTrait for Migration {
                 format!(r#"DROP TYPE IF EXISTS "{}""#, FPBAType::name()),
             ))
             .await?;
-        // manager
-        //     .drop_table(Table::drop().table(Post::Table).to_owned())
-        //     .await
+        manager
+            .drop_table(
+                Table::drop()
+                    .table(FinancialPlannerTransaction)
+                    .if_exists()
+                    .to_owned(),
+            )
+            .await?;
         Ok(())
     }
 }

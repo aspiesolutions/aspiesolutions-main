@@ -2,24 +2,37 @@ type Address implements Node {
   id: ID!
 }
 
+"A response type that allows sending recoverable errors to the client"
+type GetUserResult {
+  user: User
+  errors: [String!]!
+}
+
 type Mutation {
   noop: String
+  createUser: User!
 }
 
 type Query {
-  node(id: ID!): Node!
+  node(id: ID!): Node
   accessCode(id: ID!): AccessCode
+  user(id: ID!): GetUserResult!
 }
 
 interface Node {
   id: Node
 }
 
-type AccessCode {
+type User {
   id: ID!
+  idpId: String!
 }
 
 type Session implements Node {
+  id: ID!
+}
+
+type AccessCode {
   id: ID!
 }
 

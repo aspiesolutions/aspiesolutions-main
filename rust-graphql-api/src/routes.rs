@@ -36,22 +36,7 @@ pub async fn handle_graphql_post_request(
     schema: &State<Schema>,
     body: juniper_rocket::GraphQLRequest,
 ) -> Result<juniper_rocket::GraphQLResponse, aspiesolutions_core::Error> {
-    use sea_orm::prelude::*;
-
-    println!("got bearer token {:#?}", token);
     let conn = db.into_inner();
-    let user = match entity::user::Entity::find()
-        .filter(entity::user::Column::IdpId.eq(token.claims.sub.as_str()))
-        .one(&conn)
-        .await?
-    {
-        Some(u) => u,
-        None => {
-            return Err(aspiesolutions_core::Error::UserNotFoundError(
-                "Could not find a user reference with the given subject".to_string(),
-            ))
-        }
-    };
 
     let context = Context {
         conn,

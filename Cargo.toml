@@ -3,5 +3,6 @@ members=["lib-graphql","rust-graphql-api","entity","migration","rust-lib-db-sea-
 
 [profile.release]
 lto=true
+
 [profile.dev]
 opt-level=0
