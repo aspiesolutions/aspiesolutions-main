@@ -8,7 +8,7 @@ pub mod lib;
 
 #[launch]
 async fn rocket() -> _ {
-    let _ = dotenv::dotenv().ok();
+    let vars = dotenv::dotenv().unwrap_or_else(|e| panic!("{e}"));
     let schema = lib_graphql::Schema::new(
         lib_graphql::Query,
         lib_graphql::Mutation,

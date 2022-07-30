@@ -22,7 +22,7 @@ impl Auth0Config {
     /// Constructs a new instance of this struct using std::env::var(AUTH0_FIELD) and panics if not present
     pub fn new_from_env() -> Self {
         Self {
-            domain: std::env::var(ENV_KEY_AUTH0_DOMAIN).unwrap_or_else(|_| {
+            domain: std::env::var(ENV_KEY_AUTH0_DOMAIN).unwrap_or_else(|var_error| {
                 panic!(
                     "Envrionment Variable {} must be defined",
                     ENV_KEY_AUTH0_DOMAIN
@@ -43,7 +43,7 @@ impl Auth0Config {
             audience: std::env::var(ENV_KEY_AUTH0_AUDIENCE).unwrap_or_else(|_| {
                 panic!(
                     "Envrionment Variable {} must be defined",
-                    ENV_KEY_AUTH0_DOMAIN
+                    ENV_KEY_AUTH0_AUDIENCE
                 )
             }),
         }
